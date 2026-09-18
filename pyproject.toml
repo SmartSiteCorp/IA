@@ -1,0 +1,45 @@
+[build-system]
+requires = ["hatchling==1.32.3"]
+build-backend = "hatchling.build"
+
+[project]
+name = "smartsite-ia"
+version = "0.1.0"
+description = "Validated construction-defect dataset preparation for SmartSite"
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+dependencies = ["pillow==12.3.0", "numpy>=2.2,<2.5", "pycocotools==2.0.11"]
+
+[project.scripts]
+smartsite-data = "smartsite_ia.cli:main"
+
+[dependency-groups]
+dev = ["pytest==9.1.1", "pytest-cov==7.1.0", "ruff==0.16.8", "mypy==2.3.1"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+files = ["src"]
+
+[[tool.mypy.overrides]]
+module = ["pycocotools.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+
+[tool.coverage.run]
+branch = true
+source = ["smartsite_ia"]
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 90
