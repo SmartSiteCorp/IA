@@ -63,6 +63,15 @@ def finite_mean(values: Any) -> float | None:
 def counts_for_image(
     references: list[dict[str, Any]], predictions: list[dict[str, Any]], threshold: float
 ) -> dict[str, dict[str, int]]:
+    return {
+        name: row["counts"]
+        for name, row in analyze_masks(references, predictions, threshold).items()
+    }
+
+
+def analyze_masks(
+    references: list[dict[str, Any]], predictions: list[dict[str, Any]], threshold: float
+) -> dict[str, Any]:
     """Un défaut ne peut compter qu'une fois, même si plusieurs propositions le couvrent."""
     result = {}
     for label, name in enumerate(CLASS_NAMES, 1):
@@ -73,14 +82,33 @@ def counts_for_image(
             reverse=True,
         )
         matched: set[int] = set()
-        if dt and gt:
-            overlaps = coco_mask.iou([r["segmentation"] for r in dt], gt, [0] * len(gt))
-            for row in overlaps:
-                candidates = [i for i in range(len(gt)) if i not in matched and row[i] >= 0.5]
-                if candidates:
-                    matched.add(max(candidates, key=lambda i: row[i]))
+        errors = {"duplicate": 0, "insufficient_overlap": 0, "no_overlap": 0}
+        overlaps = (
+            coco_mask.iou([r["segmentation"] for r in dt], gt, [0] * len(gt))
+            if dt and gt
+            else np.zeros((len(dt), len(gt)))
+        )
+        for row in overlaps:
+            candidates = [i for i in range(len(gt)) if i not in matched and row[i] >= 0.5]
+            if candidates:
+                matched.add(max(candidates, key=lambda i: row[i]))
+            else:
+                # Ce diagnostic de recouvrement
+                # Un masque trop large peut croiser une fissure et rester faux...
+                best = float(row.max()) if len(row) else 0.0
+                reason = (
+                    "duplicate"
+                    if best >= 0.5
+                    else "insufficient_overlap"
+                    if best > 0
+                    else "no_overlap"
+                )
+                errors[reason] += 1
         tp = len(matched)
-        result[name] = {"tp": tp, "fp": len(dt) - tp, "fn": len(gt) - tp}
+        result[name] = {
+            "counts": {"tp": tp, "fp": len(dt) - tp, "fn": len(gt) - tp},
+            "errors": errors,
+        }
     return result
 
 

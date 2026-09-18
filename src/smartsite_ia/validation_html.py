@@ -62,6 +62,42 @@ indéfini.</p>"""
     )
 
 
+def inference_description(report: dict[str, Any]) -> str:
+    settings = report.get("inference")
+    if not settings:
+        return "réglages non enregistrés dans cet ancien rapport"
+    profile = (
+        "historique" if settings["preprocessing"] == "public-v1" else "aligné sur l'entraînement"
+    )
+    return (
+        f"traitement {profile}, "
+        f"seuil des pixels du masque {settings['mask_probability_threshold']:.0%}"
+    )
+
+
+def error_summary(report: dict[str, Any]) -> str:
+    if "mask_errors" not in report:
+        return ""
+    rows = []
+    for name in CLASS_NAMES:
+        errors = report["mask_errors"][name]
+        rows.append(
+            f"<tr><td>{NAMES[name]}</td><td>{errors['duplicate']}</td>"
+            f"<td>{errors['insufficient_overlap']}</td><td>{errors['no_overlap']}</td></tr>"
+        )
+    return (
+        "<h2>Comprendre les propositions non appariées</h2>"
+        "<p>Ce diagnostic décrit les écarts aux masques fournis ; "
+        "il ne valide pas automatiquement une fissure. "
+        "Un recouvrement insuffisant peut venir des contours, "
+        "du découpage en plusieurs défauts ou d'une mauvaise détection.</p>"
+        "<div class='table'><table><thead><tr><th>Défaut</th><th>Doublons</th>"
+        "<th>Recouvrement insuffisant</th><th>Aucun recouvrement</th></tr></thead><tbody>"
+        + "".join(rows)
+        + "</tbody></table></div>"
+    )
+
+
 def gallery(records: list[dict[str, Any]], columns: list[tuple[str, str]]) -> str:
     cards = []
     for index, record in enumerate(records):
@@ -86,6 +122,8 @@ def write_validation_page(output: Path, report: dict[str, Any]) -> None:
         "Les photos de test restent réservées.</p>"
     )
     body += metric_table([("Modèle évalué", report)])
+    body += f"<p>{inference_description(report)}.</p>"
+    body += error_summary(report)
     body += gallery(
         report["records"],
         [
@@ -104,16 +142,26 @@ def write_comparison_page(output: Path, first: dict[str, Any], second: dict[str,
         f"<p>Comparaison sur les mêmes {first['images']} photos, avec les mêmes règles. "
         "Les annotations fournies sont affichées séparément des prédictions.</p>"
     )
+    if first["checkpoint_sha256"] == second["checkpoint_sha256"]:
+        body += (
+            "<p>Les poids du modèle sont identiques : cette comparaison porte "
+            "sur le traitement des images et des masques.</p>"
+        )
+    body += (
+        f"<p>Avant : {inference_description(first)}.<br>"
+        f"Après : {inference_description(second)}.</p>"
+    )
     body += metric_table([("Avant", first), ("Après", second)])
+    body += error_summary(second)
     body += gallery(
         first["records"],
         [
             ("Photo", "photo.jpg"),
             ("Annotations fournies", "reference.jpg"),
-            ("Avant : premier essai", "before.jpg"),
-            ("Après : entraînement élargi", "after.jpg"),
+            ("Avant", "before.jpg"),
+            ("Après", "after.jpg"),
         ],
     )
     (output / "index.html").write_text(
-        frame("SmartSite — avant et après entraînement", body), encoding="utf-8"
+        frame("SmartSite — comparaison des détections", body), encoding="utf-8"
     )

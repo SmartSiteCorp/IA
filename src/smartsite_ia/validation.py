@@ -8,6 +8,7 @@ from typing import Any
 from smartsite_ia.annotations import unique_object
 from smartsite_ia.curation import digest, read_document, staged_output
 from smartsite_ia.importer import write_json
+from smartsite_ia.inference import DEFAULT_PROFILE, inference_metadata
 from smartsite_ia.learning import process_peak_rss, runtime, verify_run
 from smartsite_ia.model_assets import CLASS_NAMES
 from smartsite_ia.prediction import (
@@ -18,9 +19,9 @@ from smartsite_ia.prediction import (
 )
 from smartsite_ia.review import MAX_FILE_BYTES, MAX_JSON_BYTES, SAMPLE_ID, read_local
 from smartsite_ia.validation_metrics import (
+    analyze_masks,
     coco_api,
     coco_scores,
-    counts_for_image,
     summarize_counts,
 )
 
@@ -69,8 +70,16 @@ def load_validation(
     return document, records, hashes["valid/_annotations.coco.json"]
 
 
-def evaluate_validation(run: Path, corpus: Path, output: Path, device: str) -> dict[str, Any]:
+def evaluate_validation(
+    run: Path,
+    corpus: Path,
+    output: Path,
+    device: str,
+    preprocessing: str = DEFAULT_PROFILE,
+    mask_threshold: float = 0.5,
+) -> dict[str, Any]:
     """Un chargement du modèle, une photo à la fois, et toutes les images du lot."""
+    settings = inference_metadata(preprocessing, mask_threshold)
     report, checkpoint = verify_run(run)
     document, records, annotation_hash = load_validation(corpus, report)
     environment = runtime(device)
@@ -79,7 +88,7 @@ def evaluate_validation(run: Path, corpus: Path, output: Path, device: str) -> d
     images = {im["file_name"]: im for im in document["images"]}
     results, coco_predictions = [], []
     with staged_output(output, [run, corpus]) as stage:
-        engine = load_engine(checkpoint, device)
+        engine = load_engine(checkpoint, device, preprocessing, mask_threshold)
         for record in records:
             sample_id = record["id"]
             raw = read_local(corpus, f"valid/{sample_id}.jpg", MAX_FILE_BYTES)
@@ -107,7 +116,8 @@ def evaluate_validation(run: Path, corpus: Path, output: Path, device: str) -> d
                 for p in proposals
             ]
             references = [{**a, "segmentation": gt.annToRLE(a)} for a in gt.imgToAnns[im["id"]]]
-            counts = counts_for_image(references, predicted, DISPLAY_THRESHOLD)
+            analysis = analyze_masks(references, predicted, DISPLAY_THRESHOLD)
+            counts = {name: row["counts"] for name, row in analysis.items()}
             folder = stage / sample_id
             folder.mkdir()
             # Les vignettes n'altèrent pas les masques utilisés pour mesurer les résultats.
@@ -138,6 +148,7 @@ def evaluate_validation(run: Path, corpus: Path, output: Path, device: str) -> d
                     "difficulty": record["difficulty"],
                     "image_sha256": record["image_sha256"],
                     "counts": counts,
+                    "mask_errors": {name: row["errors"] for name, row in analysis.items()},
                     "inference_seconds": inference_seconds,
                     "proposals": len(visible),
                 }
@@ -163,9 +174,17 @@ def evaluate_validation(run: Path, corpus: Path, output: Path, device: str) -> d
             "images": len(results),
             "records": results,
             "runtime": environment,
+            "inference": settings,
             "protocol": validation_protocol(),
             "coco": metrics,
             "counts": summarize_counts([r["counts"] for r in results]),
+            "mask_errors": {
+                name: {
+                    reason: sum(r["mask_errors"][name][reason] for r in results)
+                    for reason in ("duplicate", "insufficient_overlap", "no_overlap")
+                }
+                for name in CLASS_NAMES
+            },
             "by_difficulty": by_difficulty,
             "elapsed_seconds": time.monotonic() - started,
             "process_peak_rss_bytes": process_peak_rss(),
@@ -210,6 +229,15 @@ def compare_validations(before: Path, after: Path, output: Path) -> dict[str, An
             or report.get("test_used") is not False
         ):
             raise ValueError("Comparison requires completed validation reports")
+        settings = report.get("inference")
+        if settings is not None and (
+            not isinstance(settings, dict)
+            or settings
+            != inference_metadata(
+                settings.get("preprocessing", ""), settings.get("mask_probability_threshold", 0)
+            )
+        ):
+            raise ValueError("Invalid inference settings in validation report")
         ids = [r["id"] for r in report["records"]]
         if (
             not 1 <= len(ids) <= 5000

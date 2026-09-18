@@ -40,6 +40,7 @@ ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+norecursedirs = ["integration"]
 addopts = "-ra --strict-markers"
 
 [tool.coverage.run]

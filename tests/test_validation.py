@@ -73,6 +73,22 @@ def test_duplicates_wrong_classes_and_low_scores():
     assert validation_metrics.finite_mean(np.array([-1])) is None
 
 
+def test_error_diagnostics_distinguish_duplicates_and_partial_masks():
+    refs = document()["annotations"][:1]
+    preds = [
+        proposals()[0],
+        proposals()[0],
+        {**proposals()[0], "segmentation": rle(22)},
+        {**proposals()[0], "segmentation": rle(40)},
+    ]
+    result = validation_metrics.analyze_masks(refs, preds, 0.3)["crack"]
+    assert result["counts"] == {"tp": 1, "fp": 3, "fn": 0}
+    assert result["errors"] == {"duplicate": 1, "insufficient_overlap": 1, "no_overlap": 1}
+    assert sum(result["errors"].values()) == result["counts"]["fp"]
+    empty = validation_metrics.analyze_masks([], preds, 0.3)["crack"]
+    assert empty["errors"]["no_overlap"] == 4
+
+
 @pytest.fixture
 def validation_inputs(tmp_path, monkeypatch):
     corpus = tmp_path / "corpus"
@@ -124,12 +140,15 @@ def test_complete_evaluation_comparison_without_test_access(
         assert report["images"] == 1 and report["test_used"] is False
         assert report["counts"]["crack"]["tp"] == 1
         assert report["coco"]["mask_map_50_95"] == pytest.approx(1.0)
+        assert report["mask_errors"]["crack"]["no_overlap"] == 0
+        assert report["inference"]["preprocessing"] == "public-v1"
     output = tmp_path / "comparison"
     validation.compare_validations(before, after, output)
     assert (output / "easy_0001/after.jpg").read_bytes() == (
         after / "easy_0001/prediction.jpg"
     ).read_bytes()
     assert "Avant" in (output / "index.html").read_text()
+    assert "poids du modèle sont identiques" in (output / "index.html").read_text()
     with pytest.raises(FileExistsError):
         validation.compare_validations(before, after, output)
 
@@ -175,7 +194,9 @@ def test_validation_refuses_changed_inputs(validation_inputs, tmp_path, change):
     assert not (tmp_path / "bad").exists()
 
 
-@pytest.mark.parametrize("change", ["protocol", "image_hash", "annotations", "split", "unsafe_id"])
+@pytest.mark.parametrize(
+    "change", ["protocol", "image_hash", "annotations", "split", "unsafe_id", "inference"]
+)
 def test_comparison_requires_same_data_protocol(validation_inputs, tmp_path, change):
     corpus, _ = validation_inputs
     report = validation.evaluate_validation(tmp_path / "run", corpus, tmp_path / "before", "cpu")
@@ -190,6 +211,8 @@ def test_comparison_requires_same_data_protocol(validation_inputs, tmp_path, cha
         second["split"] = "test"
     elif change == "unsafe_id":
         second["records"][0]["id"] = "../../outside"
+    elif change == "inference":
+        second["inference"]["preprocessing"] = "unknown"
     (tmp_path / "after").mkdir()
     write_json(tmp_path / "after/report.json", second)
     with pytest.raises(ValueError):
@@ -208,3 +231,22 @@ def test_validation_cli(command, monkeypatch, capsys):
     monkeypatch.setattr(model_cli, "evaluate_validation", lambda *args: {"images": 1})
     monkeypatch.setattr(model_cli, "compare_validations", lambda *args: {})
     assert model_cli.main() == 0 and "report" in json.loads(capsys.readouterr().out)
+
+
+def test_comparison_allows_changed_inference_but_keeps_measurement_rules(
+    validation_inputs, tmp_path
+):
+    corpus, _ = validation_inputs
+    before = tmp_path / "before"
+    report = validation.evaluate_validation(tmp_path / "run", corpus, before, "cpu")
+    after = tmp_path / "after"
+    import shutil
+
+    shutil.copytree(before, after)
+    from smartsite_ia.inference import inference_metadata
+
+    report["inference"] = inference_metadata("training-v1", 0.6)
+    write_json(after / "report.json", report)
+    validation.compare_validations(before, after, tmp_path / "comparison")
+    page = (tmp_path / "comparison/index.html").read_text()
+    assert "60%" in page and "aligné" in page

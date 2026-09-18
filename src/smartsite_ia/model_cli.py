@@ -7,6 +7,7 @@ from importlib.metadata import PackageNotFoundError
 from pathlib import Path
 from typing import Any
 
+from smartsite_ia.inference import DEFAULT_PROFILE, PROFILES
 from smartsite_ia.learning import runtime, train_model
 from smartsite_ia.model_assets import PRETRAINED
 from smartsite_ia.prediction import predict_photo
@@ -39,6 +40,9 @@ def main() -> int:
     evaluate.add_argument("corpus", type=Path)
     evaluate.add_argument("--run", type=Path, required=True)
     evaluate.add_argument("--output", type=Path, required=True)
+    for command in (predict, evaluate):
+        command.add_argument("--preprocessing", choices=PROFILES, default=DEFAULT_PROFILE)
+        command.add_argument("--mask-threshold", type=float, default=0.5)
     compare = commands.add_parser("compare", help="Compare two identical validation protocols")
     compare.add_argument("before", type=Path)
     compare.add_argument("after", type=Path)
@@ -59,13 +63,28 @@ def main() -> int:
             )
             result = {"status": report["status"], "run": str(args.output / "run.json")}
         elif args.command == "evaluate":
-            report = evaluate_validation(args.run, args.corpus, args.output, args.device)
+            report = evaluate_validation(
+                args.run,
+                args.corpus,
+                args.output,
+                args.device,
+                args.preprocessing,
+                args.mask_threshold,
+            )
             result = {"images": report["images"], "report": str(args.output / "index.html")}
         elif args.command == "compare":
             compare_validations(args.before, args.after, args.output)
             result = {"report": str(args.output / "index.html")}
         else:
-            report = predict_photo(args.run, args.image, args.output, args.device, args.threshold)
+            report = predict_photo(
+                args.run,
+                args.image,
+                args.output,
+                args.device,
+                args.threshold,
+                args.preprocessing,
+                args.mask_threshold,
+            )
             result = {
                 "predictions": len(report["predictions"]),
                 "report": str(args.output / "index.html"),

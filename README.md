@@ -137,7 +137,7 @@ PYTORCH_ENABLE_MPS_FALLBACK=1 .venv/bin/smartsite-model train data/prepared/dams
 
 Le dossier de sortie doit être nouveau. Sur Mac, la variable ci-dessus autorise un repli CPU pour les opérations MPS non prises en charge ; sa présence est enregistrée, sans prétendre que toutes les opérations sont exécutées sur GPU. Aucun journal cloud ni image n'est envoyé à un service. L'exécution est en pleine précision, lot de 1, sans processus de chargement parallèles ; ce profil vérifie le parcours, pas la vitesse maximale du moteur.
 
-Le dossier contient la sélection exacte, `run.json`, les checkpoints et `checkpoints/metrics.csv`. `run.json` distingue préparation, apprentissage, succès, échec et interruption ; une erreur laisse les fichiers de diagnostic disponibles. Il enregistre configuration, versions, périphérique, empreintes, durée et limites. `checkpoint_best_total.pth` est choisi sur la validation. `last_epoch_metrics` décrit la dernière époque et ne doit pas être confondu avec les métriques du checkpoint choisi. Les poids de départ et ceux appris sont distincts. Les checkpoints complets du moteur sont conservés, mais une commande de reprise contrôlée n'est pas encore exposée par SmartSite.
+Le dossier contient la sélection exacte, `run.json`, les checkpoints et `checkpoints/metrics.csv`. `run.json` distingue préparation, apprentissage, succès, échec et interruption ; une erreur laisse les fichiers de diagnostic disponibles. Il enregistre configuration, versions, périphérique, empreintes, durée et limites. `checkpoint_best_total.pth` est choisi sur la validation. `last_epoch_metrics` décrit la dernière époque et ne doit pas être confondu avec les métriques du checkpoint choisi. Les poids de départ et ceux appris sont distincts. Les checkpoints complets sont conservés. `train --resume` permet de reprendre un essai enregistré comme interrompu ou échoué, dans le même dossier, après vérification de la configuration, du périphérique et des entrées. Il ne prolonge pas un essai terminé et ne récupère pas automatiquement une coupure brutale sans état sauvegardé.
 
 Premier essai : 32 photos et 308 instances pour apprendre, 8 photos et 70 instances pour valider ; 96 mises à jour, environ 107 secondes pour préparation/apprentissage/écriture après le contrôle du moteur. Cette durée ne comprend pas installation, téléchargement ou génération de la galerie ; elle ne prédit pas le temps d'un apprentissage complet. Le pic de mémoire n'a pas été mesuré.
 
@@ -163,6 +163,48 @@ Pour voir les résultats locaux déjà générés :
 [Galerie des huit photos de validation](http://127.0.0.1:8768/smoke_validation/) : photo, annotations fournies et prédictions, sans sélection des meilleurs exemples. [Exemple de résultat détaillé](http://127.0.0.1:8768/first_validation/). Ces sorties restent locales ; elles ne sont pas incluses dans un clone. Un nouveau `predict` crée son propre `index.html` dans le dossier choisi.
 
 Les graines, données, versions et poids sont enregistrés pour reproduire le protocole. Les calculs GPU ne sont pas garantis identiques bit pour bit. Les tests du dépôt vérifient les contrats avec un moteur simulé aux frontières ; les essais réels sont documentés séparément, sans imposer l'installation du moteur à la CI légère.
+
+## Évaluer les contours et comparer les réglages
+
+`evaluate` analyse toute la validation épinglée par le run, sans lire les fichiers du test réservé. Le modèle reste expérimental. `config/train_full.json` décrit l'essai de deux époques sur 1 198 photos train / 149 valid ; `config/train_profile.json` fournit le profil court à mesurer avant un apprentissage long.
+
+Le comportement par défaut est conservé : `--preprocessing public-v1 --mask-threshold 0.5`. L'option `training-v1` réutilise les transformations déterministes de validation du moteur installé, puis son décodage vers la taille originale de la photo. Cet adaptateur est limité au modèle SmartSite non optimisé et à RF-DETR 1.10.1 ; il ne modifie ni la bibliothèque ni les poids. Les dépendances du moteur restent optionnelles.
+
+Deux seuils distincts :
+
+- `--threshold` de `predict` filtre les **propositions de défauts** (0,3 par défaut).
+- `--mask-threshold` choisit les **pixels du défaut**, après interpolation des logits vers la photo originale (0,5 par défaut). Un autre seuil exige le profil `training-v1`.
+
+Les réglages sont enregistrés dans chaque résultat. Ils ne sont pas des mesures de gravité ni des probabilités calibrées de conformité. Ne pas appliquer un réglage sélectionné sur un checkpoint à tous les modèles sans nouvelle évaluation.
+
+```sh
+.venv/bin/smartsite-model evaluate data/prepared/damsegment_v1 \
+  --run artifacts/training/damsegment_full_v1 \
+  --output artifacts/predictions/validation_reference --device mps
+
+.venv/bin/smartsite-model evaluate data/prepared/damsegment_v1 \
+  --run artifacts/training/damsegment_full_v1 \
+  --output artifacts/predictions/validation_alignee --device mps \
+  --preprocessing training-v1 --mask-threshold 0.5
+
+.venv/bin/smartsite-model compare artifacts/predictions/validation_reference \
+  artifacts/predictions/validation_alignee --output artifacts/predictions/comparaison
+```
+
+Les dossiers de sortie doivent être nouveaux. Le comparatif refuse des photos, annotations ou règles de mesure différentes ; les réglages d'inférence peuvent changer, car c'est précisément l'objet de cette expérience. Les références restent à leur résolution native. Les métriques internes d'entraînement, qui utilisent des références redimensionnées, ne sont pas interchangeables avec ce rapport.
+
+L'évaluation conserve l'AP COCO des masques et les comptages fixes (score ≥ 0,3, IoU ≥ 0,5). Un diagnostic supplémentaire classe les propositions non appariées en doublons, recouvrements insuffisants et absence de recouvrement avec une référence de la même classe. Un recouvrement insuffisant ne prouve pas un défaut réel : contour, découpage des instances, annotation ou détection peuvent être en cause.
+
+Sur les 149 photos internes avec les poids de l'essai complet, aucun des profils alignés testés à 0,4 / 0,5 / 0,6 / 0,7 n'améliore les fissures par rapport à la référence (915 instances retrouvées, AP 0,091842). Le meilleur candidat en retrouve 909 (AP 0,090689). Le traitement actuel reste donc le réglage par défaut. Les candidats et leurs régressions restent consultables dans le [rapport local des essais](http://127.0.0.1:8768/inference_study_v1/) après génération locale ; ces artefacts ne sont pas distribués dans Git. Aucun test final n'a servi à ces choix.
+
+Les tests courants restent sans moteur. Les tests d'intégration CPU utilisent les vraies transformations et le vrai décodage RF-DETR avec des sorties synthétiques identifiées, sans téléchargement de poids ni GPU. Ils vérifient notamment les photos non carrées, les masques vides et la séparation des scores objets/pixels :
+
+```sh
+# Après installation de l'extra training uniquement.
+.venv/bin/pytest tests/integration/test_aligned_inference.py
+```
+
+Le répertoire `tests/integration` n'est pas parcouru par défaut ; il faut le demander explicitement. Les inférences réelles sur les 149 photos complètent ces tests, mais ne remplacent pas la qualification indépendante du détecteur.
 
 ## Attribution
 

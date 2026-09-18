@@ -13,6 +13,7 @@ from pycocotools import mask as coco_mask
 
 from smartsite_ia.curation import digest, staged_output
 from smartsite_ia.importer import write_json
+from smartsite_ia.inference import DEFAULT_PROFILE, configure_inference, inference_metadata
 from smartsite_ia.learning import runtime, verify_run
 from smartsite_ia.model_assets import CLASS_NAMES
 from smartsite_ia.review import MAX_FILE_BYTES, read_local
@@ -33,18 +34,30 @@ def decode_photo(raw: bytes) -> Image.Image:
         return oriented
 
 
-def load_engine(checkpoint: Path, device: str) -> Any:
+def load_engine(
+    checkpoint: Path, device: str, preprocessing: str = DEFAULT_PROFILE, mask_threshold: float = 0.5
+) -> Any:
     """Charger une seule fois les poids quand on analyse plusieurs photos."""
+    inference_metadata(preprocessing, mask_threshold)
     engine = importlib.import_module("rfdetr").RFDETR.from_checkpoint(
         str(checkpoint.resolve()), device=device, trust_checkpoint=False
     )
     if list(engine.class_names) != list(CLASS_NAMES):
         raise ValueError("Checkpoint class names do not match SmartSite")
-    return engine
+    return configure_inference(engine, preprocessing, mask_threshold)
 
 
-def predict_engine(checkpoint: Path, photo: Image.Image, device: str, threshold: float) -> Any:
-    return load_engine(checkpoint, device).predict(photo, threshold=threshold)
+def predict_engine(
+    checkpoint: Path,
+    photo: Image.Image,
+    device: str,
+    threshold: float,
+    preprocessing: str = DEFAULT_PROFILE,
+    mask_threshold: float = 0.5,
+) -> Any:
+    return load_engine(checkpoint, device, preprocessing, mask_threshold).predict(
+        photo, threshold=threshold
+    )
 
 
 def encode_predictions(
@@ -147,8 +160,15 @@ def describe_predictions(
 
 
 def predict_photo(
-    run: Path, image_path: Path, output: Path, device: str, threshold: float = 0.3
+    run: Path,
+    image_path: Path,
+    output: Path,
+    device: str,
+    threshold: float = 0.3,
+    preprocessing: str = DEFAULT_PROFILE,
+    mask_threshold: float = 0.5,
 ) -> dict[str, Any]:
+    settings = inference_metadata(preprocessing, mask_threshold)
     if not math.isfinite(threshold) or not 0 < threshold < 1:
         raise ValueError("Prediction threshold must be between 0 and 1")
     report, checkpoint = verify_run(run)
@@ -156,7 +176,9 @@ def predict_photo(
     raw = read_local(image_path.parent, image_path.name, MAX_FILE_BYTES)
     photo = decode_photo(raw)
     with staged_output(output, [run, image_path]) as stage:
-        detections = predict_engine(checkpoint, photo, device, threshold)
+        detections = predict_engine(
+            checkpoint, photo, device, threshold, preprocessing, mask_threshold
+        )
         records, annotated = describe_predictions(detections, photo)
         result = {
             "schema_version": 1,
@@ -167,6 +189,7 @@ def predict_photo(
             "height": photo.height,
             "coordinate_space": "EXIF-oriented image, pixels",
             "runtime": environment,
+            "inference": settings,
             "threshold": threshold,
             "threshold_calibrated": False,
             "qualified_for_smartsite": False,
