@@ -391,3 +391,130 @@ def test_model_cli_explains_failure(monkeypatch, capsys, error):
     monkeypatch.setattr(model_cli, "runtime", fail)
     assert model_cli.main() == 1
     assert capsys.readouterr().err
+
+
+def test_resume_keeps_data_and_restores_only_verified_checkpoint(
+    training_inputs, tmp_path, fake_engine, monkeypatch
+):
+    root, cfg_path, _ = training_inputs
+    out = tmp_path / "run"
+    original = learning.fit_engine
+
+    def interrupted(data, output, weights, config, device):
+        output.mkdir()
+        (output / "last.ckpt").write_bytes(b"synthetic full checkpoint")
+        raise KeyboardInterrupt()
+
+    monkeypatch.setattr(learning, "fit_engine", interrupted)
+    with pytest.raises(KeyboardInterrupt):
+        learning.train_model(root, out, cfg_path, tmp_path / "weights", "cpu")
+    selection = (out / "data/selection.json").read_bytes()
+
+    def resumed(data, output, weights, config, device):
+        assert config["_resume"] == str((output / "last.ckpt").resolve())
+        assert learning.os.environ["TORCH_FORCE_WEIGHTS_ONLY_LOAD"] == "1"
+        (output / "checkpoint_best_total.pth").write_bytes(b"new weights")
+        (output / "metrics.csv").write_text("epoch,train/loss,val/segm_mAP_50_95\n0,12,0.1\n")
+
+    monkeypatch.setattr(learning, "fit_engine", resumed)
+    result = learning.train_model(root, out, cfg_path, tmp_path / "weights", "cpu", resume=True)
+    assert result["status"] == "completed"
+    assert result["attempts"][0]["status"] == "interrupted"
+    assert (out / "data/selection.json").read_bytes() == selection
+    assert result["process_peak_rss_bytes"] > 0
+    with pytest.raises(ValueError, match="interrupted"):
+        learning.train_model(root, out, cfg_path, tmp_path / "weights", "cpu", resume=True)
+    monkeypatch.setattr(learning, "fit_engine", original)
+
+
+@pytest.mark.parametrize(
+    "changed", ["checkpoint", "selection", "annotation", "photo", "device", "config"]
+)
+def test_resume_refuses_changed_inputs(
+    training_inputs, tmp_path, fake_engine, monkeypatch, changed
+):
+    root, cfg_path, config = training_inputs
+    out = tmp_path / "run"
+
+    def interrupted(data, output, *args):
+        output.mkdir()
+        (output / "last.ckpt").write_bytes(b"synthetic full checkpoint")
+        raise KeyboardInterrupt()
+
+    monkeypatch.setattr(learning, "fit_engine", interrupted)
+    with pytest.raises(KeyboardInterrupt):
+        learning.train_model(root, out, cfg_path, tmp_path / "weights", "cpu")
+    targets = {
+        "checkpoint": out / "checkpoints/last.ckpt",
+        "selection": out / "data/selection.json",
+        "annotation": out / "data/train/_annotations.coco.json",
+        "photo": next((out / "data/train").glob("*.jpg")),
+    }
+    if changed in targets:
+        targets[changed].write_bytes(b"changed")
+    elif changed == "config":
+        config["epochs"] = 2
+        write_json(cfg_path, config)
+    with pytest.raises(ValueError):
+        learning.train_model(
+            root,
+            out,
+            cfg_path,
+            tmp_path / "weights",
+            "cuda" if changed == "device" else "cpu",
+            resume=True,
+        )
+
+
+def test_early_engine_return_cannot_be_reported_as_success(training_inputs, tmp_path, fake_engine):
+    root, path, config = training_inputs
+    config["epochs"] = 2
+    write_json(path, config)
+    with pytest.raises(RuntimeError, match="final epoch"):
+        learning.train_model(root, tmp_path / "run", path, tmp_path / "weights", "cpu")
+    assert json.loads((tmp_path / "run/run.json").read_text())["status"] == "failed"
+
+
+def test_safe_loading_environment_is_restored(training_inputs, tmp_path, fake_engine, monkeypatch):
+    root, path, _ = training_inputs
+    monkeypatch.setenv("TORCH_FORCE_WEIGHTS_ONLY_LOAD", "1")
+    learning.train_model(root, tmp_path / "run", path, tmp_path / "weights", "cpu")
+    assert learning.os.environ["TORCH_FORCE_WEIGHTS_ONLY_LOAD"] == "1"
+
+
+@pytest.mark.parametrize("link", ["data", "data/train", "checkpoints"])
+def test_resume_refuses_linked_folders(training_inputs, tmp_path, fake_engine, monkeypatch, link):
+    root, path, cfg = training_inputs
+    out = tmp_path / "run"
+
+    def interrupted(data, output, *args):
+        output.mkdir()
+        (output / "last.ckpt").write_bytes(b"synthetic checkpoint")
+        raise KeyboardInterrupt()
+
+    monkeypatch.setattr(learning, "fit_engine", interrupted)
+    with pytest.raises(KeyboardInterrupt):
+        learning.train_model(root, out, path, tmp_path / "weights", "cpu")
+    target = out / link
+    target.rename(tmp_path / "outside")
+    target.symlink_to(tmp_path / "outside", target_is_directory=True)
+    with pytest.raises(ValueError):
+        learning.train_model(root, out, path, tmp_path / "weights", "cpu", resume=True)
+
+
+def test_last_train_log_does_not_impersonate_a_completed_validation(
+    training_inputs, tmp_path, fake_engine, monkeypatch
+):
+    root, path, config = training_inputs
+    config["epochs"] = 2
+    write_json(path, config)
+
+    def partial_fit(data, output, *args):
+        output.mkdir()
+        (output / "checkpoint_best_total.pth").write_bytes(b"earlier best checkpoint")
+        (output / "metrics.csv").write_text("epoch,train/loss,val/segm_mAP_50_95\n0,12,.1\n1,10,\n")
+
+    monkeypatch.setattr(learning, "fit_engine", partial_fit)
+    with pytest.raises(RuntimeError, match="final epoch"):
+        learning.train_model(root, tmp_path / "run", path, tmp_path / "weights", "cpu")
+    assert json.loads((tmp_path / "run/run.json").read_text())["status"] == "failed"

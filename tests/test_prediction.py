@@ -166,3 +166,27 @@ def test_prediction_export_is_honest_safe_and_atomic(tmp_path, monkeypatch):
 def test_invalid_threshold_refused_before_loading_model(tmp_path, threshold):
     with pytest.raises(ValueError, match="threshold"):
         prediction.predict_photo(tmp_path, tmp_path / "photo", tmp_path / "out", "cpu", threshold)
+
+
+def test_explicit_background_is_not_a_defect_and_empty_boxes_remain_evaluable():
+    result = detections()
+    result.class_id[:] = 2
+    result.data = {"class_name": np.array(["__background__"])}
+    assert prediction.encode_predictions(result, Image.new("RGB", (64, 48))) == []
+    result.class_id[:] = 0
+    result.xyxy[0] = [0, 8, 0, 20]
+    with pytest.raises(ValueError):
+        prediction.encode_predictions(result, Image.new("RGB", (64, 48)))
+    records = prediction.encode_predictions(
+        result, Image.new("RGB", (64, 48)), allow_empty_boxes=True
+    )
+    assert len(records) == 1 and records[0]["mask_pixels"] == 240
+
+
+def test_mask_only_view_preserves_details_outside_the_defect():
+    photo = Image.new("RGB", (64, 48), "gray")
+    records = prediction.encode_predictions(detections(), photo)
+    shown = prediction.render_predictions(photo, records, show_boxes=False)
+    assert shown.getpixel((10, 8)) != photo.getpixel((10, 8))
+    assert shown.getpixel((10, 7)) == photo.getpixel((10, 7))
+    assert photo.getpixel((10, 8)) == (128, 128, 128)

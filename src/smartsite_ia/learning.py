@@ -6,14 +6,17 @@ import importlib
 import math
 import os
 import platform
+import resource
+import sys
 import time
 from importlib.metadata import version
 from pathlib import Path
 from typing import Any
 
-from smartsite_ia.curation import read_document
+from smartsite_ia.curation import digest, read_document
 from smartsite_ia.importer import write_json
 from smartsite_ia.model_assets import CLASS_NAMES, MODEL_NAME, MODEL_VERSION, PRETRAINED
+from smartsite_ia.review import MAX_FILE_BYTES, read_local
 from smartsite_ia.source import verify_archive
 from smartsite_ia.training_data import load_training_config, prepare_training_inputs
 
@@ -84,6 +87,7 @@ def fit_engine(
         batch_size=config["batch_size"],
         grad_accum_steps=config["grad_accum_steps"],
         lr=config["lr"],
+        resume=config.get("_resume"),
         device=device,
         seed=config["seed"],
         num_workers=0,
@@ -118,13 +122,21 @@ def summarize_metrics(path: Path) -> dict[str, float]:
                     if not math.isfinite(number):
                         raise ValueError("Non-finite training metric")
                     result[key] = number
+            if row.get("val/segm_mAP_50_95") and row.get("epoch"):
+                result["last_validation_epoch"] = float(row["epoch"])
     if not result or "train/loss" not in result or "val/segm_mAP_50_95" not in result:
         raise ValueError("Training did not produce expected loss and segmentation metrics")
     return result
 
 
 def train_model(
-    root: Path, output: Path, config_path: Path, weights: Path, device: str
+    root: Path,
+    output: Path,
+    config_path: Path,
+    weights: Path,
+    device: str,
+    *,
+    resume: bool = False,
 ) -> dict[str, Any]:
     """Un dossier neuf par essai ; on ne déclare terminé qu'après les contrôles finaux."""
     config, config_hash = load_training_config(config_path)
@@ -135,7 +147,9 @@ def train_model(
     ):
         raise ValueError("Training output must be separate from its inputs")
     environment = runtime(device)
-    output.mkdir(parents=True, exist_ok=False)
+    previous = check_resume(output, config, config_hash, device) if resume else None
+    if not resume:
+        output.mkdir(parents=True, exist_ok=False)
     report: dict[str, Any] = {
         "schema_version": 1,
         "status": "preparing",
@@ -149,15 +163,30 @@ def train_model(
         "qualified_for_smartsite": False,
         "purpose": config["purpose"],
         "limits": [
-            "Small experimental run, not a qualified construction detector",
+            "Experimental run, not a qualified construction detector",
             "Internal validation from the same dam; no independent generalization evidence",
             "GPU execution is seeded but not guaranteed bit-for-bit deterministic",
         ],
     }
+    if previous:
+        report = previous
+        report.setdefault("attempts", []).append(
+            {
+                "status": previous["status"],
+                "error_type": previous.get("error_type"),
+                "elapsed_seconds": previous.get("elapsed_seconds"),
+                "resume_checkpoint_sha256": previous["resume_checkpoint_sha256"],
+            }
+        )
+        report.pop("error_type", None)
+        report.update(status="preparing", runtime=environment)
     started = time.monotonic()
     save_state(output, report)
     try:
-        selection = prepare_training_inputs(root, output / "data", config)
+        if resume:
+            selection, _ = read_document(output / "data/selection.json")
+        else:
+            selection = prepare_training_inputs(root, output / "data", config)
         report.update(
             status="training",
             selected={
@@ -165,21 +194,42 @@ def train_model(
                 for k, v in selection["splits"].items()
             },
             selection_sha256=file_hash(output / "data/selection.json"),
+            input_annotations_sha256={
+                split: file_hash(output / f"data/{split}/_annotations.coco.json")
+                for split in ("train", "valid")
+            },
         )
         save_state(output, report)
-        fit_engine(output / "data", output / "checkpoints", weights, config, device)
+        fit_config = dict(config)
+        if resume:
+            fit_config["_resume"] = str((output / "checkpoints/last.ckpt").resolve())
+        # Lightning restaure aussi l'optimiseur. On impose sa lecture sûre,
+        # même si une dépendance demande implicitement une lecture pickle complète.
+        old_safe_load = os.environ.get("TORCH_FORCE_WEIGHTS_ONLY_LOAD")
+        os.environ["TORCH_FORCE_WEIGHTS_ONLY_LOAD"] = "1"
+        try:
+            fit_engine(output / "data", output / "checkpoints", weights, fit_config, device)
+        finally:
+            if old_safe_load is None:
+                os.environ.pop("TORCH_FORCE_WEIGHTS_ONLY_LOAD", None)
+            else:
+                os.environ["TORCH_FORCE_WEIGHTS_ONLY_LOAD"] = old_safe_load
         checkpoint = output / "checkpoints/checkpoint_best_total.pth"
         checksum = file_hash(checkpoint)
         if checksum == PRETRAINED.sha256:
             raise ValueError("Checkpoint is identical to the unadapted pretrained file")
         metrics_path = output / "checkpoints/metrics.csv"
+        last_metrics = summarize_metrics(metrics_path)
+        if last_metrics.get("last_validation_epoch", -1) + 1 != config["epochs"]:
+            raise RuntimeError("Training stopped before the requested final epoch")
         report.update(
             status="completed",
             checkpoint="checkpoints/checkpoint_best_total.pth",
             checkpoint_sha256=checksum,
-            last_epoch_metrics=summarize_metrics(metrics_path),
+            last_epoch_metrics=last_metrics,
             metrics_sha256=file_hash(metrics_path),
             elapsed_seconds=time.monotonic() - started,
+            process_peak_rss_bytes=process_peak_rss(),
         )
         save_state(output, report)
     except BaseException as error:
@@ -188,9 +238,54 @@ def train_model(
             status="interrupted" if isinstance(error, KeyboardInterrupt) else "failed",
             error_type=type(error).__name__,
             elapsed_seconds=time.monotonic() - started,
+            process_peak_rss_bytes=process_peak_rss(),
         )
+        last = output / "checkpoints/last.ckpt"
+        if last.is_file() and not last.parent.is_symlink():
+            report["resume_checkpoint_sha256"] = file_hash(last)
         save_state(output, report)
         raise
+    return report
+
+
+def process_peak_rss() -> int:
+    """Pic de mémoire du processus ; ce n'est pas un pic complet de mémoire GPU."""
+    peak = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+    return int(peak if sys.platform == "darwin" else peak * 1024)
+
+
+def check_resume(
+    output: Path, config: dict[str, Any], config_hash: str, device: str
+) -> dict[str, Any]:
+    """Reprendre seulement un essai interrompu, avec exactement les mêmes entrées."""
+    report, _ = read_document(output / "run.json")
+    if (
+        report.get("status") not in ("failed", "interrupted")
+        or report.get("model") != MODEL_NAME
+        or report.get("config_sha256") != config_hash
+        or report.get("config") != config
+        or report.get("runtime", {}).get("device") != device
+    ):
+        raise ValueError("Resume requires an interrupted run with unchanged configuration/device")
+    last = output / "checkpoints/last.ckpt"
+    if last.parent.is_symlink() or file_hash(last) != report.get("resume_checkpoint_sha256"):
+        raise ValueError("Resume checkpoint missing or changed")
+    data = output / "data"
+    if data.is_symlink() or not data.resolve().is_relative_to(output.resolve()):
+        raise ValueError("Resume data path escapes its run")
+    if file_hash(data / "selection.json") != report.get("selection_sha256"):
+        raise ValueError("Resume selection changed")
+    selection, _ = read_document(data / "selection.json")
+    for split in ("train", "valid"):
+        if (data / split).is_symlink():
+            raise ValueError("Resume split must not be linked")
+        annotation = f"{split}/_annotations.coco.json"
+        if file_hash(data / annotation) != report.get("input_annotations_sha256", {}).get(split):
+            raise ValueError("Resume annotations changed")
+        for record in selection["splits"][split]["records"]:
+            raw = read_local(data, f"{split}/{record['id']}.jpg", MAX_FILE_BYTES)
+            if digest(raw) != record["image_sha256"]:
+                raise ValueError("Resume photo changed")
     return report
 
 

@@ -33,18 +33,23 @@ def decode_photo(raw: bytes) -> Image.Image:
         return oriented
 
 
-def predict_engine(checkpoint: Path, photo: Image.Image, device: str, threshold: float) -> Any:
+def load_engine(checkpoint: Path, device: str) -> Any:
+    """Charger une seule fois les poids quand on analyse plusieurs photos."""
     engine = importlib.import_module("rfdetr").RFDETR.from_checkpoint(
         str(checkpoint.resolve()), device=device, trust_checkpoint=False
     )
     if list(engine.class_names) != list(CLASS_NAMES):
         raise ValueError("Checkpoint class names do not match SmartSite")
-    return engine.predict(photo, threshold=threshold)
+    return engine
 
 
-def describe_predictions(
-    detections: Any, photo: Image.Image
-) -> tuple[list[dict[str, Any]], Image.Image]:
+def predict_engine(checkpoint: Path, photo: Image.Image, device: str, threshold: float) -> Any:
+    return load_engine(checkpoint, device).predict(photo, threshold=threshold)
+
+
+def encode_predictions(
+    detections: Any, photo: Image.Image, *, allow_empty_boxes: bool = False
+) -> list[dict[str, Any]]:
     """Vérifier les sorties du moteur avant d'enregistrer leurs coordonnées et masques."""
     boxes, scores, classes = detections.xyxy, detections.confidence, detections.class_id
     masks = detections.mask
@@ -60,11 +65,14 @@ def describe_predictions(
         or masks.shape != (count, photo.height, photo.width)
     ):
         raise ValueError("Unexpected prediction dimensions or missing masks")
-    annotated = np.asarray(photo).copy()
     records = []
-    colors = ((255, 70, 50), (30, 140, 255))
     for index in range(count):
         label, score, box = classes[index], float(scores[index]), boxes[index].astype(float)
+        # RF-DETR expose parfois sa classe « aucun objet » à très faible score.
+        # On la retire seulement si le moteur la nomme explicitement ainsi.
+        names = getattr(detections, "data", {}).get("class_name")
+        if label == len(CLASS_NAMES) and names is not None and names[index] == "__background__":
+            continue
         if (
             int(label) != label
             or label not in (0, 1)
@@ -72,8 +80,9 @@ def describe_predictions(
             or not 0 <= score <= 1
             or not np.isfinite(box).all()
             or np.any(box < 0)
-            or box[0] >= box[2]
-            or box[1] >= box[3]
+            or box[0] > box[2]
+            or box[1] > box[3]
+            or (not allow_empty_boxes and (box[0] == box[2] or box[1] == box[3]))
             or box[2] > photo.width
             or box[3] > photo.height
         ):
@@ -95,20 +104,46 @@ def describe_predictions(
                 "mask_pixels": int(mask.sum()),
             }
         )
-        annotated[mask] = (annotated[mask] * 0.5 + np.array(colors[label]) * 0.5).astype(np.uint8)
+    return records
+
+
+def render_predictions(
+    photo: Image.Image,
+    records: list[dict[str, Any]],
+    *,
+    show_boxes: bool = True,
+) -> Image.Image:
+    """Dessiner seulement les résultats qu'on veut montrer, dans les pixels d'origine."""
+    annotated = np.asarray(photo).copy()
+    colors = ((255, 70, 50), (30, 140, 255))
+    for record in records:
+        mask = coco_mask.decode(record["mask_rle"]).astype(bool)
+        rgb = np.array(colors[record["class_id"]])
+        annotated[mask] = (annotated[mask] * 0.5 + rgb * 0.5).astype(np.uint8)
     result = Image.fromarray(annotated)
+    # Sur les photos très chargées, les étiquettes cacheraient les petites fissures.
+    if not show_boxes:
+        return result
     draw = ImageDraw.Draw(result)
     font = ImageFont.load_default(size=14)
     for record in records:
         box = record["bbox_xyxy"]
         color = colors[record["class_id"]]
         draw.rectangle(box, outline=color, width=2)
-        label = "Fissure" if record["class_id"] == 0 else "Perte de matière"
+        # La petite police embarquée ne couvre pas tous les accents ; le HTML les garde.
+        label = "Fissure" if record["class_id"] == 0 else "Perte de matiere"
         text = f"{label} {record['score']:.0%}"
         point = (box[0], max(0, box[1] - 17))
         draw.rectangle(draw.textbbox(point, text, font=font), fill="white")
         draw.text(point, text, fill=color, font=font)
-    return records, result
+    return result
+
+
+def describe_predictions(
+    detections: Any, photo: Image.Image
+) -> tuple[list[dict[str, Any]], Image.Image]:
+    records = encode_predictions(detections, photo)
+    return records, render_predictions(photo, records)
 
 
 def predict_photo(

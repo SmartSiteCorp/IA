@@ -11,6 +11,7 @@ from smartsite_ia.learning import runtime, train_model
 from smartsite_ia.model_assets import PRETRAINED
 from smartsite_ia.prediction import predict_photo
 from smartsite_ia.source import download_archive
+from smartsite_ia.validation import compare_validations, evaluate_validation
 
 
 def main() -> int:
@@ -26,6 +27,7 @@ def main() -> int:
     train.add_argument("--config", type=Path, required=True)
     train.add_argument("--weights", type=Path, required=True)
     train.add_argument("--output", type=Path, required=True)
+    train.add_argument("--resume", action="store_true", help="Resume a recorded interrupted run")
     predict = commands.add_parser(
         "predict", help="Show predictions from a completed experimental run"
     )
@@ -33,7 +35,15 @@ def main() -> int:
     predict.add_argument("--run", type=Path, required=True)
     predict.add_argument("--output", type=Path, required=True)
     predict.add_argument("--threshold", type=float, default=0.3)
-    for command in (doctor, train, predict):
+    evaluate = commands.add_parser("evaluate", help="Evaluate all pinned validation images")
+    evaluate.add_argument("corpus", type=Path)
+    evaluate.add_argument("--run", type=Path, required=True)
+    evaluate.add_argument("--output", type=Path, required=True)
+    compare = commands.add_parser("compare", help="Compare two identical validation protocols")
+    compare.add_argument("before", type=Path)
+    compare.add_argument("after", type=Path)
+    compare.add_argument("--output", type=Path, required=True)
+    for command in (doctor, train, predict, evaluate):
         command.add_argument("--device", choices=("cpu", "mps", "cuda"), required=True)
     args = parser.parse_args()
     result: dict[str, Any]
@@ -43,8 +53,17 @@ def main() -> int:
         elif args.command == "doctor":
             result = runtime(args.device)
         elif args.command == "train":
-            report = train_model(args.corpus, args.output, args.config, args.weights, args.device)
+            options = {"resume": True} if args.resume else {}
+            report = train_model(
+                args.corpus, args.output, args.config, args.weights, args.device, **options
+            )
             result = {"status": report["status"], "run": str(args.output / "run.json")}
+        elif args.command == "evaluate":
+            report = evaluate_validation(args.run, args.corpus, args.output, args.device)
+            result = {"images": report["images"], "report": str(args.output / "index.html")}
+        elif args.command == "compare":
+            compare_validations(args.before, args.after, args.output)
+            result = {"report": str(args.output / "index.html")}
         else:
             report = predict_photo(args.run, args.image, args.output, args.device, args.threshold)
             result = {
