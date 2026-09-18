@@ -12,6 +12,12 @@ dependencies = ["pillow==12.3.0", "numpy>=2.2,<2.5", "pycocotools==2.0.11"]
 
 [project.scripts]
 smartsite-data = "smartsite_ia.cli:main"
+smartsite-model = "smartsite_ia.model_cli:main"
+
+[project.optional-dependencies]
+training = [
+    "rfdetr[train]==1.10.1",
+]
 
 [dependency-groups]
 dev = ["pytest==9.1.1", "pytest-cov==7.1.0", "ruff==0.16.8", "mypy==2.3.1"]

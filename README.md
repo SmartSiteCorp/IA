@@ -1,6 +1,6 @@
 # SmartSite IA
 
-Préparation contrôlée des données de défauts du bâtiment. Le projet télécharge, importe, inspecte et prépare les corpus ; aucun modèle n'est encore entraîné et aucun service d'inférence n'est livré.
+Préparation contrôlée des données et premiers essais de détection des défauts du bâtiment. Le projet télécharge, importe, inspecte et prépare les corpus, puis entraîne RF-DETR et affiche ses prédictions. Le premier modèle est expérimental ; aucun service chantier ni détecteur qualifié n'est encore livré.
 
 Deux parcours sont disponibles :
 
@@ -112,6 +112,57 @@ Ouvrir [le corpus DamSegment](http://127.0.0.1:8767/damsegment_v1/) ou [la rése
 Choisir un nouveau dossier de sortie à chaque exécution : aucune sortie existante n'est écrasée. Une erreur ne publie pas de dossier partiel. Les chemins sortants, liens symboliques, fichiers altérés, décisions non compatibles et entrées excessives sont refusés. Les dossiers parents doivent être des espaces locaux de confiance. Les originaux ne sont jamais supprimés ; la graine, les paramètres et les empreintes des politiques rendent les décisions traçables.
 
 Les tests couvrent notamment les groupes transitifs, les doubles présents dans plusieurs difficultés, la propagation des exclusions, les corruptions, l'orientation EXIF, les seuils de masques, les conflits entre variantes et la reproductibilité des sorties.
+
+## Premier entraînement et prédictions
+
+Le moteur est une dépendance **optionnelle** : les commandes de données et les tests habituels ne nécessitent ni PyTorch ni GPU. Pour l'apprentissage, installer l'extra verrouillé :
+
+```sh
+uv sync --locked --extra training
+.venv/bin/smartsite-model doctor --device mps
+.venv/bin/smartsite-model weights --output artifacts/models/pretrained/rf-detr-seg-medium.pt
+```
+
+`mps` désigne le GPU Apple Silicon. `cpu` et `cuda` sont aussi acceptés explicitement, mais seul le parcours MPS a été exécuté pour ce premier apprentissage. Une machine sans le périphérique demandé produit une erreur. Le moteur retenu est `RFDETRSegMedium`, paquet `rfdetr[train]==1.10.1`. Le téléchargement des poids officiels est borné et leur SHA-256 épinglé ; le chargement n'autorise pas une désérialisation Python sans restriction. [Distribution RF-DETR](https://pypi.org/project/rfdetr/1.10.1/).
+
+Le premier essai utilise `config/train_smoke.json` : 32 photos d'apprentissage, 8 de validation, trois époques, résolution du modèle 432 × 432. La sélection est déterministe, stratifiée par difficulté et présence des classes, avec conservation des groupes entiers. Elle copie uniquement les images et annotations de `train` et `valid`, vérifie leurs empreintes et ne lit pas les fichiers du test réservé. Le plafond de photos peut donner un compte inférieur lorsqu'un groupe entier ne tient plus.
+
+```sh
+PYTORCH_ENABLE_MPS_FALLBACK=1 .venv/bin/smartsite-model train data/prepared/damsegment_v1 \
+  --config config/train_smoke.json \
+  --weights artifacts/models/pretrained/rf-detr-seg-medium.pt \
+  --output artifacts/training/damsegment_smoke_v1 \
+  --device mps
+```
+
+Le dossier de sortie doit être nouveau. Sur Mac, la variable ci-dessus autorise un repli CPU pour les opérations MPS non prises en charge ; sa présence est enregistrée, sans prétendre que toutes les opérations sont exécutées sur GPU. Aucun journal cloud ni image n'est envoyé à un service. L'exécution est en pleine précision, lot de 1, sans processus de chargement parallèles ; ce profil vérifie le parcours, pas la vitesse maximale du moteur.
+
+Le dossier contient la sélection exacte, `run.json`, les checkpoints et `checkpoints/metrics.csv`. `run.json` distingue préparation, apprentissage, succès, échec et interruption ; une erreur laisse les fichiers de diagnostic disponibles. Il enregistre configuration, versions, périphérique, empreintes, durée et limites. `checkpoint_best_total.pth` est choisi sur la validation. `last_epoch_metrics` décrit la dernière époque et ne doit pas être confondu avec les métriques du checkpoint choisi. Les poids de départ et ceux appris sont distincts. Les checkpoints complets du moteur sont conservés, mais une commande de reprise contrôlée n'est pas encore exposée par SmartSite.
+
+Premier essai : 32 photos et 308 instances pour apprendre, 8 photos et 70 instances pour valider ; 96 mises à jour, environ 107 secondes pour préparation/apprentissage/écriture après le contrôle du moteur. Cette durée ne comprend pas installation, téléchargement ou génération de la galerie ; elle ne prédit pas le temps d'un apprentissage complet. Le pic de mémoire n'a pas été mesuré.
+
+Analyser ensuite une photo avec les poids appris :
+
+```sh
+.venv/bin/smartsite-model predict data/prepared/damsegment_v1/valid/easy_0023.jpg \
+  --run artifacts/training/damsegment_smoke_v1 \
+  --output artifacts/predictions/ma_photo \
+  --device mps
+```
+
+Remplacer le premier chemin par une photo JPEG ou PNG RGB/grise, non animée, jusqu'à 8 Mio et 16 mégapixels. L'orientation EXIF est appliquée avant le calcul. Le résultat fournit la photo orientée, les prédictions dessinées, un JSON avec classes/scores/boîtes/masques COCO RLE et un HTML. Les coordonnées correspondent à la photo orientée en taille originale. Les labels internes du réseau sont `0=crack`, `1=surface_loss`, issus des catégories COCO `1` et `2`. Aucun calcul de largeur physique, gravité ou conformité n'est effectué.
+
+Le seuil d'affichage par défaut `0.3` est explicite et **non calibré**. Les huit photos de validation de ce premier essai ont produit huit propositions de perte de matière réparties sur quatre photos, aucune proposition de fissure à ce seuil. Les quatre autres n'ont aucune proposition. Cela valide l'exécution du parcours, **pas la fiabilité du détecteur de fissures**. L'apprentissage plus long, le contrôle des petites fissures et l'évaluation indépendante restent nécessaires. Aucun entraînement sur les photos externes ni réglage à partir du test réservé n'a eu lieu.
+
+Pour voir les résultats locaux déjà générés :
+
+```sh
+.venv/bin/python -m http.server 8768 --bind 127.0.0.1 --directory artifacts/predictions
+```
+
+[Galerie des huit photos de validation](http://127.0.0.1:8768/smoke_validation/) : photo, annotations fournies et prédictions, sans sélection des meilleurs exemples. [Exemple de résultat détaillé](http://127.0.0.1:8768/first_validation/). Ces sorties restent locales ; elles ne sont pas incluses dans un clone. Un nouveau `predict` crée son propre `index.html` dans le dossier choisi.
+
+Les graines, données, versions et poids sont enregistrés pour reproduire le protocole. Les calculs GPU ne sont pas garantis identiques bit pour bit. Les tests du dépôt vérifient les contrats avec un moteur simulé aux frontières ; les essais réels sont documentés séparément, sans imposer l'installation du moteur à la CI légère.
 
 ## Attribution
 

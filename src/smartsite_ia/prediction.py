@@ -1,0 +1,170 @@
+"""Montrer de vraies prédictions et leurs masques, sans les confondre avec un corrigé."""
+
+import html
+import importlib
+import io
+import math
+from pathlib import Path
+from typing import Any
+
+import numpy as np
+from PIL import Image, ImageDraw, ImageFont, ImageOps
+from pycocotools import mask as coco_mask
+
+from smartsite_ia.curation import digest, staged_output
+from smartsite_ia.importer import write_json
+from smartsite_ia.learning import runtime, verify_run
+from smartsite_ia.model_assets import CLASS_NAMES
+from smartsite_ia.review import MAX_FILE_BYTES, read_local
+
+
+def decode_photo(raw: bytes) -> Image.Image:
+    """Les coordonnées du résultat concernent la photo une fois remise à l'endroit."""
+    with Image.open(io.BytesIO(raw), formats=["JPEG", "PNG"]) as image:
+        if image.width < 32 or image.height < 32 or image.width * image.height > 16_000_000:
+            raise ValueError("Prediction expects a photo between 32 pixels and 16 megapixels")
+        if image.mode not in ("RGB", "L") or getattr(image, "n_frames", 1) != 1:
+            raise ValueError("Unsupported photo mode or animation")
+        orientation = image.getexif().get(274, 1)
+        if type(orientation) is not int or orientation not in range(1, 9):
+            raise ValueError("Invalid photo orientation")
+        oriented = ImageOps.exif_transpose(image).convert("RGB")
+        oriented.info.clear()
+        return oriented
+
+
+def predict_engine(checkpoint: Path, photo: Image.Image, device: str, threshold: float) -> Any:
+    engine = importlib.import_module("rfdetr").RFDETR.from_checkpoint(
+        str(checkpoint.resolve()), device=device, trust_checkpoint=False
+    )
+    if list(engine.class_names) != list(CLASS_NAMES):
+        raise ValueError("Checkpoint class names do not match SmartSite")
+    return engine.predict(photo, threshold=threshold)
+
+
+def describe_predictions(
+    detections: Any, photo: Image.Image
+) -> tuple[list[dict[str, Any]], Image.Image]:
+    """Vérifier les sorties du moteur avant d'enregistrer leurs coordonnées et masques."""
+    boxes, scores, classes = detections.xyxy, detections.confidence, detections.class_id
+    masks = detections.mask
+    count = len(boxes)
+    if (
+        count > 200
+        or scores is None
+        or classes is None
+        or masks is None
+        or boxes.shape != (count, 4)
+        or scores.shape != (count,)
+        or classes.shape != (count,)
+        or masks.shape != (count, photo.height, photo.width)
+    ):
+        raise ValueError("Unexpected prediction dimensions or missing masks")
+    annotated = np.asarray(photo).copy()
+    records = []
+    colors = ((255, 70, 50), (30, 140, 255))
+    for index in range(count):
+        label, score, box = classes[index], float(scores[index]), boxes[index].astype(float)
+        if (
+            int(label) != label
+            or label not in (0, 1)
+            or not math.isfinite(score)
+            or not 0 <= score <= 1
+            or not np.isfinite(box).all()
+            or np.any(box < 0)
+            or box[0] >= box[2]
+            or box[1] >= box[3]
+            or box[2] > photo.width
+            or box[3] > photo.height
+        ):
+            raise ValueError("Invalid prediction class, score or box")
+        mask = masks[index]
+        if mask.dtype != np.bool_:
+            raise ValueError("Prediction masks must be binary")
+        label = int(label)
+        encoded = coco_mask.encode(np.asfortranarray(mask, dtype=np.uint8))
+        encoded["counts"] = encoded["counts"].decode("ascii")
+        records.append(
+            {
+                "id": index + 1,
+                "class_id": label,
+                "class_name": CLASS_NAMES[label],
+                "score": score,
+                "bbox_xyxy": box.tolist(),
+                "mask_rle": encoded,
+                "mask_pixels": int(mask.sum()),
+            }
+        )
+        annotated[mask] = (annotated[mask] * 0.5 + np.array(colors[label]) * 0.5).astype(np.uint8)
+    result = Image.fromarray(annotated)
+    draw = ImageDraw.Draw(result)
+    font = ImageFont.load_default(size=14)
+    for record in records:
+        box = record["bbox_xyxy"]
+        color = colors[record["class_id"]]
+        draw.rectangle(box, outline=color, width=2)
+        label = "Fissure" if record["class_id"] == 0 else "Perte de matière"
+        text = f"{label} {record['score']:.0%}"
+        point = (box[0], max(0, box[1] - 17))
+        draw.rectangle(draw.textbbox(point, text, font=font), fill="white")
+        draw.text(point, text, fill=color, font=font)
+    return records, result
+
+
+def predict_photo(
+    run: Path, image_path: Path, output: Path, device: str, threshold: float = 0.3
+) -> dict[str, Any]:
+    if not math.isfinite(threshold) or not 0 < threshold < 1:
+        raise ValueError("Prediction threshold must be between 0 and 1")
+    report, checkpoint = verify_run(run)
+    environment = runtime(device)
+    raw = read_local(image_path.parent, image_path.name, MAX_FILE_BYTES)
+    photo = decode_photo(raw)
+    with staged_output(output, [run, image_path]) as stage:
+        detections = predict_engine(checkpoint, photo, device, threshold)
+        records, annotated = describe_predictions(detections, photo)
+        result = {
+            "schema_version": 1,
+            "model": report["model"],
+            "checkpoint_sha256": report["checkpoint_sha256"],
+            "source_image_sha256": digest(raw),
+            "width": photo.width,
+            "height": photo.height,
+            "coordinate_space": "EXIF-oriented image, pixels",
+            "runtime": environment,
+            "threshold": threshold,
+            "threshold_calibrated": False,
+            "qualified_for_smartsite": False,
+            "training_purpose": report["purpose"],
+            "predictions": records,
+        }
+        photo.save(stage / "photo.png")
+        annotated.save(stage / "prediction.png")
+        write_json(stage / "prediction.json", result)
+        # Rapport léger ...
+        title = html.escape(image_path.name)
+        (stage / "index.html").write_text(
+            f"""<!doctype html><html lang="fr"><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy"
+content="default-src 'none'; img-src 'self'; style-src 'unsafe-inline'">
+<title>SmartSite — première prédiction</title><style>
+body{{font:17px system-ui;max-width:1150px;margin:36px auto;padding:0 24px;color:#20323c}}
+.notice{{padding:18px;background:#fff4d3}}.photos{{display:flex;gap:20px;flex-wrap:wrap}}
+figure{{flex:1;min-width:260px;margin:0}}img{{width:100%;height:auto}}
+figcaption{{font-weight:600;margin:10px 0}}
+a{{color:#245480}}</style><h1>Première prédiction SmartSite</h1>
+<p class="notice">Modèle expérimental : ce résultat ne valide pas un chantier.
+Les couleurs montrent des prédictions, pas les annotations du dataset.
+Aucun défaut détecté ne signifie pas que la surface est conforme.</p>
+<p>Photo : {title} · {len(records)} proposition(s) · seuil d'affichage : {threshold:.0%}.
+Ce seuil n'est pas encore calibré ; les scores ne mesurent pas la gravité.</p>
+<div class="photos"><figure><figcaption>Photo orientée</figcaption>
+<a href="photo.png"><img src="photo.png" alt="Photo originale orientée"></a></figure>
+<figure><figcaption>Prédictions du modèle</figcaption><a href="prediction.png">
+<img src="prediction.png" alt="Masques et boîtes prédits"></a></figure></div>
+<p>Rouge : fissure · Bleu : perte de matière.</p>
+<p><a href="prediction.json">Résultat détaillé et masques</a></p></html>""",
+            encoding="utf-8",
+        )
+    return result
