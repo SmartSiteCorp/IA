@@ -1,18 +1,15 @@
-**SmartSite — IA de contrôle des travaux**
+# SmartSite IA
 
-Le module vise à repérer des défauts visibles et des écarts géométriques, à les rattacher à une zone et à une tâche, puis à suivre leur correction.
+Préparation contrôlée des données de défauts du bâtiment. Le projet télécharge, importe, inspecte et prépare les corpus ; aucun modèle n'est encore entraîné et aucun service d'inférence n'est livré.
 
-Décision du 18 septembre 2026 : adapter **RF-DETR Seg Medium** pour les défauts sur photos ; utiliser **Open3D** pour les mesures 3D. Le périmètre actif concerne la détection d'anomalies. La prédiction d'avancement et de délais est reportée.
+Deux parcours sont disponibles :
 
-- [Registre des sources de données](config/datasets.json)
+- **DamSegment** : segmentation d'instances du béton, avec partitions COCO `train/valid/test` pour les premiers essais.
+- **Concrete Crack Segmentation** : photos externes et masques sémantiques de fissures, conservés séparément de l'apprentissage et encore à qualifier pour l'évaluation.
 
-**État réel : première chaîne de préparation de données disponible.** L'archive de segmentation DamSegment v1 a été téléchargée, contrôlée par SHA-256 et importée localement : 1 500 images et 19 710 annotations. Aucun modèle n'est entraîné et aucun service d'inférence n'est encore livré.
+## Installation et tests
 
-L'import conserve les fichiers originaux, valide leurs correspondances, compare les annotations JSON/YOLO et produit un corpus COCO non partitionné avec un manifeste et un rapport. Les catégories restent `source_class_0` et `source_class_1` tant que leur correspondance sémantique n'est pas confirmée par une preuve documentée. Les différences entre les masques PNG fournis et la rasterisation COCO sont mesurées, sans correction silencieuse.
-
-**Installation et vérification**
-
-Python 3.11 et [uv](https://docs.astral.sh/uv/getting-started/installation/) sont nécessaires. Version d'uv utilisée pour le verrouillage : 0.12.16. Les dépendances sont verrouillées dans `uv.lock`.
+Python 3.11 et [uv](https://docs.astral.sh/uv/getting-started/installation/) sont nécessaires. Les dépendances sont verrouillées dans `uv.lock` ; version d'uv utilisée : 0.12.16.
 
 ```sh
 uv sync --locked
@@ -22,34 +19,63 @@ uv run --no-sync mypy
 uv run --no-sync pytest --cov --cov-report=term-missing
 ```
 
-Les tests utilisent de petites données synthétiques, sans téléchargement ni GPU. Ils vérifient les comportements logiciels ; ils ne mesurent pas la qualité d'un modèle. La CI utilise les mêmes contrôles et n'a pas besoin de fichiers de suivi locaux.
+Dans un environnement déjà installé, `uv run --no-sync smartsite-data` peut être remplacé par `.venv/bin/smartsite-data`. Les tests courants utilisent des fixtures synthétiques sans téléchargement ni GPU ; ils ne mesurent pas la précision d'une IA. La CI exécute les mêmes vérifications.
 
-**Préparer les données**
+## Télécharger et importer DamSegment
 
 ```sh
 uv run --no-sync smartsite-data download --output data/raw/damsegment_v1/segmentation.zip
 uv run --no-sync smartsite-data import data/raw/damsegment_v1/segmentation.zip --output data/processed/damsegment_v1
 ```
 
-Le téléchargement est explicite, limité et vérifié contre la taille et l'empreinte publiées. Une archive existante est réutilisée uniquement si elle est intacte. Un téléchargement interrompu est supprimé et peut être relancé depuis le début. L'import refuse un dossier de sortie existant, les chemins dangereux, les archives excessives, les fichiers manquants/corrompus et les annotations incohérentes. Une préparation échouée ne publie pas de résultat partiel. Les dossiers parents des sorties doivent être des espaces locaux de confiance.
+Le téléchargement vérifie taille et SHA-256. L'import contrôle les chemins, les limites des archives, les images et les annotations JSON/YOLO. Il conserve les quatre fichiers source de chaque échantillon et produit un COCO non partitionné, un manifeste et un rapport. Les catégories de cet import restent `source_class_0` et `source_class_1` : il sert de référence immuable.
 
-La sortie comprend `images/`, `masks/`, `source_annotations/`, `annotations.coco.json`, `manifest.json`, `report.json` et `ATTRIBUTION.json`. Les boîtes et surfaces COCO sont calculées avec `pycocotools` ; les coordonnées des polygones et les boîtes source sont conservées. Le résultat est un corpus d'audit, pas encore les dossiers `train/valid/test` d'un entraînement.
+L'archive DamSegment v1 contient 1 500 photos 640 × 640 et 19 710 instances. Les images, annotations et masques d'origine restent inchangés.
 
-**Revoir les annotations et les images proches**
+## Examiner les annotations
 
 ```sh
 uv run --no-sync smartsite-data review data/processed/damsegment_v1 --output artifacts/review/damsegment_v1
 ```
 
-Dans un environnement déjà installé, `uv run --no-sync smartsite-data` peut être remplacé par `.venv/bin/smartsite-data`. Ouvrir ensuite `index.html` dans le dossier de sortie avec un navigateur. Aucun serveur n'est nécessaire. Choisir un nouveau dossier à chaque exécution : aucune sortie existante n'est écrasée.
+Le rapport HTML compare les masques fournis aux polygones source reconstruits avec `pycocotools`. **Il affiche des annotations existantes, pas des prédictions.** Il signale aussi les annotations vides, les classes fortement superposées et les images similaires.
 
-La revue vérifie les quatre fichiers de chaque image contre les empreintes du manifeste. Elle reconstruit les polygones source avec COCO, compare les pixels aux masques PNG et mesure séparément la superposition des deux classes avant qu'une couleur en masque une autre. Elle ne valide pas les noms des classes et n'approuve pas automatiquement les annotations. La référence revue est le JSON source, pas un fichier COCO modifié après l'import.
+Les similitudes utilisent un dHash de 128 bits, huit rotations/symétries et une comparaison couleur 32 × 32 : distance maximale de 8 bits, écart moyen de 20/255. Ce sont des seuils de présélection, pas des probabilités. La recherche est bornée à 5 000 images et 10 000 paires. Les variantes recadrées ou prises d'un autre point de vue peuvent lui échapper.
 
-La recherche de similitude utilise un dHash horizontal/vertical de 128 bits, huit rotations/symétries et une comparaison couleur à 32 × 32. Seuils par défaut : distance ≤ 8 bits et écart moyen ≤ 20 sur 255 ; options `--max-hamming-distance` et `--max-pixel-error`. Ce sont des seuils de présélection à examiner, pas des probabilités. Les groupes relient les paires candidates ; ils ne reconstituent pas les scènes d'origine. Les recadrages, vues voisines et variations importantes peuvent échapper au contrôle.
+## Préparer les partitions d'apprentissage
 
-La page affiche des vignettes pour toutes les images et des vues détaillées pour les cas prioritaires et les paires proches. `review.json` contient toutes les mesures ; `review-decisions.template.json` fournit une fiche à compléter avec auteur et justification. Les seuils de recouvrement (0,85) et de superposition (0,90 de la plus petite classe) servent à demander une revue. Aucune photo n'est supprimée ni étiquette corrigée. La comparaison est bornée à 5 000 images et 10 000 paires ; les limites produisent une erreur, jamais une liste tronquée silencieusement.
+```sh
+uv run --no-sync smartsite-data prepare data/processed/damsegment_v1 \
+  --policy config/damsegment_review.json \
+  --output data/prepared/damsegment_v1
+```
 
-**Complément réservé à l'évaluation des fissures**
+La politique versionnée est liée à l'empreinte exacte du manifeste. Elle retient, pour SmartSite, `0 → crack` (fissure) et `1 → surface_loss` (perte de matière). Cette correspondance est une **interprétation de projet documentée après inspection de 31 images par classe** dans les trois difficultés. La publication annonce fissures et éclatement du béton, mais ne fournit pas de table numérique explicite vérifiée ; ce choix ne doit pas être présenté comme une confirmation des auteurs ni comme une validation de chaque annotation.
+
+La commande :
+
+1. Relit les fichiers et vérifie leurs empreintes ; reconstruit les instances depuis les polygones source.
+2. Met à part `easy_0104`, `easy_0219`, `easy_0224` et `easy_0216`, avec leur motif. Les trois annotations vides ne deviennent pas des exemples « sans défaut ».
+3. Applique les 12 regroupements revus et recalcule les similitudes. Un groupe lié à une image mise à part est exclu en entier.
+4. Répartit les groupes avec une graine fixe (`--seed`, défaut `20260918`) et des strates de difficulté/présence des classes. Cible : environ 80/10/10 ; un groupe n'est jamais coupé. Les petites strates restent dans l'apprentissage. Les trois partitions doivent être non vides et contenir les classes observées.
+5. Copie les photos sans réencodage ; conserve les polygones et leurs identifiants source. Les catégories COCO sont `1=crack` et `2=surface_loss`.
+
+Résultat observé sur la politique livrée :
+
+| Destination | Photos | Instances |
+|---|---:|---:|
+| `train` | 1 198 | 15 685 |
+| `valid` | 149 | 1 950 |
+| `test` | 149 | 2 072 |
+| `quarantine` | 4 | Non utilisées |
+
+Chaque partition contient ses photos et `_annotations.coco.json`, selon la structure documentée par [RF-DETR](https://rfdetr.roboflow.com/learn/train/). Le format a été contrôlé avec `pycocotools` et le chargeur publié de RF-DETR 1.10.1 a été inspecté ; aucun entraînement RF-DETR n'a été exécuté à cette étape.
+
+`manifest.json`, `report.json`, `policy.json`, `ATTRIBUTION.json` et `index.html` conservent les décisions, empreintes, comptes et limites. Les fichiers masques source restent dans le corpus importé ; l'export utilise les instances COCO, qui préservent les recouvrements entre classes.
+
+**Usage : entraînement expérimental uniquement.** Toutes les photos DamSegment proviennent d'un barrage et les identifiants des photos/scènes d'origine manquent. Les groupes de contenu évitent les fuites connues, sans garantir l'absence de scènes communes. Les scores internes ne prouvent pas une généralisation à d'autres ouvrages ni la performance sur des chantiers SmartSite. Le test ne doit pas servir à choisir le modèle ou ses seuils.
+
+## Préparer les photos externes
 
 ```sh
 uv run --no-sync smartsite-data download \
@@ -57,21 +83,39 @@ uv run --no-sync smartsite-data download \
   --output data/raw/concrete_crack_segmentation_v1/concreteCrackSegmentationDataset.rar
 ```
 
-[Concrete Crack Segmentation Dataset v1](https://data.mendeley.com/datasets/jwsn7tfbrp/1), par Çağlar Fırat Özgenel, DOI `10.17632/jwsn7tfbrp.1`, licence publiée CC BY 4.0 : 458 photos de bâtiments avec 458 masques. L'archive RAR de 745 914 150 octets est épinglée par SHA-256. Elle a été téléchargée et inspectée localement ; la commande `import` reste dédiée au ZIP DamSegment et n'importe pas ce RAR.
+`prepare-external` lit les fichiers extraits. Pour une nouvelle installation, extraire **l'archive vérifiée ci-dessus** avec un outil compatible RAR dans un dossier vide nommé `data/raw/concrete_crack_segmentation_v1/extracted`. On doit y trouver `rgb/` et `BW/`. Sur macOS, l'outil système `tar` utilisé lors de l'inspection sait lire ce RAR. Les empreintes des 916 fichiers sont ensuite vérifiées contre `config/ccsd_preparation.json` ; l'import ZIP DamSegment ne lit pas le RAR.
 
-Les originaux sont conservés séparément. Les masques sont des JPEG avec des niveaux intermédiaires : il reste à fixer une règle de binarisation et à qualifier leur alignement. Les photos utilisent trois orientations EXIF ; les 458 paires ont des dimensions cohérentes après application de ces orientations, ce qui ne prouve pas à lui seul la justesse des annotations. Ce complément reste un candidat d'évaluation des fissures, sans approbation d'apprentissage ni de recette SmartSite. Les extraits de classification du jeu apparenté `5y9wdsg2zt` proviennent de ces mêmes photos : les utiliser en entraînement compromettrait cette réserve d'évaluation.
+```sh
+uv run --no-sync smartsite-data prepare-external data/raw/concrete_crack_segmentation_v1 \
+  --policy config/ccsd_preparation.json \
+  --output data/prepared/ccsd_v1
+```
 
-**Points de validation encore ouverts**
+Les 458 photos sont orientées selon leur EXIF puis enregistrées en PNG, à résolution native, sans nouvelle compression avec perte. Les masques JPEG passent en niveaux de gris : valeur ≥ 128 = fissure blanche, sinon fond noir. Aucune dilatation, fermeture de trous ou création d'instances n'est effectuée. Une bande séparée et des comptes aux seuils 96/160 documentent la sensibilité au seuil, qui est une décision de préparation du projet.
 
-- Confirmer la signification des classes source et revoir les annotations douteuses, dont trois images sans instance annotée.
-- Les différences de rasterisation observées restent dans un voisinage d'un pixel des contours. Résoudre les annotations ambiguës et la superposition des classes ; une différence de bord ne démontre pas à elle seule une mauvaise annotation.
-- Établir les groupes par photo/scène d'origine et appliquer les décisions sur les paires proches avant toute séparation entraînement/validation/test. Les 12 paires repérées ne démontrent pas l'absence d'autres scènes partagées.
-- Qualifier un jeu d'évaluation indépendant et représentatif des prises de vue SmartSite.
+Les similitudes sont recalculées après orientation. Chaque paire est comparée à résolution native avec sa rotation/symétrie, sur la photo et le masque. Les paramètres de revue sont dans la politique : écart RGB moyen maximal de 2/255 et IoU des masques minimal de 0,98. Ces seuils conservateurs demandent une revue ; ils ne prouvent pas que toutes les annotations écartées sont fausses.
 
-Les champs `scene_group` et `split` restent donc `null`, et `approved_for_training` reste `false`. Aucune précision de détection ne peut être déduite du succès de l'import.
+Sur cette source, 199 paires forment 259 groupes de contenu. Les masques de plusieurs variantes diffèrent réellement : par exemple, `061/549` remplissent différemment une zone entre deux branches de fissure. Avec la politique livrée, 195 groupes (390 photos) sont mis à part ; 64 références restent candidates et quatre vues similaires supplémentaires sont conservées pour des essais de robustesse. Tous les originaux et les dérivés sont conservés.
 
-**Données et attribution**
+La réserve externe reste **non approuvée pour l'apprentissage et pour une évaluation finale**. Les masques sont sémantiques : comparer ultérieurement leur union aux prédictions de fissures, sans inventer d'instances. La revue d'alignement complète, les cas négatifs difficiles et la qualification chantier restent à faire. Les groupes ne constituent pas des identifiants de bâtiments. Ne pas entraîner sur le dataset apparenté `5y9wdsg2zt` : ses petits extraits proviennent de ces mêmes photos.
 
-[DamSegment v1](https://data.mendeley.com/datasets/z5z6gtt5t4/1), DOI `10.17632/z5z6gtt5t4.1`, par Vahidreza Gharehbaghi, Caroline R. Bennett, Rémy Lequesne, Hang Zhao et Jian Li. La publication annonce [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) ; aucun fichier de licence distinct n'est inclus dans l'archive de segmentation inspectée. Le rapport conserve l'attribution et décrit les transformations effectuées par SmartSite.
+## Ouvrir les rapports
 
-Les images et sorties volumineuses ne sont pas distribuées avec le code. L'archive source demeure inchangée et permet de reproduire l'import.
+```sh
+.venv/bin/python -m http.server 8767 --bind 127.0.0.1 --directory data/prepared
+```
+
+Ouvrir [le corpus DamSegment](http://127.0.0.1:8767/damsegment_v1/) ou [la réserve externe](http://127.0.0.1:8767/ccsd_v1/). Garder le terminal ouvert ; `Ctrl+C` arrête le serveur. Le HTML fonctionne aussi hors ligne. Il permet d'ouvrir les photos, masques, groupes et motifs d'exclusion ; il ne modifie pas les décisions.
+
+## Intégrité et reproductibilité
+
+Choisir un nouveau dossier de sortie à chaque exécution : aucune sortie existante n'est écrasée. Une erreur ne publie pas de dossier partiel. Les chemins sortants, liens symboliques, fichiers altérés, décisions non compatibles et entrées excessives sont refusés. Les dossiers parents doivent être des espaces locaux de confiance. Les originaux ne sont jamais supprimés ; la graine, les paramètres et les empreintes des politiques rendent les décisions traçables.
+
+Les tests couvrent notamment les groupes transitifs, les doubles présents dans plusieurs difficultés, la propagation des exclusions, les corruptions, l'orientation EXIF, les seuils de masques, les conflits entre variantes et la reproductibilité des sorties.
+
+## Attribution
+
+- [DamSegment v1](https://data.mendeley.com/datasets/z5z6gtt5t4/1), DOI `10.17632/z5z6gtt5t4.1`, Vahidreza Gharehbaghi, Caroline R. Bennett, Rémy Lequesne, Hang Zhao, Jian Li.
+- [Concrete Crack Segmentation Dataset v1](https://data.mendeley.com/datasets/jwsn7tfbrp/1), DOI `10.17632/jwsn7tfbrp.1`, Çağlar Fırat Özgenel.
+
+Les publications annoncent CC BY 4.0. Les exports conservent l'attribution et la description des modifications. Les images, archives et sorties volumineuses ne sont pas distribuées avec le code.

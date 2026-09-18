@@ -9,34 +9,58 @@
       "doi": "10.17632/z5z6gtt5t4.1",
       "declared_license": "CC-BY-4.0",
       "role": "primary_training_candidate",
-      "declared_annotation_types": ["pixel_masks", "bounding_boxes", "image_labels"],
-      "target_classes": ["crack", "surface_loss"],
+      "declared_annotation_types": [
+        "pixel_masks",
+        "bounding_boxes",
+        "image_labels"
+      ],
+      "target_classes": [
+        "crack",
+        "surface_loss"
+      ],
       "source_page_reviewed": true,
       "archive_inspected": true,
-      "inspection_scope": "segmentation archive v1 only; classification and detection archives not downloaded",
+      "inspection_scope": "Segmentation imported; detection archive additionally checked for numeric class mapping; classification not downloaded",
       "importer": "src/smartsite_ia/source.py",
       "observed_format": "640x640 RGB JPEG, RGB PNG masks, per-image polygon JSON, YOLO polygons",
       "observed_images": 1500,
       "observed_instances": 19710,
-      "semantic_mapping_status": "source IDs retained; visual interpretation not yet confirmed by an authoritative mapping",
+      "semantic_mapping_status": "project visual decision: source 0 -> crack, source 1 -> surface_loss; 31 images per class examined; not author-confirmed",
       "scene_group_status": "no original-photo grouping provided in inspected archive",
       "approved_for_training": false,
-      "required_checks": ["mask_class_mapping", "scene_grouping", "annotation_completeness", "independent_evaluation_set"],
-      "domain_limits": ["concrete_dam", "not_validated_for_construction_interiors_or_tiles"],
+      "required_checks": [
+        "representative_independent_evaluation",
+        "difficult_negatives",
+        "original_scene_grouping_unavailable",
+        "domain_annotation_validation"
+      ],
+      "domain_limits": [
+        "concrete_dam",
+        "not_validated_for_construction_interiors_or_tiles"
+      ],
       "review_tool": "smartsite-data review",
       "observed_near_duplicate_candidate_pairs": 12,
       "mask_rasterization_review": "All 2764891 differing pixels are within a one-pixel boundary neighborhood; this does not certify semantic labels",
-      "near_duplicate_status": "12 pairs reviewed visually and measured at native resolution; other shared scenes/crops can remain"
+      "near_duplicate_status": "12 pairs reviewed visually and measured at native resolution; other shared scenes/crops can remain",
+      "preparation_command": "smartsite-data prepare",
+      "prepared_export_usage": "experimental_training_only; 1198 train, 149 valid, 149 internal test, 4 quarantined",
+      "curation_policy": "config/damsegment_review.json"
     },
     {
       "id": "concrete_crack_segmentation_v1",
       "url": "https://data.mendeley.com/datasets/jwsn7tfbrp/1",
       "doi": "10.17632/jwsn7tfbrp.1",
       "declared_license": "CC-BY-4.0",
-      "authors": ["Çağlar Fırat Özgenel"],
+      "authors": [
+        "Çağlar Fırat Özgenel"
+      ],
       "role": "reserved_external_crack_evaluation_candidate",
-      "declared_annotation_types": ["semantic_crack_masks"],
-      "target_classes": ["crack"],
+      "declared_annotation_types": [
+        "semantic_crack_masks"
+      ],
+      "target_classes": [
+        "crack"
+      ],
       "source_page_reviewed": true,
       "archive_inspected": true,
       "inspection_scope": "Original RAR verified; 458 image/mask pairs decoded and checked, raw files preserved",
@@ -49,22 +73,55 @@
       "orientation_status": "264 photos orientation 1, 179 orientation 6, 15 orientation 3; masks orientation 1; all paired dimensions agree after EXIF transpose",
       "approved_for_training": false,
       "approved_for_evaluation": false,
-      "required_checks": ["documented_mask_binarization", "visual_alignment_review", "within_source_scene_grouping", "within_source_near_duplicate_review", "evaluation_protocol"],
-      "related_dataset_exclusions": ["5y9wdsg2zt classification patches derive from these originals; do not train on those while reserving this source for evaluation"],
-      "domain_limits": ["campus_buildings", "cracks_only", "not_all_defects_negative", "not_drone_validation", "not_representative_of_all_active_construction_sites"]
+      "required_checks": [
+        "complete_visual_alignment_review",
+        "resolve_conflicting_masks",
+        "scene_ids_unavailable",
+        "difficult_negative_coverage",
+        "evaluation_protocol_qualification"
+      ],
+      "related_dataset_exclusions": [
+        "5y9wdsg2zt classification patches derive from these originals; do not train on those while reserving this source for evaluation"
+      ],
+      "domain_limits": [
+        "campus_buildings",
+        "cracks_only",
+        "not_all_defects_negative",
+        "not_drone_validation",
+        "not_representative_of_all_active_construction_sites"
+      ],
+      "preparation_command": "smartsite-data prepare-external",
+      "preparation_policy": "config/ccsd_preparation.json",
+      "prepared_output": "458 native-resolution lossless PNG photos; binary semantic masks at 128, sensitivity at 96/160",
+      "pair_review_status": "199 pairs compared at native resolution; 195 groups quarantined with conservative mask/image thresholds; 12 pairs inspected visually",
+      "prepared_candidate_references": 64,
+      "prepared_similar_variants": 4,
+      "prepared_quarantined_images": 390
     },
     {
       "id": "sdnet2018",
       "url": "https://digitalcommons.usu.edu/all_datasets/48/",
       "declared_license": "CC-BY-4.0",
       "role": "auxiliary_candidate_requires_localization_annotations",
-      "declared_annotation_types": ["image_labels"],
-      "target_classes": ["crack"],
+      "declared_annotation_types": [
+        "image_labels"
+      ],
+      "target_classes": [
+        "crack"
+      ],
       "source_page_reviewed": true,
       "archive_inspected": false,
       "approved_for_training": false,
-      "required_checks": ["archive_access", "original_image_grouping", "localization_annotations", "labels_for_other_target_classes"],
-      "domain_limits": ["concrete_patches", "binary_noncrack_label_is_not_all_classes_negative"]
+      "required_checks": [
+        "archive_access",
+        "original_image_grouping",
+        "localization_annotations",
+        "labels_for_other_target_classes"
+      ],
+      "domain_limits": [
+        "concrete_patches",
+        "binary_noncrack_label_is_not_all_classes_negative"
+      ]
     },
     {
       "id": "kasbah_v2",
@@ -72,13 +129,29 @@
       "doi": "10.17632/zwshr65gnc.2",
       "declared_license": "CC-BY-4.0",
       "role": "reserved_external_exploratory_evaluation",
-      "declared_annotation_types": ["multilabel_image_labels"],
-      "target_classes": ["crack", "surface_loss", "mold_suspected"],
+      "declared_annotation_types": [
+        "multilabel_image_labels"
+      ],
+      "target_classes": [
+        "crack",
+        "surface_loss",
+        "mold_suspected"
+      ],
       "source_page_reviewed": true,
       "archive_inspected": false,
       "approved_for_training": false,
-      "required_checks": ["archive_access", "grouping_and_duplicates", "label_mapping", "independent_localization_annotations_for_mask_evaluation"],
-      "domain_limits": ["only_published_test_subset", "224x224", "heritage_exterior_walls", "not_a_complete_mold_training_corpus"]
+      "required_checks": [
+        "archive_access",
+        "grouping_and_duplicates",
+        "label_mapping",
+        "independent_localization_annotations_for_mask_evaluation"
+      ],
+      "domain_limits": [
+        "only_published_test_subset",
+        "224x224",
+        "heritage_exterior_walls",
+        "not_a_complete_mold_training_corpus"
+      ]
     },
     {
       "id": "ceramics_defects_v1",
@@ -86,39 +159,79 @@
       "doi": "10.17632/47x6jdbr5j.1",
       "declared_license": "CC-BY-4.0",
       "role": "auxiliary_candidate_requires_reannotation",
-      "declared_annotation_types": ["image_labels"],
-      "target_classes": ["crack", "tile_damage"],
+      "declared_annotation_types": [
+        "image_labels"
+      ],
+      "target_classes": [
+        "crack",
+        "tile_damage"
+      ],
       "source_page_reviewed": true,
       "archive_inspected": false,
       "approved_for_training": false,
-      "required_checks": ["archive_access", "originals_separated_from_augmentations", "group_by_physical_tile", "defect_subtype_mapping", "localization_annotations"],
-      "domain_limits": ["few_physical_samples", "defective_is_not_synonymous_with_crack", "not_installed_tile_validation"]
+      "required_checks": [
+        "archive_access",
+        "originals_separated_from_augmentations",
+        "group_by_physical_tile",
+        "defect_subtype_mapping",
+        "localization_annotations"
+      ],
+      "domain_limits": [
+        "few_physical_samples",
+        "defective_is_not_synonymous_with_crack",
+        "not_installed_tile_validation"
+      ]
     },
     {
       "id": "cubit",
       "url": "https://github.com/CUHK-USR-Group/Defect-Dataset",
       "declared_license": null,
       "role": "pending_license_candidate_for_drone",
-      "declared_annotation_types": ["bounding_boxes", "segmentation_masks_in_separate_subset"],
-      "target_classes": ["crack", "surface_loss", "moisture_trace"],
+      "declared_annotation_types": [
+        "bounding_boxes",
+        "segmentation_masks_in_separate_subset"
+      ],
+      "target_classes": [
+        "crack",
+        "surface_loss",
+        "moisture_trace"
+      ],
       "source_page_reviewed": true,
       "archive_inspected": false,
       "approved_for_training": false,
-      "required_checks": ["data_reuse_terms", "archive_access", "subset_specific_class_mapping", "scene_grouping"],
-      "domain_limits": ["class_and_annotation_coverage_differs_between_subsets"]
+      "required_checks": [
+        "data_reuse_terms",
+        "archive_access",
+        "subset_specific_class_mapping",
+        "scene_grouping"
+      ],
+      "domain_limits": [
+        "class_and_annotation_coverage_differs_between_subsets"
+      ]
     },
     {
       "id": "bd3",
       "url": "https://github.com/Praveenkottari/BD3-Dataset",
       "declared_license": null,
       "role": "not_selected_as_foundation",
-      "declared_annotation_types": ["image_labels"],
+      "declared_annotation_types": [
+        "image_labels"
+      ],
       "target_classes": [],
       "source_page_reviewed": true,
       "archive_inspected": false,
       "approved_for_training": false,
-      "required_checks": ["complete_dataset_access", "data_reuse_terms", "source_grouping", "localization_annotations"],
-      "domain_limits": ["classification_not_localized_detection", "algae_is_not_mold", "does_not_measure_wall_geometry"]
+      "required_checks": [
+        "complete_dataset_access",
+        "data_reuse_terms",
+        "source_grouping",
+        "localization_annotations"
+      ],
+      "domain_limits": [
+        "classification_not_localized_detection",
+        "algae_is_not_mold",
+        "does_not_measure_wall_geometry"
+      ]
     }
   ]
 }

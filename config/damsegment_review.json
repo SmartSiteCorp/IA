@@ -6,14 +6,105 @@
   "review_status": "partial",
   "reviewer": "Codex: visual and numerical review, not a civil-engineering expert sign-off",
   "semantic_mapping": {
-    "status": "unconfirmed",
-    "export_labels": ["source_class_0", "source_class_1"],
-    "reason": "Published figures do not establish a numeric-ID mapping for this archive; preserve source IDs"
+    "status": "project_visual_decision",
+    "author_confirmed": false,
+    "reviewer": "Codex — visual dataset curation, not a civil-engineering sign-off",
+    "categories": [
+      {
+        "id": 1,
+        "source_category_id": 0,
+        "name": "crack"
+      },
+      {
+        "id": 2,
+        "source_category_id": 1,
+        "name": "surface_loss"
+      }
+    ],
+    "reason": "Project interpretation supported by source polygons overlaid on 31 regularly sampled images per class across Easy/Medium/Hard. Class 0 traces linear/branched discontinuities; class 1 outlines apparent concrete loss, cavities and chipped surfaces. Publication names crack/spalling but no authoritative numeric mapping was found. Use for experimental training only. Some visible joints/cavities need field context before being considered actionable defects.",
+    "sources": [
+      "https://data.mendeley.com/datasets/z5z6gtt5t4/1",
+      "https://doi.org/10.1016/j.dib.2026.112671"
+    ],
+    "reviewed_samples": {
+      "0": [
+        "easy_0001",
+        "easy_0050",
+        "easy_0099",
+        "easy_0150",
+        "easy_0205",
+        "easy_0262",
+        "easy_0323",
+        "easy_0389",
+        "easy_0441",
+        "easy_0490",
+        "hard_0038",
+        "hard_0086",
+        "hard_0134",
+        "hard_0182",
+        "hard_0230",
+        "hard_0278",
+        "hard_0326",
+        "hard_0374",
+        "hard_0422",
+        "hard_0470",
+        "medium_0018",
+        "medium_0066",
+        "medium_0114",
+        "medium_0162",
+        "medium_0210",
+        "medium_0258",
+        "medium_0306",
+        "medium_0354",
+        "medium_0402",
+        "medium_0450",
+        "medium_0498"
+      ],
+      "1": [
+        "easy_0001",
+        "easy_0033",
+        "easy_0082",
+        "easy_0117",
+        "easy_0170",
+        "easy_0203",
+        "easy_0231",
+        "easy_0267",
+        "easy_0290",
+        "easy_0306",
+        "easy_0326",
+        "easy_0346",
+        "easy_0376",
+        "easy_0400",
+        "easy_0434",
+        "hard_0022",
+        "hard_0100",
+        "hard_0165",
+        "hard_0206",
+        "hard_0259",
+        "hard_0323",
+        "hard_0370",
+        "hard_0455",
+        "medium_0060",
+        "medium_0123",
+        "medium_0195",
+        "medium_0269",
+        "medium_0317",
+        "medium_0375",
+        "medium_0422",
+        "medium_0483"
+      ]
+    },
+    "limits": [
+      "No exhaustive instance relabeling",
+      "No assertion of structural severity or required repair",
+      "Retain original source IDs and annotations"
+    ]
   },
   "annotation_policy": {
     "proposed_training_reference": "source instance polygons rasterized by COCO",
     "original_png_masks": "preserve for review; do not silently replace or clean labels",
-    "boundary_review": "Measured PNG/COCO differences all occur within a one-pixel boundary neighborhood; this alone does not certify correctness"
+    "boundary_review": "Measured PNG/COCO differences all occur within a one-pixel boundary neighborhood; this alone does not certify correctness",
+    "training_reference": "source instance polygons rasterized by COCO; cross-class overlap retained, without color-based erasure"
   },
   "quarantine_for_future_partitions": [
     {
@@ -35,73 +126,109 @@
   ],
   "must_stay_together": [
     {
-      "members": ["easy_0028", "medium_0031"],
+      "members": [
+        "easy_0028",
+        "medium_0031"
+      ],
       "reason": "Same visual content on reviewed comparison; tiny native-pixel differences",
       "native_rgb_mae": 0.033384602864583335,
       "maximum_channel_difference": 14
     },
     {
-      "members": ["easy_0059", "medium_0032"],
+      "members": [
+        "easy_0059",
+        "medium_0032"
+      ],
       "reason": "Same visual content on reviewed comparison; tiny native-pixel differences",
       "native_rgb_mae": 0.04793782552083333,
       "maximum_channel_difference": 23
     },
     {
-      "members": ["easy_0074", "medium_0121"],
+      "members": [
+        "easy_0074",
+        "medium_0121"
+      ],
       "reason": "Same visual content on reviewed comparison; tiny native-pixel differences",
       "native_rgb_mae": 0.03246744791666667,
       "maximum_channel_difference": 13
     },
     {
-      "members": ["easy_0197", "medium_0125"],
+      "members": [
+        "easy_0197",
+        "medium_0125"
+      ],
       "reason": "Same visual content on reviewed comparison; tiny native-pixel differences",
       "native_rgb_mae": 0.0123779296875,
       "maximum_channel_difference": 12
     },
     {
-      "members": ["easy_0292", "easy_0499"],
+      "members": [
+        "easy_0292",
+        "easy_0499"
+      ],
       "reason": "Same visual content on reviewed comparison; tiny native-pixel differences",
       "native_rgb_mae": 0.0005672200520833333,
       "maximum_channel_difference": 5
     },
     {
-      "members": ["easy_0482", "medium_0069"],
+      "members": [
+        "easy_0482",
+        "medium_0069"
+      ],
       "reason": "Same visual content on reviewed comparison; tiny native-pixel differences",
       "native_rgb_mae": 0.00028645833333333333,
       "maximum_channel_difference": 2
     },
     {
-      "members": ["hard_0045", "hard_0342"],
+      "members": [
+        "hard_0045",
+        "hard_0342"
+      ],
       "reason": "Same visual content on reviewed comparison; tiny native-pixel differences",
       "native_rgb_mae": 0.013094075520833333,
       "maximum_channel_difference": 15
     },
     {
-      "members": ["hard_0120", "medium_0313"],
+      "members": [
+        "hard_0120",
+        "medium_0313"
+      ],
       "reason": "Same visual content on reviewed comparison; tiny native-pixel differences",
       "native_rgb_mae": 0.01896484375,
       "maximum_channel_difference": 13
     },
     {
-      "members": ["hard_0221", "hard_0266"],
+      "members": [
+        "hard_0221",
+        "hard_0266"
+      ],
       "reason": "Same visual content on reviewed comparison; tiny native-pixel differences",
       "native_rgb_mae": 0.0009879557291666667,
       "maximum_channel_difference": 6
     },
     {
-      "members": ["hard_0298", "medium_0489"],
+      "members": [
+        "hard_0298",
+        "medium_0489"
+      ],
       "reason": "Same visual content on reviewed comparison; tiny native-pixel differences",
       "native_rgb_mae": 0.015143229166666666,
       "maximum_channel_difference": 14
     },
     {
-      "members": ["hard_0338", "hard_0436"],
+      "members": [
+        "hard_0338",
+        "hard_0436"
+      ],
       "reason": "Same visual content on reviewed comparison; tiny native-pixel differences",
       "native_rgb_mae": 0.0036149088541666667,
       "maximum_channel_difference": 3
     },
     {
-      "members": ["medium_0201", "medium_0455"],
+      "members": [
+        "medium_0201",
+        "medium_0455"
+      ],
       "reason": "Same visual content on reviewed comparison; tiny native-pixel differences",
       "native_rgb_mae": 0.0023160807291666666,
       "maximum_channel_difference": 6
@@ -110,5 +237,8 @@
   "scene_grouping_complete": false,
   "applied_to_corpus": false,
   "approved_for_training": false,
-  "remaining_checks": ["Resolve semantic class mapping and high class overlap", "Find original-scene groups or explicitly limit internal evaluation", "Apply reviewed policies through a validated partition exporter", "Qualify external crack evaluation with mask policy and difficult negatives"]
+  "remaining_checks": [
+    "Original-scene groups remain unknown: only exploratory within-dam evaluation",
+    "Qualify external crack evaluation and difficult negatives"
+  ]
 }

@@ -6,13 +6,15 @@ import sys
 from pathlib import Path
 from zipfile import BadZipFile
 
+from smartsite_ia.external import prepare_external
 from smartsite_ia.importer import import_archive
+from smartsite_ia.prepare import prepare_corpus
 from smartsite_ia.review import review_corpus
 from smartsite_ia.source import SOURCES, download_archive
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Prepare and audit DamSegment v1")
+    parser = argparse.ArgumentParser(description="Prepare and audit SmartSite defect datasets")
     commands = parser.add_subparsers(dest="command", required=True)
     download = commands.add_parser("download", help="Download and verify a pinned source archive")
     download.add_argument("--output", type=Path, required=True)
@@ -25,10 +27,43 @@ def main() -> int:
     review.add_argument("--output", type=Path, required=True)
     review.add_argument("--max-hamming-distance", type=int, default=8)
     review.add_argument("--max-pixel-error", type=float, default=20.0)
+    prepare = commands.add_parser(
+        "prepare", help="Apply reviewed curation and export grouped COCO splits"
+    )
+    prepare.add_argument("corpus", type=Path)
+    prepare.add_argument("--policy", type=Path, required=True)
+    prepare.add_argument("--output", type=Path, required=True)
+    prepare.add_argument("--seed", type=int, default=20260918)
+    external = commands.add_parser(
+        "prepare-external", help="Normalize verified external image/mask pairs"
+    )
+    external.add_argument(
+        "source", type=Path, help="Source directory containing extracted/rgb and extracted/BW"
+    )
+    external.add_argument("--policy", type=Path, required=True)
+    external.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     try:
         if args.command == "download":
             print(download_archive(args.output, SOURCES[args.dataset]))
+        elif args.command in ("prepare", "prepare-external"):
+            report = (
+                prepare_corpus(args.corpus, args.output, args.policy, args.seed)
+                if args.command == "prepare"
+                else prepare_external(args.source, args.output, args.policy)
+            )
+            print(
+                json.dumps(
+                    {
+                        "images": report["images"],
+                        "usage": report["usage"],
+                        "approved_for_training": report["approved_for_training"],
+                        "report": str(args.output / "index.html"),
+                        "splits": report.get("splits", report.get("split_counts")),
+                    },
+                    indent=2,
+                )
+            )
         elif args.command == "review":
             report = review_corpus(
                 args.corpus, args.output, args.max_hamming_distance, args.max_pixel_error
