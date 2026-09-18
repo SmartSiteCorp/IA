@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="fr"><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+<title>SmartSite — revue des données</title>
+<style>
+body{font:16px/1.5 system-ui,sans-serif;max-width:1400px;margin:auto;padding:24px;color:#172b3a;background:#f5f7fa}
+h1,h2,h3{line-height:1.2}a{color:#1559a0}.notice,article{background:white;padding:20px;border:1px solid #d3dce5;border-radius:10px;margin:20px 0}
+.notice{border-left:5px solid #b77900}.panels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+figure{margin:0}figure img{width:100%;height:auto}figcaption{font-weight:600}table{width:100%;border-collapse:collapse;background:white}
+td,th{text-align:left;padding:10px;border-bottom:1px solid #d3dce5}td img{max-width:160px}code{word-break:break-all}
+@media(max-width:700px){.panels{grid-template-columns:1fr}body{padding:12px}.scroll{overflow-x:auto}}
+</style>
+<h1>Revue des données SmartSite</h1>
+<p>$images photos · $annotations annotations · $pair_count paires à examiner</p>
+<div class="notice"><strong>Ce rapport montre les annotations du dataset, pas les résultats d'une IA.</strong>
+<p>Les classes restent numérotées 0 (rouge) et 1 (bleu). Un signal demande une vérification ; il ne prouve pas une erreur.
+Aucune photo n'est supprimée, corrigée ou répartie pour l'entraînement. L'approbation reste désactivée.</p></div>
+<nav><a href="#annotations">Revoir les annotations</a> · <a href="#similarity">Comparer les photos proches</a> ·
+<a href="#inventory">Toutes les images</a> · <a href="review.json">Rapport complet JSON</a> ·
+<a href="review-decisions.template.json">Fiche de décisions à compléter</a></nav>
+<h2 id="annotations">Annotations : cas prioritaires et exemples de chaque difficulté</h2>
+<p>Cliquer sur une image pour l'ouvrir en 640 × 640. Les masques restent dans leur palette d'origine.
+Les cas détaillés sont choisis par règle fixe : images sans annotation, catégories presque entièrement superposées, trois plus faibles recouvrements par classe et difficulté, deux exemples par difficulté et toutes les paires proches.</p>
+<p>Les masques couleur montrent la dernière annotation dessinée lorsque plusieurs catégories se superposent. Le nombre de pixels communs est calculé avant cet écrasement : il permet de repérer ce que l'image seule masque.</p>
+$details
+<h2 id="similarity">Photos proches à examiner</h2>
+<p>Comparaison de l'image entière, avec rotations et symétries. Seuils de recherche :
+distance ≤ $max_distance/128 et écart couleur moyen ≤ $max_error/255.
+Les photos ci-dessous restent dans leur orientation d'origine ; la transformation indiquée est celle utilisée pour les comparer.
+Les recadrages et vues voisines peuvent échapper à cette recherche. Un groupe de candidats n'est pas un groupe de scène confirmé.</p>
+<div class="scroll"><table><thead><tr><th>Photo A</th><th>Photo B</th><th>Type</th><th>Transformation B</th><th>Distance</th><th>Écart couleur</th></tr></thead>
+<tbody>$pairs</tbody></table></div>
+<h2 id="inventory">Inventaire complet</h2><p>« Pas de signal automatique » ne signifie pas « annotation validée ».
+Le recouvrement comparé concerne deux formats d'annotation, pas la précision d'un modèle. Utiliser la recherche du navigateur pour retrouver un identifiant.</p>
+<div class="scroll"><table><thead><tr><th>Photo</th><th>Identifiant</th><th>Annotations</th><th>À revoir</th><th>Pixels différents (COCO)</th></tr></thead><tbody>$rows</tbody></table></div>
+<p>Source : <a href="https://data.mendeley.com/datasets/z5z6gtt5t4/1">DamSegment v1</a>, Gharehbaghi, Bennett, Lequesne, Zhao et Li — CC BY 4.0.
+Aperçus redimensionnés, photos de détail conservées à l'identique, masques reconstruits et écarts affichés par SmartSite ; originaux conservés dans le corpus.</p>
+<p>Manifeste contrôlé : <code>$manifest_sha256</code></p></html>

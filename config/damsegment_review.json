@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "dataset": "damsegment_v1",
+  "reviewed_at": "2026-09-18",
+  "manifest_sha256": "ab62aeecdc9b590858c009714ff8402282bab4ad300c3fd5d4af0e5615a294a2",
+  "review_status": "partial",
+  "reviewer": "Codex: visual and numerical review, not a civil-engineering expert sign-off",
+  "semantic_mapping": {
+    "status": "unconfirmed",
+    "export_labels": ["source_class_0", "source_class_1"],
+    "reason": "Published figures do not establish a numeric-ID mapping for this archive; preserve source IDs"
+  },
+  "annotation_policy": {
+    "proposed_training_reference": "source instance polygons rasterized by COCO",
+    "original_png_masks": "preserve for review; do not silently replace or clean labels",
+    "boundary_review": "Measured PNG/COCO differences all occur within a one-pixel boundary neighborhood; this alone does not certify correctness"
+  },
+  "quarantine_for_future_partitions": [
+    {
+      "id": "easy_0104",
+      "reason": "Empty annotation; visible linear feature may be a joint; not a confirmed negative"
+    },
+    {
+      "id": "easy_0219",
+      "reason": "Empty annotation; visible linear feature requires a label decision"
+    },
+    {
+      "id": "easy_0224",
+      "reason": "Empty annotation; visible linear feature requires a label decision"
+    },
+    {
+      "id": "easy_0216",
+      "reason": "Source class 1 polygons almost entirely overlap source class 0; resolve semantic annotations first"
+    }
+  ],
+  "must_stay_together": [
+    {
+      "members": ["easy_0028", "medium_0031"],
+      "reason": "Same visual content on reviewed comparison; tiny native-pixel differences",
+      "native_rgb_mae": 0.033384602864583335,
+      "maximum_channel_difference": 14
+    },
+    {
+      "members": ["easy_0059", "medium_0032"],
+      "reason": "Same visual content on reviewed comparison; tiny native-pixel differences",
+      "native_rgb_mae": 0.04793782552083333,
+      "maximum_channel_difference": 23
+    },
+    {
+      "members": ["easy_0074", "medium_0121"],
+      "reason": "Same visual content on reviewed comparison; tiny native-pixel differences",
+      "native_rgb_mae": 0.03246744791666667,
+      "maximum_channel_difference": 13
+    },
+    {
+      "members": ["easy_0197", "medium_0125"],
+      "reason": "Same visual content on reviewed comparison; tiny native-pixel differences",
+      "native_rgb_mae": 0.0123779296875,
+      "maximum_channel_difference": 12
+    },
+    {
+      "members": ["easy_0292", "easy_0499"],
+      "reason": "Same visual content on reviewed comparison; tiny native-pixel differences",
+      "native_rgb_mae": 0.0005672200520833333,
+      "maximum_channel_difference": 5
+    },
+    {
+      "members": ["easy_0482", "medium_0069"],
+      "reason": "Same visual content on reviewed comparison; tiny native-pixel differences",
+      "native_rgb_mae": 0.00028645833333333333,
+      "maximum_channel_difference": 2
+    },
+    {
+      "members": ["hard_0045", "hard_0342"],
+      "reason": "Same visual content on reviewed comparison; tiny native-pixel differences",
+      "native_rgb_mae": 0.013094075520833333,
+      "maximum_channel_difference": 15
+    },
+    {
+      "members": ["hard_0120", "medium_0313"],
+      "reason": "Same visual content on reviewed comparison; tiny native-pixel differences",
+      "native_rgb_mae": 0.01896484375,
+      "maximum_channel_difference": 13
+    },
+    {
+      "members": ["hard_0221", "hard_0266"],
+      "reason": "Same visual content on reviewed comparison; tiny native-pixel differences",
+      "native_rgb_mae": 0.0009879557291666667,
+      "maximum_channel_difference": 6
+    },
+    {
+      "members": ["hard_0298", "medium_0489"],
+      "reason": "Same visual content on reviewed comparison; tiny native-pixel differences",
+      "native_rgb_mae": 0.015143229166666666,
+      "maximum_channel_difference": 14
+    },
+    {
+      "members": ["hard_0338", "hard_0436"],
+      "reason": "Same visual content on reviewed comparison; tiny native-pixel differences",
+      "native_rgb_mae": 0.0036149088541666667,
+      "maximum_channel_difference": 3
+    },
+    {
+      "members": ["medium_0201", "medium_0455"],
+      "reason": "Same visual content on reviewed comparison; tiny native-pixel differences",
+      "native_rgb_mae": 0.0023160807291666666,
+      "maximum_channel_difference": 6
+    }
+  ],
+  "scene_grouping_complete": false,
+  "applied_to_corpus": false,
+  "approved_for_training": false,
+  "remaining_checks": ["Resolve semantic class mapping and high class overlap", "Find original-scene groups or explicitly limit internal evaluation", "Apply reviewed policies through a validated partition exporter", "Qualify external crack evaluation with mask policy and difficult negatives"]
+}

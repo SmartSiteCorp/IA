@@ -25,6 +25,17 @@ DAMSEGMENT = Source(
     sha256="d87849a70d7a2e280e49d3687d89a5850902804554a35d779c941ea71ffcff1a",
     expected_images=1500,
 )
+CONCRETE_CRACK_SEGMENTATION = Source(
+    url="https://data.mendeley.com/public-files/datasets/jwsn7tfbrp/files/"
+    "88e685a6-e3c5-423d-845f-89e35a457867/file_downloaded",
+    size=745914150,
+    sha256="1b8458ab6f84dc5086e9af8579e2cabccd3d209df97b46622096a4c105d5a6b2",
+    expected_images=458,
+)
+SOURCES = {
+    "damsegment_v1": DAMSEGMENT,
+    "concrete_crack_segmentation_v1": CONCRETE_CRACK_SEGMENTATION,
+}
 PROVENANCE = {
     "dataset": "DamSegment",
     "version": 1,
