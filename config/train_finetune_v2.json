@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "purpose": "experiment",
+  "seed": 20260918,
+  "epochs": 1,
+  "train_images": 1198,
+  "valid_images": 149,
+  "batch_size": 1,
+  "grad_accum_steps": 2,
+  "lr": 0.0001,
+  "corpus_sha256": {
+    "manifest.json": "7e8f2df3c8b75dd427963b428d53840ea732ce86933cd7f6ee6ce32a563e989e",
+    "report.json": "243a04d28c14058bc1e2768b02baa3c997f6a1bc0ca094c49224d3b06b627755",
+    "train/_annotations.coco.json": "b3c89103e3f0374cf2f6a4b4700f03e513abf894b5d20e5735af9a39117955b9",
+    "valid/_annotations.coco.json": "3547a30f17f79cdd00f72039fd1aad4141b8286ca3759aec0dc5462a1fe92122"
+  },
+  "initial_checkpoint_sha256": "7760ab7d49ab7cd4c813a366e81eba480cbb9fe2a526cdeb0a3a8f79cbec73b2"
+}

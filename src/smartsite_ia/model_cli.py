@@ -26,7 +26,11 @@ def main() -> int:
     )
     train.add_argument("corpus", type=Path)
     train.add_argument("--config", type=Path, required=True)
-    train.add_argument("--weights", type=Path, required=True)
+    origin = train.add_mutually_exclusive_group(required=True)
+    origin.add_argument("--weights", type=Path)
+    origin.add_argument(
+        "--from-run", type=Path, help="Fine-tune verified weights with a new optimizer"
+    )
     train.add_argument("--output", type=Path, required=True)
     train.add_argument("--resume", action="store_true", help="Resume a recorded interrupted run")
     predict = commands.add_parser(
@@ -57,7 +61,9 @@ def main() -> int:
         elif args.command == "doctor":
             result = runtime(args.device)
         elif args.command == "train":
-            options = {"resume": True} if args.resume else {}
+            options: dict[str, Any] = {"resume": True} if args.resume else {}
+            if args.from_run:
+                options["from_run"] = args.from_run
             report = train_model(
                 args.corpus, args.output, args.config, args.weights, args.device, **options
             )

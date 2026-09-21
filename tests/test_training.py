@@ -225,6 +225,14 @@ def fake_engine(monkeypatch):
     calls = []
     monkeypatch.setattr(learning, "runtime", lambda device: {"device": device})
     monkeypatch.setattr(learning, "verify_archive", lambda *args: PRETRAINED.sha256)
+    original_hash = learning.file_hash
+    monkeypatch.setattr(
+        learning,
+        "file_hash",
+        lambda path, maximum=2_000_000_000: (
+            PRETRAINED.sha256 if path.name == "weights" else original_hash(path, maximum)
+        ),
+    )
 
     def fit(data, output, weights, config, device):
         assert not (data / "test").exists()
@@ -518,3 +526,221 @@ def test_last_train_log_does_not_impersonate_a_completed_validation(
     with pytest.raises(RuntimeError, match="final epoch"):
         learning.train_model(root, tmp_path / "run", path, tmp_path / "weights", "cpu")
     assert json.loads((tmp_path / "run/run.json").read_text())["status"] == "failed"
+
+
+@pytest.fixture
+def completed_parent(training_inputs, tmp_path, fake_engine):
+    root, path, config = training_inputs
+    parent = tmp_path / "parent"
+    report = learning.train_model(root, parent, path, tmp_path / "weights", "cpu")
+    report["runtime"]["versions"] = {"rfdetr": MODEL_VERSION}
+    write_json(parent / "run.json", report)
+    config["initial_checkpoint_sha256"] = report["checkpoint_sha256"]
+    write_json(path, config)
+    return parent, report
+
+
+def test_fine_tuning_keeps_parent_and_records_cold_optimizer(
+    training_inputs, tmp_path, completed_parent, monkeypatch
+):
+    root, path, _ = training_inputs
+    parent, parent_report = completed_parent
+    original = {p: p.read_bytes() for p in parent.rglob("*") if p.is_file()}
+
+    def fit(data, output, weights, config, device):
+        assert weights == parent / parent_report["checkpoint"]
+        assert "_resume" not in config
+        output.mkdir()
+        (output / "checkpoint_best_total.pth").write_bytes(b"new learned weights")
+        (output / "metrics.csv").write_text("epoch,train/loss,val/segm_mAP_50_95\n0,10,.2\n")
+
+    monkeypatch.setattr(learning, "fit_engine", fit)
+    report = learning.train_model(root, tmp_path / "child", path, None, "cpu", from_run=parent)
+    assert report["initialization"] == {
+        "mode": "fine_tune",
+        "checkpoint_sha256": parent_report["checkpoint_sha256"],
+        "parent_run": str(parent.resolve()),
+        "parent_report_sha256": learning.file_hash(parent / "run.json"),
+        "optimizer_restored": False,
+        "scheduler_restored": False,
+        "epoch_numbering": "Restarted at zero in this new run",
+    }
+    assert all(p.read_bytes() == raw for p, raw in original.items())
+    assert learning.verify_run(tmp_path / "child")[0] == report
+
+
+@pytest.mark.parametrize("change", ["hash", "corpus", "version", "classes", "status", "weights"])
+def test_fine_tuning_refuses_changed_parent_before_output(
+    training_inputs, tmp_path, completed_parent, change
+):
+    root, path, _ = training_inputs
+    parent, report = completed_parent
+    if change == "hash":
+        report["checkpoint_sha256"] = "a" * 64
+    elif change == "corpus":
+        report["config"]["corpus_sha256"]["manifest.json"] = "a" * 64
+    elif change == "version":
+        report["runtime"]["versions"]["rfdetr"] = "unknown"
+    elif change == "classes":
+        report["class_names"] = ["other"]
+    elif change == "status":
+        report["status"] = "interrupted"
+    else:
+        (parent / report["checkpoint"]).write_bytes(b"changed")
+    write_json(parent / "run.json", report)
+    with pytest.raises(ValueError):
+        learning.train_model(root, tmp_path / "child", path, None, "cpu", from_run=parent)
+    assert not (tmp_path / "child").exists()
+
+
+@pytest.mark.parametrize("pin", [None, "", "x" * 64, True])
+def test_fine_tuning_requires_pinned_hash(training_inputs, tmp_path, completed_parent, pin):
+    root, path, config = training_inputs
+    parent, _ = completed_parent
+    config["initial_checkpoint_sha256"] = pin
+    write_json(path, config)
+    with pytest.raises(ValueError, match="initial checkpoint"):
+        learning.train_model(root, tmp_path / "child", path, None, "cpu", from_run=parent)
+
+
+def test_fine_tuning_refuses_parent_output_and_ambiguous_origin(
+    training_inputs, tmp_path, completed_parent
+):
+    root, path, config = training_inputs
+    parent, _ = completed_parent
+    for out, weights, source in [
+        (parent / "child", None, parent),
+        (tmp_path / "child", tmp_path / "weights", parent),
+        (tmp_path / "child", None, None),
+        (tmp_path / "child", tmp_path / "weights", None),
+    ]:
+        with pytest.raises(ValueError):
+            learning.train_model(root, out, path, weights, "cpu", from_run=source)
+    config.pop("initial_checkpoint_sha256")
+    write_json(path, config)
+    with pytest.raises(ValueError, match="differs"):
+        learning.train_model(root, tmp_path / "child", path, None, "cpu", from_run=parent)
+
+
+def test_fine_tuning_adapter_keeps_both_learned_classes(tmp_path, monkeypatch):
+    captured = {}
+
+    class Engine:
+        def __init__(self, **kwargs):
+            captured.update(kwargs)
+
+        def train(self, **kwargs):
+            assert kwargs["resume"] is None
+
+    modules = {
+        "rfdetr": SimpleNamespace(RFDETRSegMedium=Engine),
+        "pytorch_lightning": SimpleNamespace(seed_everything=lambda *a, **kw: None),
+    }
+    monkeypatch.setattr(learning.importlib, "import_module", lambda name: modules[name])
+    config = {
+        "seed": 42,
+        "epochs": 1,
+        "batch_size": 1,
+        "grad_accum_steps": 2,
+        "lr": 0.0001,
+        "purpose": "experiment",
+        "initial_checkpoint_sha256": "a" * 64,
+    }
+    learning.fit_engine(tmp_path / "data", tmp_path / "out", tmp_path / "parent.pth", config, "cpu")
+    assert captured["num_classes"] == 2
+    assert captured["pretrain_weights"] == str((tmp_path / "parent.pth").resolve())
+
+
+def test_fine_tuning_cli_forwards_parent_and_resume(monkeypatch):
+    def train(*args, **kwargs):
+        assert args[3] is None
+        assert kwargs == {"from_run": Path("parent"), "resume": True}
+        return {"status": "completed"}
+
+    monkeypatch.setattr(model_cli, "train_model", train)
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "smartsite-model",
+            "train",
+            "corpus",
+            "--config",
+            "cfg",
+            "--from-run",
+            "parent",
+            "--output",
+            "child",
+            "--device",
+            "cpu",
+            "--resume",
+        ],
+    )
+    assert model_cli.main() == 0
+
+
+def test_interrupted_fine_tuning_restores_its_own_optimizer_checkpoint(
+    training_inputs, tmp_path, completed_parent, monkeypatch
+):
+    root, path, _ = training_inputs
+    parent, _ = completed_parent
+    out = tmp_path / "child"
+
+    def interrupt(data, output, *args):
+        output.mkdir()
+        (output / "last.ckpt").write_bytes(b"child optimizer checkpoint")
+        raise KeyboardInterrupt()
+
+    monkeypatch.setattr(learning, "fit_engine", interrupt)
+    with pytest.raises(KeyboardInterrupt):
+        learning.train_model(root, out, path, None, "cpu", from_run=parent)
+
+    def resumed(data, output, weights, config, device):
+        assert config["_resume"] == str((out / "checkpoints/last.ckpt").resolve())
+        assert Path(config["_resume"]).read_bytes() == b"child optimizer checkpoint"
+        (output / "checkpoint_best_total.pth").write_bytes(b"child learned weights")
+        (output / "metrics.csv").write_text("epoch,train/loss,val/segm_mAP_50_95\n0,9,.3\n")
+
+    monkeypatch.setattr(learning, "fit_engine", resumed)
+    result = learning.train_model(root, out, path, None, "cpu", from_run=parent, resume=True)
+    assert result["status"] == "completed"
+    assert result["attempts"][0]["status"] == "interrupted"
+    assert result["initialization"]["optimizer_restored"] is False
+    assert result["attempts"][0]["resume_checkpoint_sha256"]
+
+
+def test_parent_changes_during_fine_tuning_are_reported_as_failure(
+    training_inputs, tmp_path, completed_parent, monkeypatch
+):
+    root, path, _ = training_inputs
+    parent, _ = completed_parent
+
+    def fit(data, output, weights, config, device):
+        output.mkdir()
+        weights.write_bytes(b"parent modified externally")
+        (output / "checkpoint_best_total.pth").write_bytes(b"child weights")
+
+    monkeypatch.setattr(learning, "fit_engine", fit)
+    with pytest.raises(ValueError, match="Initial checkpoint changed"):
+        learning.train_model(root, tmp_path / "child", path, None, "cpu", from_run=parent)
+    assert json.loads((tmp_path / "child/run.json").read_text())["status"] == "failed"
+
+
+def test_resume_refuses_different_parent_report(
+    training_inputs, tmp_path, completed_parent, monkeypatch
+):
+    root, path, _ = training_inputs
+    parent, parent_report = completed_parent
+    out = tmp_path / "child"
+
+    def interrupt(data, output, *args):
+        output.mkdir()
+        (output / "last.ckpt").write_bytes(b"child optimizer checkpoint")
+        raise KeyboardInterrupt()
+
+    monkeypatch.setattr(learning, "fit_engine", interrupt)
+    with pytest.raises(KeyboardInterrupt):
+        learning.train_model(root, out, path, None, "cpu", from_run=parent)
+    parent_report["purpose"] = "changed"
+    write_json(parent / "run.json", parent_report)
+    with pytest.raises(ValueError, match="initialization changed"):
+        learning.train_model(root, out, path, None, "cpu", from_run=parent, resume=True)

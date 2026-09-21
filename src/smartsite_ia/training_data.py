@@ -32,6 +32,11 @@ def load_training_config(path: Path) -> tuple[dict[str, Any], str]:
         "grad_accum_steps": (1, 32),
     }
     expected = {"schema_version", "purpose", "corpus_sha256", "lr", *bounds}
+    if "initial_checkpoint_sha256" in config:
+        expected.add("initial_checkpoint_sha256")
+        checksum_value = config["initial_checkpoint_sha256"]
+        if not isinstance(checksum_value, str) or not re.fullmatch("[a-f0-9]{64}", checksum_value):
+            raise ValueError("Expected a pinned initial checkpoint hash")
     if set(config) != expected or config["purpose"] not in ("smoke", "experiment"):
         raise ValueError("Unknown or missing training configuration fields")
     for key, (minimum, maximum) in bounds.items():

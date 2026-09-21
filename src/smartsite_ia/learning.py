@@ -68,6 +68,10 @@ def runtime(device: str) -> dict[str, Any]:
             )
         },
         "mps_fallback_requested": os.environ.get("PYTORCH_ENABLE_MPS_FALLBACK") == "1",
+        "mps_allocator_environment": {
+            name: os.environ.get(name)
+            for name in ("PYTORCH_MPS_HIGH_WATERMARK_RATIO", "PYTORCH_MPS_LOW_WATERMARK_RATIO")
+        },
     }
 
 
@@ -78,7 +82,11 @@ def fit_engine(
     lightning = importlib.import_module("pytorch_lightning")
     lightning.seed_everything(config["seed"], workers=True)
     engine = importlib.import_module("rfdetr").RFDETRSegMedium(
-        pretrain_weights=str(weights.resolve()), device=device, amp=False, fused_optimizer=False
+        pretrain_weights=str(weights.resolve()),
+        device=device,
+        amp=False,
+        fused_optimizer=False,
+        **({"num_classes": len(CLASS_NAMES)} if "initial_checkpoint_sha256" in config else {}),
     )
     engine.train(
         dataset_dir=str(data.resolve()),
@@ -133,14 +141,15 @@ def train_model(
     root: Path,
     output: Path,
     config_path: Path,
-    weights: Path,
+    weights: Path | None,
     device: str,
     *,
     resume: bool = False,
+    from_run: Path | None = None,
 ) -> dict[str, Any]:
     """Un dossier neuf par essai ; on ne déclare terminé qu'après les contrôles finaux."""
     config, config_hash = load_training_config(config_path)
-    verify_archive(weights, PRETRAINED)
+    weights, initialization = training_origin(config, weights, from_run, output)
     if (
         output.resolve().is_relative_to(root.resolve())
         or output.resolve() == weights.resolve().parent
@@ -148,6 +157,15 @@ def train_model(
         raise ValueError("Training output must be separate from its inputs")
     environment = runtime(device)
     previous = check_resume(output, config, config_hash, device) if resume else None
+    if (
+        previous
+        and previous.get(
+            "initialization",
+            {"mode": "official_pretrained", "checkpoint_sha256": PRETRAINED.sha256},
+        )
+        != initialization
+    ):
+        raise ValueError("Resume initialization changed")
     if not resume:
         output.mkdir(parents=True, exist_ok=False)
     report: dict[str, Any] = {
@@ -157,6 +175,7 @@ def train_model(
         "config": config,
         "config_sha256": config_hash,
         "pretrained_sha256": PRETRAINED.sha256,
+        "initialization": initialization,
         "runtime": environment,
         "class_names": list(CLASS_NAMES),
         "test_used": False,
@@ -216,8 +235,10 @@ def train_model(
                 os.environ["TORCH_FORCE_WEIGHTS_ONLY_LOAD"] = old_safe_load
         checkpoint = output / "checkpoints/checkpoint_best_total.pth"
         checksum = file_hash(checkpoint)
-        if checksum == PRETRAINED.sha256:
-            raise ValueError("Checkpoint is identical to the unadapted pretrained file")
+        if checksum == initialization["checkpoint_sha256"]:
+            raise ValueError("Checkpoint is identical to its initial weights")
+        if file_hash(weights) != initialization["checkpoint_sha256"]:
+            raise ValueError("Initial checkpoint changed during training")
         metrics_path = output / "checkpoints/metrics.csv"
         last_metrics = summarize_metrics(metrics_path)
         if last_metrics.get("last_validation_epoch", -1) + 1 != config["epochs"]:
@@ -246,6 +267,39 @@ def train_model(
         save_state(output, report)
         raise
     return report
+
+
+def training_origin(
+    config: dict[str, Any], weights: Path | None, parent: Path | None, output: Path
+) -> tuple[Path, dict[str, Any]]:
+    """Choisir des poids vérifiés, sans écrire dans l'essai qui nous sert de départ."""
+    if (weights is None) == (parent is None):
+        raise ValueError("Choose exactly one of pretrained weights or a completed parent run")
+    pinned = config.get("initial_checkpoint_sha256")
+    if parent is None:
+        if pinned is not None:
+            raise ValueError("A pinned initial checkpoint requires a parent run")
+        assert weights is not None
+        verify_archive(weights, PRETRAINED)
+        return weights, {"mode": "official_pretrained", "checkpoint_sha256": PRETRAINED.sha256}
+    if output.resolve().is_relative_to(parent.resolve()):
+        raise ValueError("Fine-tuning output must be outside the parent run")
+    report, checkpoint = verify_run(parent)
+    if (
+        pinned != report["checkpoint_sha256"]
+        or report["config"]["corpus_sha256"] != config["corpus_sha256"]
+        or report.get("runtime", {}).get("versions", {}).get("rfdetr") != MODEL_VERSION
+    ):
+        raise ValueError("Parent checkpoint, corpus or engine version differs from configuration")
+    return checkpoint, {
+        "mode": "fine_tune",
+        "checkpoint_sha256": pinned,
+        "parent_run": str(parent.resolve()),
+        "parent_report_sha256": file_hash(parent / "run.json"),
+        "optimizer_restored": False,
+        "scheduler_restored": False,
+        "epoch_numbering": "Restarted at zero in this new run",
+    }
 
 
 def process_peak_rss() -> int:
