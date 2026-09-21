@@ -9,9 +9,10 @@ from typing import Any
 
 from smartsite_ia.inference import DEFAULT_PROFILE, PROFILES
 from smartsite_ia.learning import runtime, train_model
-from smartsite_ia.model_assets import PRETRAINED
+from smartsite_ia.model_assets import CLASS_NAMES, PRETRAINED
 from smartsite_ia.prediction import predict_photo
 from smartsite_ia.source import download_archive
+from smartsite_ia.training_data import load_training_config, prepare_training_inputs
 from smartsite_ia.validation import compare_validations, evaluate_validation
 
 
@@ -21,6 +22,12 @@ def main() -> int:
     weights = commands.add_parser("weights", help="Download the pinned official pretrained weights")
     weights.add_argument("--output", type=Path, required=True)
     doctor = commands.add_parser("doctor", help="Check installed engine and requested hardware")
+    prepare = commands.add_parser(
+        "prepare", help="Prepare class-specific train/valid data without a model"
+    )
+    prepare.add_argument("corpus", type=Path)
+    prepare.add_argument("--config", type=Path, required=True)
+    prepare.add_argument("--output", type=Path, required=True)
     train = commands.add_parser(
         "train", help="Train on prepared train/valid data; leave test reserved"
     )
@@ -44,6 +51,9 @@ def main() -> int:
     evaluate.add_argument("corpus", type=Path)
     evaluate.add_argument("--run", type=Path, required=True)
     evaluate.add_argument("--output", type=Path, required=True)
+    evaluate.add_argument(
+        "--classes", nargs="+", choices=CLASS_NAMES, help="Compare a shared subset of model classes"
+    )
     for command in (predict, evaluate):
         command.add_argument("--preprocessing", choices=PROFILES, default=DEFAULT_PROFILE)
         command.add_argument("--mask-threshold", type=float, default=0.5)
@@ -60,6 +70,21 @@ def main() -> int:
             result = {"weights": str(download_archive(args.output, PRETRAINED))}
         elif args.command == "doctor":
             result = runtime(args.device)
+        elif args.command == "prepare":
+            config, _ = load_training_config(args.config)
+            selection = prepare_training_inputs(args.corpus, args.output, config)
+            result = {
+                "class_names": selection["class_names"],
+                "report": str(args.output / "selection.json"),
+                "splits": {
+                    split: {
+                        key: value
+                        for key, value in details.items()
+                        if key not in ("records", "without_target_annotation_ids")
+                    }
+                    for split, details in selection["splits"].items()
+                },
+            }
         elif args.command == "train":
             options: dict[str, Any] = {"resume": True} if args.resume else {}
             if args.from_run:
@@ -76,6 +101,7 @@ def main() -> int:
                 args.device,
                 args.preprocessing,
                 args.mask_threshold,
+                tuple(args.classes) if args.classes is not None else None,
             )
             result = {"images": report["images"], "report": str(args.output / "index.html")}
         elif args.command == "compare":

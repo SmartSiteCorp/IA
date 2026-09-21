@@ -56,6 +56,92 @@ def test_perfect_and_empty_predictions():
     assert totals["crack"]["recall"] == 0 and totals["crack"]["precision"] is None
 
 
+@pytest.mark.parametrize("name", CLASS_NAMES)
+def test_specialist_and_multiclass_compare_only_on_identical_target_references(
+    validation_inputs, tmp_path, monkeypatch, name
+):
+    corpus, run = validation_inputs
+    baseline = validation.evaluate_validation(
+        tmp_path / "run", corpus, tmp_path / "baseline", "cpu", class_names=(name,)
+    )
+    assert list(baseline["counts"]) == [name]
+    assert baseline["counts"][name]["tp"] == 1
+    assert list(baseline["coco"]["per_class"]) == [name]
+    assert baseline["model_class_names"] == list(CLASS_NAMES)
+    run["config"]["class_names"] = [name]
+    mask = coco_mask.decode(rle()).astype(bool)
+
+    def load(*args):
+        assert args[-1] == (name,)
+        result = SimpleNamespace(
+            xyxy=np.array([[10, 8, 30, 20]]),
+            confidence=np.array([0.9]),
+            class_id=np.array([0]),
+            mask=np.stack([mask]),
+        )
+        return SimpleNamespace(predict=lambda *a, **kw: result)
+
+    monkeypatch.setattr(validation, "load_engine", load)
+    specialist = validation.evaluate_validation(
+        tmp_path / "run", corpus, tmp_path / "specialist", "cpu"
+    )
+    assert specialist["class_names"] == [name]
+    assert specialist["counts"] == baseline["counts"]
+    assert specialist["annotations_sha256"] == baseline["annotations_sha256"]
+    assert (
+        specialist["source_annotations_sha256"]
+        == run["config"]["corpus_sha256"]["valid/_annotations.coco.json"]
+    )
+    validation.compare_validations(
+        tmp_path / "baseline", tmp_path / "specialist", tmp_path / "comparison"
+    )
+    page = (tmp_path / "comparison/index.html").read_text()
+    assert ("Rouge : fissure" in page) is (name == "crack")
+    assert ("Bleu : perte de matière" in page) is (name == "surface_loss")
+    proposals = json.loads((tmp_path / "specialist/easy_0001/predictions.json").read_text())[
+        "predictions"
+    ]
+    assert proposals[0]["class_id"] == 0 and proposals[0]["class_name"] == name
+
+
+def test_evaluation_cannot_claim_a_class_its_model_does_not_support(validation_inputs, tmp_path):
+    corpus, report = validation_inputs
+    report["config"]["class_names"] = ["crack"]
+    with pytest.raises(ValueError, match="included"):
+        validation.evaluate_validation(
+            tmp_path / "run", corpus, tmp_path / "bad", "cpu", class_names=("surface_loss",)
+        )
+    assert not (tmp_path / "bad").exists()
+
+
+def test_specialist_keeps_false_alarms_on_photos_without_target_annotations(
+    validation_inputs, tmp_path
+):
+    corpus, run = validation_inputs
+    photo = corpus / "valid/easy_0002.jpg"
+    Image.new("RGB", (64, 64), "gray").save(photo)
+    for name in ("manifest.json", "report.json"):
+        path = corpus / name
+        doc = json.loads(path.read_text())
+        doc["records"].append(
+            dict(id="easy_0002", split="valid", difficulty="Easy", image_sha256=file_hash(photo))
+        )
+        write_json(path, doc)
+    doc = document()
+    doc["images"].append(dict(id=2, file_name="easy_0002.jpg", width=64, height=64))
+    doc["annotations"].append({**doc["annotations"][1], "id": 3, "image_id": 2})
+    write_json(corpus / "valid/_annotations.coco.json", doc)
+    for name in run["config"]["corpus_sha256"]:
+        run["config"]["corpus_sha256"][name] = file_hash(corpus / name)
+    result = validation.evaluate_validation(
+        tmp_path / "run", corpus, tmp_path / "out", "cpu", class_names=("crack",)
+    )
+    assert result["images"] == 2
+    assert result["counts"]["crack"]["tp"] == 1 and result["counts"]["crack"]["fp"] == 1
+    assert result["counts"]["crack"]["precision"] == 0.5
+    assert result["records"][1]["counts"]["crack"] == {"tp": 0, "fp": 1, "fn": 0}
+
+
 def test_duplicates_wrong_classes_and_low_scores():
     refs = document()["annotations"][:1]
     preds = proposals() + [proposals()[0], {**proposals()[0], "score": 0.2}]
@@ -195,7 +281,8 @@ def test_validation_refuses_changed_inputs(validation_inputs, tmp_path, change):
 
 
 @pytest.mark.parametrize(
-    "change", ["protocol", "image_hash", "annotations", "split", "unsafe_id", "inference"]
+    "change",
+    ["protocol", "image_hash", "annotations", "split", "unsafe_id", "inference", "classes"],
 )
 def test_comparison_requires_same_data_protocol(validation_inputs, tmp_path, change):
     corpus, _ = validation_inputs
@@ -213,6 +300,8 @@ def test_comparison_requires_same_data_protocol(validation_inputs, tmp_path, cha
         second["records"][0]["id"] = "../../outside"
     elif change == "inference":
         second["inference"]["preprocessing"] = "unknown"
+    elif change == "classes":
+        second["class_names"] = ["crack"]
     (tmp_path / "after").mkdir()
     write_json(tmp_path / "after/report.json", second)
     with pytest.raises(ValueError):
@@ -231,6 +320,32 @@ def test_validation_cli(command, monkeypatch, capsys):
     monkeypatch.setattr(model_cli, "evaluate_validation", lambda *args: {"images": 1})
     monkeypatch.setattr(model_cli, "compare_validations", lambda *args: {})
     assert model_cli.main() == 0 and "report" in json.loads(capsys.readouterr().out)
+
+
+def test_evaluation_cli_forwards_the_requested_class_scope(monkeypatch, capsys):
+    def evaluate(*args):
+        assert args[-1] == ("crack",)
+        return {"images": 1}
+
+    monkeypatch.setattr(model_cli, "evaluate_validation", evaluate)
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "smartsite-model",
+            "evaluate",
+            "corpus",
+            "--run",
+            "run",
+            "--device",
+            "cpu",
+            "--output",
+            "out",
+            "--classes",
+            "crack",
+        ],
+    )
+    assert model_cli.main() == 0
+    assert json.loads(capsys.readouterr().out)["images"] == 1
 
 
 def test_comparison_allows_changed_inference_but_keeps_measurement_rules(

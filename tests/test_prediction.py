@@ -190,3 +190,69 @@ def test_mask_only_view_preserves_details_outside_the_defect():
     assert shown.getpixel((10, 8)) != photo.getpixel((10, 8))
     assert shown.getpixel((10, 7)) == photo.getpixel((10, 7))
     assert photo.getpixel((10, 8)) == (128, 128, 128)
+
+
+@pytest.mark.parametrize("name,color", [("crack", (191, 99, 89)), ("surface_loss", (79, 134, 191))])
+def test_single_class_names_colors_and_background_remain_consistent(name, color):
+    photo = Image.new("RGB", (64, 48), "gray")
+    names = (name,)
+    values = detections()
+    records = prediction.encode_predictions(values, photo, class_names=names)
+    assert records[0]["class_id"] == 0 and records[0]["class_name"] == name
+    rendered = prediction.render_predictions(photo, records, show_boxes=False, class_names=names)
+    assert rendered.getpixel((15, 15)) == color
+    values.class_id[:] = 1
+    with pytest.raises(ValueError, match="class"):
+        prediction.encode_predictions(values, photo, class_names=names)
+    values.data = {"class_name": np.array(["__background__"])}
+    assert prediction.encode_predictions(values, photo, class_names=names) == []
+
+
+def test_single_class_checkpoint_must_match_the_requested_mapping(tmp_path, monkeypatch):
+    class Engine:
+        class_names = ["surface_loss"]
+
+        @classmethod
+        def from_checkpoint(cls, *args, **kwargs):
+            assert kwargs["trust_checkpoint"] is False
+            return cls()
+
+    monkeypatch.setattr(
+        prediction.importlib, "import_module", lambda _: SimpleNamespace(RFDETR=Engine)
+    )
+    assert isinstance(
+        prediction.load_engine(tmp_path / "weights", "cpu", class_names=("surface_loss",)), Engine
+    )
+    with pytest.raises(ValueError, match="class names"):
+        prediction.load_engine(tmp_path / "weights", "cpu", class_names=("crack",))
+
+
+def test_single_class_photo_export_states_its_scope(tmp_path, monkeypatch):
+    photo = tmp_path / "image.jpg"
+    Image.new("RGB", (64, 48)).save(photo)
+    monkeypatch.setattr(
+        prediction,
+        "verify_run",
+        lambda _: (
+            {
+                "model": MODEL_NAME,
+                "checkpoint_sha256": "a" * 64,
+                "purpose": "smoke",
+                "config": {"class_names": ["surface_loss"]},
+            },
+            tmp_path / "weights",
+        ),
+    )
+    monkeypatch.setattr(prediction, "runtime", lambda _: {})
+
+    def predict(*args):
+        assert args[-1] == ("surface_loss",)
+        return detections()
+
+    monkeypatch.setattr(prediction, "predict_engine", predict)
+    out = tmp_path / "out"
+    report = prediction.predict_photo(tmp_path / "run", photo, out, "cpu")
+    assert report["class_names"] == ["surface_loss"]
+    assert report["predictions"][0]["class_name"] == "surface_loss"
+    page = (out / "index.html").read_text()
+    assert "Bleu : perte de matière" in page and "Rouge : fissure" not in page

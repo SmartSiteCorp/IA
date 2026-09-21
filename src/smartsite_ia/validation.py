@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from smartsite_ia.annotations import unique_object
+from smartsite_ia.categories import get_class_names, project_categories
 from smartsite_ia.curation import digest, read_document, staged_output
 from smartsite_ia.importer import write_json
 from smartsite_ia.inference import DEFAULT_PROFILE, inference_metadata
@@ -31,7 +32,7 @@ DISPLAY_THRESHOLD = 0.3
 
 
 def load_validation(
-    root: Path, run_report: dict[str, Any]
+    root: Path, run_report: dict[str, Any], class_names: tuple[str, ...] = CLASS_NAMES
 ) -> tuple[dict[str, Any], list[dict[str, Any]], str]:
     """Les empreintes viennent de l'essai, pas d'une sélection faite après ses résultats."""
     documents = {}
@@ -46,28 +47,18 @@ def load_validation(
     if manifest != documents["report.json"]["records"]:
         raise ValueError("Validation manifest and report disagree")
     records = sorted([r for r in manifest if r["split"] == "valid"], key=lambda r: r["id"])
-    document = documents["valid/_annotations.coco.json"]
+    document = project_categories(documents["valid/_annotations.coco.json"], class_names)
     if not 1 <= len(records) <= 5000 or len(document["images"]) != len(records):
         raise ValueError("Invalid validation image count")
-    if [(c["id"], c["name"]) for c in document["categories"]] != list(enumerate(CLASS_NAMES, 1)):
-        raise ValueError("Unexpected validation categories")
     expected = {f"{r['id']}.jpg" for r in records if SAMPLE_ID.fullmatch(r["id"])}
     if len(expected) != len(records) or {im["file_name"] for im in document["images"]} != expected:
         raise ValueError("Validation IDs or paths disagree")
-    if len({im["id"] for im in document["images"]}) != len(records):
-        raise ValueError("Duplicate validation image ID")
-    ids = {im["id"] for im in document["images"]}
-    seen = set()
-    for a in document["annotations"]:
-        if (
-            a["image_id"] not in ids
-            or a["category_id"] not in (1, 2)
-            or a.get("iscrowd", 0) != 0
-            or a["id"] in seen
-        ):
-            raise ValueError("Unsupported or inconsistent validation annotation")
-        seen.add(a["id"])
-    return document, records, hashes["valid/_annotations.coco.json"]
+    # Même projection pour le spécialiste et le modèle à deux classes, leur
+    # comparaison doit porter sur EXACTEMENT les mêmes références de fissure
+    checksum = hashes["valid/_annotations.coco.json"]
+    if class_names != CLASS_NAMES:
+        checksum = digest(json.dumps(document, sort_keys=True, allow_nan=False).encode())
+    return document, records, checksum
 
 
 def evaluate_validation(
@@ -77,18 +68,25 @@ def evaluate_validation(
     device: str,
     preprocessing: str = DEFAULT_PROFILE,
     mask_threshold: float = 0.5,
+    class_names: tuple[str, ...] | None = None,
 ) -> dict[str, Any]:
     """Un chargement du modèle, une photo à la fois, et toutes les images du lot."""
     settings = inference_metadata(preprocessing, mask_threshold)
     report, checkpoint = verify_run(run)
-    document, records, annotation_hash = load_validation(corpus, report)
+    model_names = get_class_names(report.get("config", {}))
+    names = (
+        model_names if class_names is None else get_class_names({"class_names": list(class_names)})
+    )
+    if not set(names).issubset(model_names):
+        raise ValueError("Evaluation classes must be included in the model classes")
+    document, records, annotation_hash = load_validation(corpus, report, names)
     environment = runtime(device)
     started = time.monotonic()
     gt = coco_api(document)
     images = {im["file_name"]: im for im in document["images"]}
     results, coco_predictions = [], []
     with staged_output(output, [run, corpus]) as stage:
-        engine = load_engine(checkpoint, device, preprocessing, mask_threshold)
+        engine = load_engine(checkpoint, device, preprocessing, mask_threshold, model_names)
         for record in records:
             sample_id = record["id"]
             raw = read_local(corpus, f"valid/{sample_id}.jpg", MAX_FILE_BYTES)
@@ -102,8 +100,16 @@ def evaluate_validation(
             # À très faible score, le moteur renvoie aussi des boîtes plates au bord.
             # On conserve leurs masques dans l'évaluation, sans retirer des erreurs.
             proposals = encode_predictions(
-                engine.predict(photo, threshold=SCORE_FLOOR), photo, allow_empty_boxes=True
+                engine.predict(photo, threshold=SCORE_FLOOR),
+                photo,
+                allow_empty_boxes=True,
+                class_names=model_names,
             )
+            proposals = [
+                {**p, "class_id": names.index(p["class_name"])}
+                for p in proposals
+                if p["class_name"] in names
+            ]
             inference_seconds = time.monotonic() - before
             # L'ID réseau commence à zéro, l'ID COCO à un : une seule conversion ici.
             predicted = [
@@ -116,14 +122,14 @@ def evaluate_validation(
                 for p in proposals
             ]
             references = [{**a, "segmentation": gt.annToRLE(a)} for a in gt.imgToAnns[im["id"]]]
-            analysis = analyze_masks(references, predicted, DISPLAY_THRESHOLD)
+            analysis = analyze_masks(references, predicted, DISPLAY_THRESHOLD, names)
             counts = {name: row["counts"] for name, row in analysis.items()}
             folder = stage / sample_id
             folder.mkdir()
             # Les vignettes n'altèrent pas les masques utilisés pour mesurer les résultats.
             photo.save(folder / "photo.jpg", quality=90)
             visible = [p for p in proposals if p["score"] >= DISPLAY_THRESHOLD]
-            render_predictions(photo, visible, show_boxes=False).save(
+            render_predictions(photo, visible, show_boxes=False, class_names=names).save(
                 folder / "prediction.jpg", quality=90
             )
             ref_records = []
@@ -137,7 +143,7 @@ def evaluate_validation(
                         "mask_rle": a["segmentation"],
                     }
                 )
-            render_predictions(photo, ref_records, show_boxes=False).save(
+            render_predictions(photo, ref_records, show_boxes=False, class_names=names).save(
                 folder / "reference.jpg", quality=90
             )
             write_json(folder / "predictions.json", {"schema_version": 1, "predictions": proposals})
@@ -160,7 +166,7 @@ def evaluate_validation(
             subset = [r for r in results if r["difficulty"] == difficulty]
             by_difficulty[difficulty] = {
                 "images": len(subset),
-                "counts": summarize_counts([r["counts"] for r in subset]),
+                "counts": summarize_counts([r["counts"] for r in subset], names),
             }
         metrics = coco_scores(document, coco_predictions)
         result = {
@@ -170,20 +176,25 @@ def evaluate_validation(
             "test_used": False,
             "qualified_for_smartsite": False,
             "checkpoint_sha256": report["checkpoint_sha256"],
+            "class_names": list(names),
+            "model_class_names": list(model_names),
             "annotations_sha256": annotation_hash,
+            "source_annotations_sha256": report["config"]["corpus_sha256"][
+                "valid/_annotations.coco.json"
+            ],
             "images": len(results),
             "records": results,
             "runtime": environment,
             "inference": settings,
             "protocol": validation_protocol(),
             "coco": metrics,
-            "counts": summarize_counts([r["counts"] for r in results]),
+            "counts": summarize_counts([r["counts"] for r in results], names),
             "mask_errors": {
                 name: {
                     reason: sum(r["mask_errors"][name][reason] for r in results)
                     for reason in ("duplicate", "insufficient_overlap", "no_overlap")
                 }
-                for name in CLASS_NAMES
+                for name in names
             },
             "by_difficulty": by_difficulty,
             "elapsed_seconds": time.monotonic() - started,
@@ -250,6 +261,7 @@ def compare_validations(before: Path, after: Path, output: Path) -> dict[str, An
     ]
     if (
         first["protocol"] != second["protocol"]
+        or get_class_names(first) != get_class_names(second)
         or first["annotations_sha256"] != second["annotations_sha256"]
         or signatures[0] != signatures[1]
     ):

@@ -7,10 +7,11 @@ from pathlib import Path
 from typing import Any
 
 from smartsite_ia.annotations import unique_object
+from smartsite_ia.categories import get_class_names, project_categories
 from smartsite_ia.curation import digest, read_document, staged_output
 from smartsite_ia.importer import write_json
-from smartsite_ia.model_assets import CLASS_NAMES
 from smartsite_ia.review import MAX_FILE_BYTES, MAX_JSON_BYTES, read_local
+from smartsite_ia.training_data_html import write_training_data_page
 
 CORPUS_FILES = (
     "manifest.json",
@@ -32,6 +33,13 @@ def load_training_config(path: Path) -> tuple[dict[str, Any], str]:
         "grad_accum_steps": (1, 32),
     }
     expected = {"schema_version", "purpose", "corpus_sha256", "lr", *bounds}
+    if "class_names" in config:
+        expected.add("class_names")
+    get_class_names(config)
+    if "checkpoint_selection" in config:
+        expected.add("checkpoint_selection")
+        if config["checkpoint_selection"] not in ("best_validation", "last_epoch"):
+            raise ValueError("Unknown checkpoint selection rule")
     if "initial_checkpoint_sha256" in config:
         expected.add("initial_checkpoint_sha256")
         checksum_value = config["initial_checkpoint_sha256"]
@@ -89,6 +97,7 @@ def select_groups(records: list[dict[str, Any]], maximum: int, seed: int) -> lis
 
 def prepare_training_inputs(root: Path, output: Path, config: dict[str, Any]) -> dict[str, Any]:
     """Vérifier les fichiers épinglés puis copier seulement train et validation."""
+    names = get_class_names(config)
     documents = {}
     for name in CORPUS_FILES:
         raw = read_local(root, name, MAX_JSON_BYTES)
@@ -125,7 +134,19 @@ def prepare_training_inputs(root: Path, output: Path, config: dict[str, Any]) ->
         if group in group_splits and group_splits[group] != record["split"]:
             raise ValueError("A content group crosses prepared splits")
         group_splits[group] = record["split"]
-    selection: dict[str, Any] = {"schema_version": 1, "test_used": False, "splits": {}}
+    selection: dict[str, Any] = {
+        "schema_version": 1,
+        "test_used": False,
+        "class_names": list(names),
+        "configuration": config,
+        "source_corpus_sha256": config["corpus_sha256"],
+        "limits": [
+            "No target annotation does not prove a defect-free surface",
+            "Source categories are a project convention, not author-confirmed semantics",
+            "Original groups and splits retained; unknown source scenes remain a limitation",
+        ],
+        "splits": {},
+    }
     with staged_output(output, [root]) as stage:
         for split in ("train", "valid"):
             subset = select_groups(
@@ -133,19 +154,16 @@ def prepare_training_inputs(root: Path, output: Path, config: dict[str, Any]) ->
                 config[f"{split}_images"],
                 config["seed"],
             )
-            document = documents[f"{split}/_annotations.coco.json"]
-            if [(c["id"], c["name"]) for c in document["categories"]] != list(
-                enumerate(CLASS_NAMES, 1)
-            ):
-                raise ValueError("Unexpected COCO class mapping")
+            source = documents[f"{split}/_annotations.coco.json"]
+            document = project_categories(source, names)
             filenames = {f"{r['id']}.jpg" for r in subset}
             images = [im for im in document["images"] if im["file_name"] in filenames]
-            if len(images) != len(subset):
+            if len(images) != len(subset) or {im["file_name"] for im in images} != filenames:
                 raise ValueError("COCO images and manifest disagree")
             ids = {im["id"] for im in images}
             annotations = [a for a in document["annotations"] if a["image_id"] in ids]
-            if {a["category_id"] for a in annotations} != {1, 2}:
-                raise ValueError("Both COCO classes must occur in the selected split")
+            if {a["category_id"] for a in annotations} != set(range(1, len(names) + 1)):
+                raise ValueError("All selected COCO classes must occur in the selected split")
             (stage / split).mkdir()
             for record in subset:
                 relative = f"{split}/{record['id']}.jpg"
@@ -159,10 +177,19 @@ def prepare_training_inputs(root: Path, output: Path, config: dict[str, Any]) ->
                 stage / split / "_annotations.coco.json",
                 {**document, "images": images, "annotations": annotations},
             )
+            positive_ids = {a["image_id"] for a in annotations}
+            without_target = sorted(
+                Path(im["file_name"]).stem for im in images if im["id"] not in positive_ids
+            )
             selection["splits"][split] = {
                 "images": len(images),
                 "annotations": len(annotations),
+                "excluded_annotations": sum(a["image_id"] in ids for a in source["annotations"])
+                - len(annotations),
+                "images_without_target_annotations": len(without_target),
+                "without_target_annotation_ids": without_target,
                 "records": subset,
             }
         write_json(stage / "selection.json", selection)
+        write_training_data_page(stage, selection)
     return selection

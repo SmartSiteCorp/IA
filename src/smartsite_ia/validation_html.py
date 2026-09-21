@@ -4,9 +4,9 @@ import html
 from pathlib import Path
 from typing import Any
 
-from smartsite_ia.model_assets import CLASS_NAMES
+from smartsite_ia.categories import CLASS_LABELS, CLASS_NAMES, class_legend, get_class_names
 
-NAMES = {"crack": "Fissures", "surface_loss": "Pertes de matière"}
+NAMES = CLASS_LABELS
 STYLE = """body{font:16px system-ui;background:#f4f6fa;color:#20323c;margin:0;padding:32px}
 main{max-width:1450px;margin:auto}h1{font-size:32px}p{line-height:1.6;max-width:1050px}
 .notice{background:#fff1ce;padding:18px;border-radius:12px}
@@ -38,7 +38,7 @@ pas un chantier. Aucun défaut détecté ne signifie pas que la surface est conf
 
 def metric_table(reports: list[tuple[str, dict[str, Any]]]) -> str:
     rows = []
-    for name in CLASS_NAMES:
+    for name in get_class_names(reports[0][1]):
         for label, report in reports:
             counts = report["counts"][name]
             ap = report["coco"]["per_class"][name]["mask_ap_50_95"]
@@ -79,7 +79,7 @@ def error_summary(report: dict[str, Any]) -> str:
     if "mask_errors" not in report:
         return ""
     rows = []
-    for name in CLASS_NAMES:
+    for name in get_class_names(report):
         errors = report["mask_errors"][name]
         rows.append(
             f"<tr><td>{NAMES[name]}</td><td>{errors['duplicate']}</td>"
@@ -98,7 +98,11 @@ def error_summary(report: dict[str, Any]) -> str:
     )
 
 
-def gallery(records: list[dict[str, Any]], columns: list[tuple[str, str]]) -> str:
+def gallery(
+    records: list[dict[str, Any]],
+    columns: list[tuple[str, str]],
+    class_names: tuple[str, ...] = CLASS_NAMES,
+) -> str:
     cards = []
     for index, record in enumerate(records):
         sample_id = html.escape(record["id"])
@@ -111,7 +115,7 @@ def gallery(records: list[dict[str, Any]], columns: list[tuple[str, str]]) -> st
 <small>{html.escape(record["difficulty"])}</small></summary>
 <div class="grid">{figures}</div></details>""")
     return (
-        "<p>Rouge : fissure · Bleu : perte de matière. "
+        f"<p>{class_legend(class_names)}. "
         "Toutes les photos sont disponibles ci-dessous, dans le même ordre.</p>" + "".join(cards)
     )
 
@@ -131,6 +135,7 @@ def write_validation_page(output: Path, report: dict[str, Any]) -> None:
             ("Annotations fournies", "reference.jpg"),
             ("Prédictions", "prediction.jpg"),
         ],
+        get_class_names(report),
     )
     (output / "index.html").write_text(
         frame("SmartSite — résultats de validation", body), encoding="utf-8"
@@ -161,6 +166,7 @@ def write_comparison_page(output: Path, first: dict[str, Any], second: dict[str,
             ("Avant", "before.jpg"),
             ("Après", "after.jpg"),
         ],
+        get_class_names(first),
     )
     (output / "index.html").write_text(
         frame("SmartSite — comparaison des détections", body), encoding="utf-8"

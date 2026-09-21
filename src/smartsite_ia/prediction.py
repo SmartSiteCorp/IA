@@ -11,6 +11,7 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 from pycocotools import mask as coco_mask
 
+from smartsite_ia.categories import class_legend, get_class_names
 from smartsite_ia.curation import digest, staged_output
 from smartsite_ia.importer import write_json
 from smartsite_ia.inference import DEFAULT_PROFILE, configure_inference, inference_metadata
@@ -35,14 +36,18 @@ def decode_photo(raw: bytes) -> Image.Image:
 
 
 def load_engine(
-    checkpoint: Path, device: str, preprocessing: str = DEFAULT_PROFILE, mask_threshold: float = 0.5
+    checkpoint: Path,
+    device: str,
+    preprocessing: str = DEFAULT_PROFILE,
+    mask_threshold: float = 0.5,
+    class_names: tuple[str, ...] = CLASS_NAMES,
 ) -> Any:
     """Charger une seule fois les poids quand on analyse plusieurs photos."""
     inference_metadata(preprocessing, mask_threshold)
     engine = importlib.import_module("rfdetr").RFDETR.from_checkpoint(
         str(checkpoint.resolve()), device=device, trust_checkpoint=False
     )
-    if list(engine.class_names) != list(CLASS_NAMES):
+    if list(engine.class_names) != list(class_names):
         raise ValueError("Checkpoint class names do not match SmartSite")
     return configure_inference(engine, preprocessing, mask_threshold)
 
@@ -54,14 +59,19 @@ def predict_engine(
     threshold: float,
     preprocessing: str = DEFAULT_PROFILE,
     mask_threshold: float = 0.5,
+    class_names: tuple[str, ...] = CLASS_NAMES,
 ) -> Any:
-    return load_engine(checkpoint, device, preprocessing, mask_threshold).predict(
+    return load_engine(checkpoint, device, preprocessing, mask_threshold, class_names).predict(
         photo, threshold=threshold
     )
 
 
 def encode_predictions(
-    detections: Any, photo: Image.Image, *, allow_empty_boxes: bool = False
+    detections: Any,
+    photo: Image.Image,
+    *,
+    allow_empty_boxes: bool = False,
+    class_names: tuple[str, ...] = CLASS_NAMES,
 ) -> list[dict[str, Any]]:
     """Vérifier les sorties du moteur avant d'enregistrer leurs coordonnées et masques."""
     boxes, scores, classes = detections.xyxy, detections.confidence, detections.class_id
@@ -84,11 +94,11 @@ def encode_predictions(
         # RF-DETR expose parfois sa classe « aucun objet » à très faible score.
         # On la retire seulement si le moteur la nomme explicitement ainsi.
         names = getattr(detections, "data", {}).get("class_name")
-        if label == len(CLASS_NAMES) and names is not None and names[index] == "__background__":
+        if label == len(class_names) and names is not None and names[index] == "__background__":
             continue
         if (
             int(label) != label
-            or label not in (0, 1)
+            or not 0 <= label < len(class_names)
             or not math.isfinite(score)
             or not 0 <= score <= 1
             or not np.isfinite(box).all()
@@ -110,7 +120,7 @@ def encode_predictions(
             {
                 "id": index + 1,
                 "class_id": label,
-                "class_name": CLASS_NAMES[label],
+                "class_name": class_names[label],
                 "score": score,
                 "bbox_xyxy": box.tolist(),
                 "mask_rle": encoded,
@@ -125,10 +135,13 @@ def render_predictions(
     records: list[dict[str, Any]],
     *,
     show_boxes: bool = True,
+    class_names: tuple[str, ...] = CLASS_NAMES,
 ) -> Image.Image:
     """Dessiner seulement les résultats qu'on veut montrer, dans les pixels d'origine."""
     annotated = np.asarray(photo).copy()
-    colors = ((255, 70, 50), (30, 140, 255))
+    # La couleur depend du défaut, pas de sa position dans la tête du modèle
+    palette = {"crack": (255, 70, 50), "surface_loss": (30, 140, 255)}
+    colors = [palette[name] for name in class_names]
     for record in records:
         mask = coco_mask.decode(record["mask_rle"]).astype(bool)
         rgb = np.array(colors[record["class_id"]])
@@ -144,7 +157,7 @@ def render_predictions(
         color = colors[record["class_id"]]
         draw.rectangle(box, outline=color, width=2)
         # La petite police embarquée ne couvre pas tous les accents ; le HTML les garde.
-        label = "Fissure" if record["class_id"] == 0 else "Perte de matiere"
+        label = "Fissure" if class_names[record["class_id"]] == "crack" else "Perte de matiere"
         text = f"{label} {record['score']:.0%}"
         point = (box[0], max(0, box[1] - 17))
         draw.rectangle(draw.textbbox(point, text, font=font), fill="white")
@@ -153,10 +166,10 @@ def render_predictions(
 
 
 def describe_predictions(
-    detections: Any, photo: Image.Image
+    detections: Any, photo: Image.Image, class_names: tuple[str, ...] = CLASS_NAMES
 ) -> tuple[list[dict[str, Any]], Image.Image]:
-    records = encode_predictions(detections, photo)
-    return records, render_predictions(photo, records)
+    records = encode_predictions(detections, photo, class_names=class_names)
+    return records, render_predictions(photo, records, class_names=class_names)
 
 
 def predict_photo(
@@ -172,17 +185,19 @@ def predict_photo(
     if not math.isfinite(threshold) or not 0 < threshold < 1:
         raise ValueError("Prediction threshold must be between 0 and 1")
     report, checkpoint = verify_run(run)
+    names = get_class_names(report.get("config", {}))
     environment = runtime(device)
     raw = read_local(image_path.parent, image_path.name, MAX_FILE_BYTES)
     photo = decode_photo(raw)
     with staged_output(output, [run, image_path]) as stage:
         detections = predict_engine(
-            checkpoint, photo, device, threshold, preprocessing, mask_threshold
+            checkpoint, photo, device, threshold, preprocessing, mask_threshold, names
         )
-        records, annotated = describe_predictions(detections, photo)
+        records, annotated = describe_predictions(detections, photo, names)
         result = {
             "schema_version": 1,
             "model": report["model"],
+            "class_names": list(names),
             "checkpoint_sha256": report["checkpoint_sha256"],
             "source_image_sha256": digest(raw),
             "width": photo.width,
@@ -221,7 +236,7 @@ Ce seuil n'est pas encore calibré ; les scores ne mesurent pas la gravité.</p>
 <a href="photo.png"><img src="photo.png" alt="Photo originale orientée"></a></figure>
 <figure><figcaption>Prédictions du modèle</figcaption><a href="prediction.png">
 <img src="prediction.png" alt="Masques et boîtes prédits"></a></figure></div>
-<p>Rouge : fissure · Bleu : perte de matière.</p>
+<p>Catégories recherchées — {class_legend(names)}.</p>
 <p><a href="prediction.json">Résultat détaillé et masques</a></p></html>""",
             encoding="utf-8",
         )

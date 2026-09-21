@@ -5,6 +5,7 @@ from types import SimpleNamespace
 import pytest
 
 from smartsite_ia import inference, prediction
+from smartsite_ia.categories import CLASS_NAMES
 
 
 def test_legacy_profile_keeps_the_public_engine():
@@ -47,7 +48,7 @@ def test_incompatible_engine_refused_before_inference(monkeypatch, change):
     engine = SimpleNamespace(
         model=SimpleNamespace(model=object(), args=SimpleNamespace(num_classes=2)),
         model_config=SimpleNamespace(segmentation_head=True),
-        class_names=list(inference.CLASS_NAMES),
+        class_names=list(CLASS_NAMES),
         _is_optimized_for_inference=False,
     )
     if change == "optimized":
@@ -60,5 +61,5 @@ def test_incompatible_engine_refused_before_inference(monkeypatch, change):
         engine.model.args.num_classes = 80
     else:
         engine.model_config.segmentation_head = False
-    with pytest.raises(ValueError, match="segmenter"):
+    with pytest.raises(ValueError, match="segmenter|class names"):
         inference.configure_inference(engine, "training-v1")

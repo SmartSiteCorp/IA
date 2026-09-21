@@ -133,6 +133,12 @@ def test_training_selection_is_reproducible_grouped_and_never_reads_test(
         ("run_test", True),
         ("corpus_sha256", {}),
         ("corpus_sha256", {"bad": "bad"}),
+        ("class_names", None),
+        ("class_names", ["person"]),
+        ("class_names", ["crack", "crack"]),
+        ("checkpoint_selection", "test_score"),
+        ("checkpoint_selection", None),
+        ("checkpoint_selection", True),
     ],
 )
 def test_training_config_rejects_invalid_options(training_inputs, key, value):
@@ -250,6 +256,7 @@ def test_run_records_success_and_verifies_checkpoint(training_inputs, tmp_path, 
     out = tmp_path / "run"
     report = learning.train_model(root, out, config, tmp_path / "weights", "cpu")
     assert report["status"] == "completed" and not report["test_used"]
+    assert report["checkpoint_selection"] == "best_validation"
     assert report["selected"]["train"]["images"] == 4
     assert len(fake_engine) == 1
     assert learning.verify_run(out)[0] == report
@@ -258,6 +265,15 @@ def test_run_records_success_and_verifies_checkpoint(training_inputs, tmp_path, 
         learning.verify_run(out)
     with pytest.raises(FileExistsError):
         learning.train_model(root, out, config, tmp_path / "weights", "cpu")
+
+
+def test_last_epoch_selection_is_validated_and_recorded(training_inputs, tmp_path, fake_engine):
+    root, config_path, config = training_inputs
+    config["checkpoint_selection"] = "last_epoch"
+    write_json(config_path, config)
+    report = learning.train_model(root, tmp_path / "run", config_path, tmp_path / "weights", "cpu")
+    assert report["checkpoint_selection"] == "last_epoch"
+    assert fake_engine[0][0]["checkpoint_selection"] == "last_epoch"
 
 
 @pytest.mark.parametrize(
@@ -331,7 +347,10 @@ def test_runtime_checks_device_version_and_disables_remote_access(monkeypatch):
         learning.runtime("cpu")
 
 
-def test_engine_adapter_passes_explicit_safe_options(tmp_path, monkeypatch):
+@pytest.mark.parametrize(
+    "selection,skipped", [(None, 0), ("best_validation", 0), ("last_epoch", 2)]
+)
+def test_engine_adapter_passes_explicit_safe_options(tmp_path, monkeypatch, selection, skipped):
     captured = {}
 
     class Engine:
@@ -348,12 +367,14 @@ def test_engine_adapter_passes_explicit_safe_options(tmp_path, monkeypatch):
     monkeypatch.setattr(learning.importlib, "import_module", lambda name: modules[name])
     config = {
         "seed": 42,
-        "epochs": 1,
+        "epochs": 3,
         "batch_size": 1,
         "grad_accum_steps": 1,
         "lr": 0.0001,
         "purpose": "smoke",
     }
+    if selection is not None:
+        config["checkpoint_selection"] = selection
     learning.fit_engine(tmp_path / "data", tmp_path / "run", tmp_path / "weights", config, "cpu")
     assert captured["model"]["amp"] is False
     assert all(
@@ -361,6 +382,7 @@ def test_engine_adapter_passes_explicit_safe_options(tmp_path, monkeypatch):
         for key in ["run_test", "wandb", "mlflow", "clearml", "tensorboard"]
     )
     assert captured["train"]["notes"]["classes"] == list(CLASS_NAMES)
+    assert captured["train"]["skip_best_epochs"] == skipped
 
 
 @pytest.mark.parametrize("command", ["weights", "doctor", "train", "predict"])
@@ -622,7 +644,8 @@ def test_fine_tuning_refuses_parent_output_and_ambiguous_origin(
         learning.train_model(root, tmp_path / "child", path, None, "cpu", from_run=parent)
 
 
-def test_fine_tuning_adapter_keeps_both_learned_classes(tmp_path, monkeypatch):
+@pytest.mark.parametrize("names", [list(CLASS_NAMES), ["crack"], ["surface_loss"]])
+def test_fine_tuning_adapter_keeps_learned_classes(tmp_path, monkeypatch, names):
     captured = {}
 
     class Engine:
@@ -645,9 +668,10 @@ def test_fine_tuning_adapter_keeps_both_learned_classes(tmp_path, monkeypatch):
         "lr": 0.0001,
         "purpose": "experiment",
         "initial_checkpoint_sha256": "a" * 64,
+        "class_names": names,
     }
     learning.fit_engine(tmp_path / "data", tmp_path / "out", tmp_path / "parent.pth", config, "cpu")
-    assert captured["num_classes"] == 2
+    assert captured["num_classes"] == len(names)
     assert captured["pretrain_weights"] == str((tmp_path / "parent.pth").resolve())
 
 
@@ -744,3 +768,131 @@ def test_resume_refuses_different_parent_report(
     write_json(parent / "run.json", parent_report)
     with pytest.raises(ValueError, match="initialization changed"):
         learning.train_model(root, out, path, None, "cpu", from_run=parent, resume=True)
+
+
+@pytest.fixture
+def mixed_training_inputs(training_inputs):
+    """Deux photos sans fissure : une autre anomalie, puis aucune annotation."""
+    root, path, config = training_inputs
+    manifest = json.loads((root / "manifest.json").read_text())
+    for split in ("train", "valid"):
+        target = root / split / "_annotations.coco.json"
+        doc = json.loads(target.read_text())
+        doc["annotations"] = [
+            a
+            for a in doc["annotations"]
+            if a["image_id"] != 1 and not (a["image_id"] == 0 and a["category_id"] == 1)
+        ]
+        write_json(target, doc)
+        records = [r for r in manifest["records"] if r["split"] == split]
+        records[0]["source_classes"], records[1]["source_classes"] = [1], []
+    report = json.loads((root / "report.json").read_text())
+    report["records"] = manifest["records"]
+    write_json(root / "manifest.json", manifest)
+    write_json(root / "report.json", report)
+    config.update(train_images=8, valid_images=4)
+    repin(root, config)
+    write_json(path, config)
+    return root, path, config
+
+
+def test_specialist_keeps_negative_photos_groups_originals_and_identical_selection(
+    mixed_training_inputs, tmp_path, monkeypatch
+):
+    root, _, config = mixed_training_inputs
+    original = {name: (root / name).read_bytes() for name in training_data.CORPUS_FILES}
+    read = training_data.read_local
+
+    def guarded(folder, relative, limit):
+        assert not str(relative).startswith("test/")
+        return read(folder, relative, limit)
+
+    monkeypatch.setattr(training_data, "read_local", guarded)
+    baseline = training_data.prepare_training_inputs(root, tmp_path / "both", config)
+    config = {**config, "class_names": ["crack"]}
+    first = training_data.prepare_training_inputs(root, tmp_path / "crack", config)
+    second = training_data.prepare_training_inputs(root, tmp_path / "repeat", config)
+    assert first == second and first["class_names"] == ["crack"]
+    assert first["configuration"] == config
+    assert first["source_corpus_sha256"] == config["corpus_sha256"]
+    for split in ("train", "valid"):
+        details = first["splits"][split]
+        assert details["records"] == baseline["splits"][split]["records"]
+        assert details["images_without_target_annotations"] == 2
+        assert details["annotations"] == details["images"] - 2
+        assert details["excluded_annotations"] == details["images"] - 1
+        target = f"{split}/_annotations.coco.json"
+        doc = json.loads((tmp_path / "crack" / target).read_text())
+        source = json.loads(original[target])
+        assert doc["images"] == source["images"]
+        assert doc["annotations"] == [a for a in source["annotations"] if a["category_id"] == 1]
+        assert (tmp_path / "crack" / target).read_bytes() == (
+            tmp_path / "repeat" / target
+        ).read_bytes()
+        for record in details["records"]:
+            assert (tmp_path / "crack" / record["image"]).read_bytes() == (
+                root / record["image"]
+            ).read_bytes()
+    assert all((root / name).read_bytes() == raw for name, raw in original.items())
+    assert not (tmp_path / "crack/test").exists()
+    page = (tmp_path / "crack/index.html").read_text()
+    assert "pas les détections" in page and "garantie sans fissure" in page
+    assert page.count("<figure>") == 4
+    assert "test/easy_" not in page
+
+
+@pytest.mark.parametrize("names", [["crack"], ["surface_loss"], list(CLASS_NAMES)])
+def test_class_configuration_reaches_the_run_and_its_inputs(
+    training_inputs, tmp_path, fake_engine, names
+):
+    root, path, config = training_inputs
+    config["class_names"] = names
+    write_json(path, config)
+    assert training_data.load_training_config(path)[0]["class_names"] == names
+    out = tmp_path / "run"
+    report = learning.train_model(root, out, path, tmp_path / "weights", "cpu")
+    assert report["class_names"] == names
+    assert fake_engine[0][0]["class_names"] == names
+    assert learning.verify_run(out)[0] == report
+    doc = json.loads((out / "data/train/_annotations.coco.json").read_text())
+    assert [c["name"] for c in doc["categories"]] == names
+    assert {a["category_id"] for a in doc["annotations"]} == set(range(1, len(names) + 1))
+    report["class_names"] = ["surface_loss"] if names == ["crack"] else ["crack"]
+    write_json(out / "run.json", report)
+    with pytest.raises(ValueError, match="completed"):
+        learning.verify_run(out)
+
+
+def test_fine_tuning_cannot_silently_change_a_parents_class_mapping(
+    training_inputs, tmp_path, completed_parent
+):
+    root, path, config = training_inputs
+    parent, _ = completed_parent
+    config["class_names"] = ["crack"]
+    write_json(path, config)
+    with pytest.raises(ValueError, match="classes"):
+        learning.train_model(root, tmp_path / "child", path, None, "cpu", from_run=parent)
+    assert not (tmp_path / "child").exists()
+
+
+def test_prepare_cli_runs_without_loading_the_model(training_inputs, tmp_path, monkeypatch, capsys):
+    root, path, config = training_inputs
+    config["class_names"] = ["crack"]
+    write_json(path, config)
+    out = tmp_path / "prepared"
+
+    def forbidden(*args):
+        raise AssertionError("No model or training during data preparation")
+
+    monkeypatch.setattr(model_cli, "runtime", forbidden)
+    monkeypatch.setattr(model_cli, "train_model", forbidden)
+    monkeypatch.setattr(
+        "sys.argv",
+        ["smartsite-model", "prepare", str(root), "--config", str(path), "--output", str(out)],
+    )
+    assert model_cli.main() == 0
+    result = json.loads(capsys.readouterr().out)
+    assert result["class_names"] == ["crack"]
+    assert result["splits"]["train"]["images"] == 4
+    assert (out / "selection.json").exists()
+    assert not (out / "checkpoints").exists()

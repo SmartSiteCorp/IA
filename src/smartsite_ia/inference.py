@@ -8,7 +8,8 @@ from typing import Any
 import numpy as np
 from PIL import Image
 
-from smartsite_ia.model_assets import CLASS_NAMES, MODEL_VERSION
+from smartsite_ia.categories import get_class_names
+from smartsite_ia.model_assets import MODEL_VERSION
 
 PROFILES = ("public-v1", "training-v1")
 DEFAULT_PROFILE = "public-v1"
@@ -53,11 +54,11 @@ class AlignedPredictor:
             raise ValueError("Aligned inference requires the pinned RF-DETR version")
         self.context = engine.model
         config = engine.model_config
+        self.class_names = get_class_names({"class_names": list(engine.class_names)})
         if (
             self.context.model is None
             or engine._is_optimized_for_inference
-            or list(engine.class_names) != list(CLASS_NAMES)
-            or self.context.args.num_classes != len(CLASS_NAMES)
+            or self.context.args.num_classes != len(self.class_names)
             or not config.segmentation_head
         ):
             raise ValueError("Aligned inference expects the unoptimized SmartSite segmenter")
@@ -98,10 +99,10 @@ class AlignedPredictor:
                 data={
                     "class_name": np.array(
                         [
-                            CLASS_NAMES[label]
-                            if 0 <= label < len(CLASS_NAMES)
+                            self.class_names[label]
+                            if 0 <= label < len(self.class_names)
                             else "__background__"
-                            if label == len(CLASS_NAMES)
+                            if label == len(self.class_names)
                             else ""
                             for label in labels
                         ],

@@ -43,11 +43,11 @@ def coco_scores(document: dict[str, Any], predictions: list[dict[str, Any]]) -> 
         evaluator.accumulate()
         evaluator.summarize()
     result: dict[str, Any] = {}
-    for index, name in enumerate(CLASS_NAMES):
+    for index, category in enumerate(sorted(document["categories"], key=lambda c: c["id"])):
         precision = evaluator.eval["precision"][:, :, index, 0, -1]
         recall = evaluator.eval["recall"][:, index, 0, -1]
         ap50 = precision[0]
-        result[name] = {
+        result[category["name"]] = {
             "mask_ap_50_95": finite_mean(precision),
             "mask_ap_50": finite_mean(ap50),
             "mask_ar_100": finite_mean(recall),
@@ -70,11 +70,14 @@ def counts_for_image(
 
 
 def analyze_masks(
-    references: list[dict[str, Any]], predictions: list[dict[str, Any]], threshold: float
+    references: list[dict[str, Any]],
+    predictions: list[dict[str, Any]],
+    threshold: float,
+    class_names: tuple[str, ...] = CLASS_NAMES,
 ) -> dict[str, Any]:
     """Un défaut ne peut compter qu'une fois, même si plusieurs propositions le couvrent."""
     result = {}
-    for label, name in enumerate(CLASS_NAMES, 1):
+    for label, name in enumerate(class_names, 1):
         gt = [r["segmentation"] for r in references if r["category_id"] == label]
         dt = sorted(
             [r for r in predictions if r["category_id"] == label and r["score"] >= threshold],
@@ -112,9 +115,11 @@ def analyze_masks(
     return result
 
 
-def summarize_counts(rows: list[dict[str, Any]]) -> dict[str, Any]:
+def summarize_counts(
+    rows: list[dict[str, Any]], class_names: tuple[str, ...] = CLASS_NAMES
+) -> dict[str, Any]:
     result = {}
-    for name in CLASS_NAMES:
+    for name in class_names:
         counts = {key: sum(row[name][key] for row in rows) for key in ("tp", "fp", "fn")}
         tp, fp, fn = (counts[key] for key in ("tp", "fp", "fn"))
         result[name] = {

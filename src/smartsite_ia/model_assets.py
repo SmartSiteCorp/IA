@@ -1,10 +1,10 @@
 """Les poids de départ ont une origine et une empreinte fixes, comme les données."""
 
+from smartsite_ia.categories import CLASS_NAMES as CLASS_NAMES
 from smartsite_ia.source import Source
 
 MODEL_VERSION = "1.10.1"
 MODEL_NAME = "RFDETRSegMedium"
-CLASS_NAMES = ("crack", "surface_loss")
 # Le téléchargeur est partagé avec les archives il contrôle taille durée et SHA
 # Ce fichier ne contient aucune image
 PRETRAINED = Source(

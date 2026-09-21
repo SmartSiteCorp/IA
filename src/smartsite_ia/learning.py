@@ -13,9 +13,10 @@ from importlib.metadata import version
 from pathlib import Path
 from typing import Any
 
+from smartsite_ia.categories import get_class_names
 from smartsite_ia.curation import digest, read_document
 from smartsite_ia.importer import write_json
-from smartsite_ia.model_assets import CLASS_NAMES, MODEL_NAME, MODEL_VERSION, PRETRAINED
+from smartsite_ia.model_assets import MODEL_NAME, MODEL_VERSION, PRETRAINED
 from smartsite_ia.review import MAX_FILE_BYTES, read_local
 from smartsite_ia.source import verify_archive
 from smartsite_ia.training_data import load_training_config, prepare_training_inputs
@@ -81,17 +82,25 @@ def fit_engine(
     """Utiliser l'API du moteur, sans réécrire ses calculs d'apprentissage."""
     lightning = importlib.import_module("pytorch_lightning")
     lightning.seed_everything(config["seed"], workers=True)
+    names = get_class_names(config)
     engine = importlib.import_module("rfdetr").RFDETRSegMedium(
         pretrain_weights=str(weights.resolve()),
         device=device,
         amp=False,
         fused_optimizer=False,
-        **({"num_classes": len(CLASS_NAMES)} if "initial_checkpoint_sha256" in config else {}),
+        # Un parent adapté garde sa tête. Depuis les poids officiels, le moteur
+        # ajuste lui-même le nombre de classes en lisant notre COCO préparé.
+        **({"num_classes": len(names)} if "initial_checkpoint_sha256" in config else {}),
     )
     engine.train(
         dataset_dir=str(data.resolve()),
         output_dir=str(output.resolve()),
         epochs=config["epochs"],
+        # Pour comparer deux apprentissages au même budget, on peut garder
+        # uniquement le dernier passage. Le moteur sait déjà faire cette sélection.
+        skip_best_epochs=(
+            config["epochs"] - 1 if config.get("checkpoint_selection") == "last_epoch" else 0
+        ),
         batch_size=config["batch_size"],
         grad_accum_steps=config["grad_accum_steps"],
         lr=config["lr"],
@@ -113,7 +122,7 @@ def fit_engine(
         compute_val_loss=True,
         log_per_class_metrics=True,
         progress_bar="tqdm",
-        notes={"purpose": config["purpose"], "classes": list(CLASS_NAMES), "test_used": False},
+        notes={"purpose": config["purpose"], "classes": list(names), "test_used": False},
     )
 
 
@@ -177,10 +186,11 @@ def train_model(
         "pretrained_sha256": PRETRAINED.sha256,
         "initialization": initialization,
         "runtime": environment,
-        "class_names": list(CLASS_NAMES),
+        "class_names": list(get_class_names(config)),
         "test_used": False,
         "qualified_for_smartsite": False,
         "purpose": config["purpose"],
+        "checkpoint_selection": config.get("checkpoint_selection", "best_validation"),
         "limits": [
             "Experimental run, not a qualified construction detector",
             "Internal validation from the same dam; no independent generalization evidence",
@@ -287,10 +297,13 @@ def training_origin(
     report, checkpoint = verify_run(parent)
     if (
         pinned != report["checkpoint_sha256"]
+        or tuple(report["class_names"]) != get_class_names(config)
         or report["config"]["corpus_sha256"] != config["corpus_sha256"]
         or report.get("runtime", {}).get("versions", {}).get("rfdetr") != MODEL_VERSION
     ):
-        raise ValueError("Parent checkpoint, corpus or engine version differs from configuration")
+        raise ValueError(
+            "Parent checkpoint, classes, corpus or engine version differs from configuration"
+        )
     return checkpoint, {
         "mode": "fine_tune",
         "checkpoint_sha256": pinned,
@@ -318,6 +331,7 @@ def check_resume(
         or report.get("model") != MODEL_NAME
         or report.get("config_sha256") != config_hash
         or report.get("config") != config
+        or report.get("class_names") != list(get_class_names(config))
         or report.get("runtime", {}).get("device") != device
     ):
         raise ValueError("Resume requires an interrupted run with unchanged configuration/device")
@@ -348,7 +362,7 @@ def verify_run(root: Path) -> tuple[dict[str, Any], Path]:
     if (
         report.get("status") != "completed"
         or report.get("model") != MODEL_NAME
-        or report.get("class_names") != list(CLASS_NAMES)
+        or report.get("class_names") != list(get_class_names(report.get("config", {})))
         or report.get("checkpoint") != "checkpoints/checkpoint_best_total.pth"
     ):
         raise ValueError("Expected a completed SmartSite training run")
