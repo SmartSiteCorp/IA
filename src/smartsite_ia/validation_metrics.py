@@ -79,39 +79,52 @@ def analyze_masks(
     result = {}
     for label, name in enumerate(class_names, 1):
         gt = [r["segmentation"] for r in references if r["category_id"] == label]
-        dt = sorted(
-            [r for r in predictions if r["category_id"] == label and r["score"] >= threshold],
-            key=lambda r: r["score"],
-            reverse=True,
-        )
-        matched: set[int] = set()
+        dt = [r for r in predictions if r["category_id"] == label and r["score"] >= threshold]
+        matches = match_masks(gt, dt)
         errors = {"duplicate": 0, "insufficient_overlap": 0, "no_overlap": 0}
-        overlaps = (
-            coco_mask.iou([r["segmentation"] for r in dt], gt, [0] * len(gt))
-            if dt and gt
-            else np.zeros((len(dt), len(gt)))
-        )
-        for row in overlaps:
-            candidates = [i for i in range(len(gt)) if i not in matched and row[i] >= 0.5]
-            if candidates:
-                matched.add(max(candidates, key=lambda i: row[i]))
-            else:
-                # Ce diagnostic de recouvrement
-                # Un masque trop large peut croiser une fissure et rester faux...
-                best = float(row.max()) if len(row) else 0.0
-                reason = (
-                    "duplicate"
-                    if best >= 0.5
-                    else "insufficient_overlap"
-                    if best > 0
-                    else "no_overlap"
-                )
-                errors[reason] += 1
-        tp = len(matched)
+        for match in matches:
+            if match["reason"] != "matched":
+                errors[match["reason"]] += 1
+        tp = len(matches) - sum(errors.values())
         result[name] = {
             "counts": {"tp": tp, "fp": len(dt) - tp, "fn": len(gt) - tp},
             "errors": errors,
         }
+    return result
+
+
+def match_masks(
+    references: list[dict[str, Any]], predictions: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    """Apparier une seule classe ; garder les indices pour expliquer chaque alerte."""
+    # Le tri reste stable en cas de scores égaux, comme dans les anciens rapports
+    ordered = sorted(enumerate(predictions), key=lambda item: item[1]["score"], reverse=True)
+    overlaps = (
+        coco_mask.iou([p["segmentation"] for _, p in ordered], references, [0] * len(references))
+        if predictions and references
+        else np.zeros((len(predictions), len(references)))
+    )
+    matched: set[int] = set()
+    result = []
+    for (index, _), row in zip(ordered, overlaps, strict=True):
+        candidates = [i for i in range(len(references)) if i not in matched and row[i] >= 0.5]
+        reference = max(candidates, key=lambda i: row[i]) if candidates else None
+        best = float(row.max()) if len(row) else 0.0
+        if reference is not None:
+            matched.add(reference)
+            reason = "matched"
+        else:
+            reason = (
+                "duplicate" if best >= 0.5 else "insufficient_overlap" if best > 0 else "no_overlap"
+            )
+        result.append(
+            {
+                "prediction_index": index,
+                "reference_index": reference,
+                "reason": reason,
+                "best_iou": best,
+            }
+        )
     return result
 
 

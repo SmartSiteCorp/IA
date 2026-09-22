@@ -90,7 +90,11 @@ def fit_engine(
         fused_optimizer=False,
         # Un parent adapté garde sa tête. Depuis les poids officiels, le moteur
         # ajuste lui-même le nombre de classes en lisant notre COCO préparé.
-        **({"num_classes": len(names)} if "initial_checkpoint_sha256" in config else {}),
+        **(
+            {"num_classes": len(names)}
+            if "initial_checkpoint_sha256" in config or "continuation_checkpoint_sha256" in config
+            else {}
+        ),
     )
     engine.train(
         dataset_dir=str(data.resolve()),
@@ -155,10 +159,20 @@ def train_model(
     *,
     resume: bool = False,
     from_run: Path | None = None,
+    continue_run: Path | None = None,
 ) -> dict[str, Any]:
     """Un dossier neuf par essai ; on ne déclare terminé qu'après les contrôles finaux."""
     config, config_hash = load_training_config(config_path)
-    weights, initialization = training_origin(config, weights, from_run, output)
+    if continue_run is not None:
+        from smartsite_ia.continuation import continuation_origin
+
+        if weights is not None or from_run is not None:
+            raise ValueError("Continuation cannot be mixed with a fresh initialization")
+        weights, initialization = continuation_origin(continue_run, output, config, device)
+    else:
+        if "continuation_checkpoint_sha256" in config:
+            raise ValueError("Continuation configuration requires its full parent state")
+        weights, initialization = training_origin(config, weights, from_run, output)
     if (
         output.resolve().is_relative_to(root.resolve())
         or output.resolve() == weights.resolve().parent
@@ -232,6 +246,16 @@ def train_model(
         fit_config = dict(config)
         if resume:
             fit_config["_resume"] = str((output / "checkpoints/last.ckpt").resolve())
+        elif continue_run is not None:
+            from smartsite_ia.continuation import copy_continuation_state
+
+            # Seuls les chemins des sauvegardes sont remis à zéro
+            # Les poids, moments de l'optimiseur et compteurs restent ceux du parent
+            copied = output / "initial_state.ckpt"
+            copy_continuation_state(continue_run, config, copied)
+            fit_config["_resume"] = str(copied.resolve())
+            report["initial_state_sha256"] = file_hash(copied)
+            save_state(output, report)
         # Lightning restaure aussi l'optimiseur. On impose sa lecture sûre,
         # même si une dépendance demande implicitement une lecture pickle complète.
         old_safe_load = os.environ.get("TORCH_FORCE_WEIGHTS_ONLY_LOAD")
@@ -262,6 +286,9 @@ def train_model(
             elapsed_seconds=time.monotonic() - started,
             process_peak_rss_bytes=process_peak_rss(),
         )
+        last = output / "checkpoints/last.ckpt"
+        if last.is_file():
+            report["resume_checkpoint_sha256"] = file_hash(last)
         save_state(output, report)
     except BaseException as error:
         # On garde les journaux et points de reprise d'un essai interrompu
@@ -338,6 +365,12 @@ def check_resume(
     last = output / "checkpoints/last.ckpt"
     if last.parent.is_symlink() or file_hash(last) != report.get("resume_checkpoint_sha256"):
         raise ValueError("Resume checkpoint missing or changed")
+    verify_training_data(output, report)
+    return report
+
+
+def verify_training_data(output: Path, report: dict[str, Any]) -> None:
+    """Les mêmes contrôles protègent une reprise et une continuation du parent."""
     data = output / "data"
     if data.is_symlink() or not data.resolve().is_relative_to(output.resolve()):
         raise ValueError("Resume data path escapes its run")
@@ -354,7 +387,6 @@ def check_resume(
             raw = read_local(data, f"{split}/{record['id']}.jpg", MAX_FILE_BYTES)
             if digest(raw) != record["image_sha256"]:
                 raise ValueError("Resume photo changed")
-    return report
 
 
 def verify_run(root: Path) -> tuple[dict[str, Any], Path]:

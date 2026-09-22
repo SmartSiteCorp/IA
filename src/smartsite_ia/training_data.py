@@ -40,11 +40,14 @@ def load_training_config(path: Path) -> tuple[dict[str, Any], str]:
         expected.add("checkpoint_selection")
         if config["checkpoint_selection"] not in ("best_validation", "last_epoch"):
             raise ValueError("Unknown checkpoint selection rule")
-    if "initial_checkpoint_sha256" in config:
-        expected.add("initial_checkpoint_sha256")
-        checksum_value = config["initial_checkpoint_sha256"]
-        if not isinstance(checksum_value, str) or not re.fullmatch("[a-f0-9]{64}", checksum_value):
-            raise ValueError("Expected a pinned initial checkpoint hash")
+    for key in ("initial_checkpoint_sha256", "continuation_checkpoint_sha256"):
+        if key in config:
+            expected.add(key)
+            checksum_value = config[key]
+            if not isinstance(checksum_value, str) or not re.fullmatch(
+                "[a-f0-9]{64}", checksum_value
+            ):
+                raise ValueError("Expected a pinned initial checkpoint hash")
     if set(config) != expected or config["purpose"] not in ("smoke", "experiment"):
         raise ValueError("Unknown or missing training configuration fields")
     for key, (minimum, maximum) in bounds.items():

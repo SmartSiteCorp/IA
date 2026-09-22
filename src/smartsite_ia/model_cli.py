@@ -7,11 +7,13 @@ from importlib.metadata import PackageNotFoundError
 from pathlib import Path
 from typing import Any
 
+from smartsite_ia.continuation import extend_training
 from smartsite_ia.inference import DEFAULT_PROFILE, PROFILES
 from smartsite_ia.learning import runtime, train_model
 from smartsite_ia.model_assets import CLASS_NAMES, PRETRAINED
 from smartsite_ia.prediction import predict_photo
 from smartsite_ia.source import download_archive
+from smartsite_ia.threshold_study import DEFAULT_THRESHOLDS, study_thresholds
 from smartsite_ia.training_data import load_training_config, prepare_training_inputs
 from smartsite_ia.validation import compare_validations, evaluate_validation
 
@@ -40,6 +42,13 @@ def main() -> int:
     )
     train.add_argument("--output", type=Path, required=True)
     train.add_argument("--resume", action="store_true", help="Resume a recorded interrupted run")
+    extend = commands.add_parser("extend", help="Continue full state and evaluate each extra epoch")
+    extend.add_argument("corpus", type=Path)
+    extend.add_argument("--parent", type=Path, required=True)
+    extend.add_argument("--plan", type=Path, required=True)
+    extend.add_argument("--output", type=Path, required=True)
+    extend.add_argument("--check", action="store_true", help="Check readiness without training")
+    extend.add_argument("--resume", action="store_true", help="Resume this extension after a stop")
     predict = commands.add_parser(
         "predict", help="Show predictions from a completed experimental run"
     )
@@ -61,7 +70,16 @@ def main() -> int:
     compare.add_argument("before", type=Path)
     compare.add_argument("after", type=Path)
     compare.add_argument("--output", type=Path, required=True)
-    for command in (doctor, train, predict, evaluate):
+    study = commands.add_parser(
+        "study-thresholds", help="Compare saved validation scores; no model required"
+    )
+    study.add_argument("corpus", type=Path)
+    study.add_argument("--run", type=Path, required=True)
+    study.add_argument("--evaluation", type=Path, required=True)
+    study.add_argument("--output", type=Path, required=True)
+    study.add_argument("--class", dest="target_class", choices=CLASS_NAMES, default="surface_loss")
+    study.add_argument("--thresholds", nargs="+", type=float, default=DEFAULT_THRESHOLDS)
+    for command in (doctor, train, extend, predict, evaluate):
         command.add_argument("--device", choices=("cpu", "mps", "cuda"), required=True)
     args = parser.parse_args()
     result: dict[str, Any]
@@ -93,6 +111,21 @@ def main() -> int:
                 args.corpus, args.output, args.config, args.weights, args.device, **options
             )
             result = {"status": report["status"], "run": str(args.output / "run.json")}
+        elif args.command == "extend":
+            report = extend_training(
+                args.corpus,
+                args.parent,
+                args.output,
+                args.plan,
+                args.device,
+                check=args.check,
+                resume=args.resume,
+            )
+            result = {
+                "status": report["status"],
+                "training_started": not args.check,
+                "report": str(args.output / "index.html") if not args.check else None,
+            }
         elif args.command == "evaluate":
             report = evaluate_validation(
                 args.run,
@@ -107,6 +140,21 @@ def main() -> int:
         elif args.command == "compare":
             compare_validations(args.before, args.after, args.output)
             result = {"report": str(args.output / "index.html")}
+        elif args.command == "study-thresholds":
+            report = study_thresholds(
+                args.run,
+                args.corpus,
+                args.evaluation,
+                args.output,
+                args.target_class,
+                tuple(args.thresholds),
+            )
+            result = {
+                "images": report["images"],
+                "report": str(args.output / "index.html"),
+                "best_observed_f1_thresholds": report["best_observed_f1_thresholds"],
+                "selected_threshold": None,
+            }
         else:
             report = predict_photo(
                 args.run,

@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "reviewed_at": "2026-09-18",
+  "reviewed_at": "2026-09-21",
   "description": "Registre de sources candidates. Aucun téléchargement, contrôle d'archive ou entraînement n'est attesté par la consultation de leur page.",
   "datasets": [
     {
@@ -44,7 +44,9 @@
       "near_duplicate_status": "12 pairs reviewed visually and measured at native resolution; other shared scenes/crops can remain",
       "preparation_command": "smartsite-data prepare",
       "prepared_export_usage": "experimental_training_only; 1198 train, 149 valid, 149 internal test, 4 quarantined",
-      "curation_policy": "config/damsegment_review.json"
+      "curation_policy": "config/damsegment_review.json",
+      "source_page_reviewed_at": "2026-09-21",
+      "review_notes_fr": "Déjà utilisé pour nos deux catégories. Domaine barrage ; les contours et la définition des cavités restent à revoir. Ce corpus seul ne valide pas les chantiers."
     },
     {
       "id": "concrete_crack_segmentation_v1",
@@ -151,7 +153,9 @@
         "224x224",
         "heritage_exterior_walls",
         "not_a_complete_mold_training_corpus"
-      ]
+      ],
+      "source_page_reviewed_at": "2026-09-21",
+      "review_notes_fr": "Réserve exploratoire pour l’aspect de moisissures et les autres dommages de façade. Seul le test publié de 634 photos est disponible, à 224 × 224, avec des étiquettes par image. Ce n’est pas un corpus de segmentation prêt à entraîner."
     },
     {
       "id": "ceramics_defects_v1",
@@ -180,7 +184,9 @@
         "few_physical_samples",
         "defective_is_not_synonymous_with_crack",
         "not_installed_tile_validation"
-      ]
+      ],
+      "source_page_reviewed_at": "2026-09-21",
+      "review_notes_fr": "Candidat secondaire pour le carrelage. Étiquettes normal/défectueux, peu de carreaux physiques ; annotations de localisation et distinction fissure/déformation à établir. Pas encore inspecté."
     },
     {
       "id": "cubit",
@@ -207,7 +213,26 @@
       ],
       "domain_limits": [
         "class_and_annotation_coverage_differs_between_subsets"
-      ]
+      ],
+      "source_page_reviewed_at": "2026-09-21",
+      "review_notes_fr": "Priorité de vérification pour diversifier fissures/pertes de matière sur façades : CUBIT-Seg annonce des masques. CUBIT-Det propose aussi moisture, avec des boîtes seulement. Licence des données à clarifier et archives à inspecter avant utilisation.",
+      "declared_subsets": {
+        "CUBIT-Det": {
+          "images": 5527,
+          "annotations": "bounding_boxes",
+          "classes": [
+            "crack",
+            "spalling",
+            "moisture"
+          ]
+        },
+        "CUBIT-Seg": {
+          "crack_images": 5462,
+          "spalling_images": 1160,
+          "annotations": "pixel_masks",
+          "resolution": "512x512"
+        }
+      }
     },
     {
       "id": "bd3",
@@ -231,7 +256,59 @@
         "classification_not_localized_detection",
         "algae_is_not_mold",
         "does_not_measure_wall_geometry"
+      ],
+      "source_page_reviewed_at": "2026-09-21",
+      "review_notes_fr": "Source conditionnelle pour peinture écaillée, taches et éclatement. Classification par photo ; contours à créer. Accès complet et licence non établis dans notre projet. Ne pas convertir automatiquement algae en moisissure ni stain en humidité.",
+      "license_clarification_url": "https://github.com/Praveenkottari/BD3-Dataset/issues/5",
+      "declared_classes": [
+        "Algae",
+        "Major Crack",
+        "Minor Crack",
+        "Peeling",
+        "Spalling",
+        "Stain",
+        "Normal"
       ]
+    },
+    {
+      "id": "dacl10k_v2",
+      "url": "https://github.com/phiyodr/dacl10k-toolkit",
+      "paper_url": "https://openaccess.thecvf.com/content/WACV2024/papers/Flotzinger_dacl10k_Benchmark_for_Semantic_Bridge_Damage_Segmentation_WACV_2024_paper.pdf",
+      "declared_license": "CC-BY-NC-4.0",
+      "role": "research_candidate_not_selected_for_product",
+      "declared_annotation_types": [
+        "multilabel_semantic_polygons"
+      ],
+      "target_classes": [
+        "crack",
+        "surface_loss",
+        "moisture_trace"
+      ],
+      "relevant_source_classes": [
+        "Crack",
+        "ACrack",
+        "Cavity",
+        "Spalling",
+        "Wetspot",
+        "Rockpocket"
+      ],
+      "source_page_reviewed": true,
+      "source_page_reviewed_at": "2026-09-21",
+      "archive_inspected": false,
+      "approved_for_training": false,
+      "required_checks": [
+        "intended_use_compatible_with_noncommercial_terms",
+        "archive_access_and_integrity",
+        "class_mapping",
+        "scene_grouping",
+        "coarse_polygon_suitability"
+      ],
+      "domain_limits": [
+        "bridge_inspections_not_construction_interiors",
+        "coarse_semantic_polygons_not_instance_ground_truth",
+        "no_mold_or_installed_tile_validation"
+      ],
+      "review_notes_fr": "Candidat de recherche intéressant : cavités, éclatement, fissures et taches humides distingués. Licence annoncée CC BY-NC 4.0 ; pas retenu comme base du produit. Polygones sémantiques grossiers, images de ponts, archive non inspectée."
     }
   ]
 }
