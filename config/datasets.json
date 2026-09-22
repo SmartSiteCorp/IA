@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "reviewed_at": "2026-09-21",
+  "reviewed_at": "2026-09-22",
   "description": "Registre de sources candidates. Aucun téléchargement, contrôle d'archive ou entraînement n'est attesté par la consultation de leur page.",
   "datasets": [
     {
@@ -215,7 +215,7 @@
         "class_and_annotation_coverage_differs_between_subsets"
       ],
       "source_page_reviewed_at": "2026-09-21",
-      "review_notes_fr": "Priorité de vérification pour diversifier fissures/pertes de matière sur façades : CUBIT-Seg annonce des masques. CUBIT-Det propose aussi moisture, avec des boîtes seulement. Licence des données à clarifier et archives à inspecter avant utilisation.",
+      "review_notes_fr": "Priorité de vérification pour diversifier fissures/pertes de matière sur façades : CUBIT-Seg annonce des masques. CUBIT-Det propose aussi moisture, avec des boîtes seulement. Licence des données à clarifier et archives à inspecter avant utilisation. Mise à jour du 22 septembre : licence auteur CC BY 4.0 vérifiée pour CUBIT-Det uniquement ; voir cubit_det_author_release.",
       "declared_subsets": {
         "CUBIT-Det": {
           "images": 5527,
@@ -309,6 +309,196 @@
         "no_mold_or_installed_tile_validation"
       ],
       "review_notes_fr": "Candidat de recherche intéressant : cavités, éclatement, fissures et taches humides distingués. Licence annoncée CC BY-NC 4.0 ; pas retenu comme base du produit. Polygones sémantiques grossiers, images de ponts, archive non inspectée."
+    },
+    {
+      "id": "mbdd2025_v1",
+      "name": "MBDD2025: A Deep Learning-Oriented Dataset for Diverse Building Defect Detection from UAV Images",
+      "url": "https://zenodo.org/records/15622584",
+      "metadata_url": "https://zenodo.org/api/records/15622584",
+      "doi": "10.5281/zenodo.15622584",
+      "declared_license": "CC-BY-4.0",
+      "authors": [
+        "Qikai Zha",
+        "Yiming Yao",
+        "Yufan Zheng",
+        "Wanqi Ma",
+        "Wenkang Zhang"
+      ],
+      "role": "exploratory_moisture_probe_not_training_or_final_test",
+      "declared_annotation_types": [
+        "VOC_XML_boxes",
+        "YOLO_boxes"
+      ],
+      "source_classes": [
+        "crack",
+        "leakage",
+        "abscission",
+        "corrosion",
+        "bulge"
+      ],
+      "target_classes": [
+        "moisture_trace"
+      ],
+      "source_page_reviewed": true,
+      "source_page_reviewed_at": "2026-09-22",
+      "archive_inspected": true,
+      "inspection_scope": "HTTP range inspection of ZIP directory, README, all VOC annotations and 24 selected JPEGs; not a complete image import",
+      "declared_images": 14471,
+      "observed_annotation_files": 14471,
+      "invalid_annotation_files_excluded_from_probe_selection": 105,
+      "observed_probe_images": 24,
+      "probe_positive_images_by_source_label": 12,
+      "probe_images_without_target_label": 12,
+      "probe_selection": "config/moisture_probe_sample_v1.json",
+      "probe_protocol": "config/probe_moisture_v1.json",
+      "archive": {
+        "url": "https://zenodo.org/api/records/15622584/files/MBDD2025.zip/content",
+        "size_bytes": 2533687033,
+        "published_md5": "b2dfdce060ef687c327b1f8203b52636",
+        "full_archive_checksum_verified": false
+      },
+      "integrity": "ZIP CRC and recorded per-file SHA256 for selected photos/XML; full archive not downloaded or MD5-verified",
+      "approved_for_training": false,
+      "approved_for_evaluation": false,
+      "approved_for_exploratory_probe": true,
+      "required_checks": [
+        "annotation_semantics_and_completeness",
+        "building_scene_groups_and_near_duplicates",
+        "reviewed_negative_controls",
+        "construction_and_interior_domain_coverage",
+        "independent_evaluation_protocol"
+      ],
+      "domain_limits": [
+        "UAV_existing_building_facades_not_construction_interiors",
+        "no_label_does_not_mean_healthy",
+        "source_leakage_does_not_confirm_active_moisture",
+        "multiple_near_views_not_independent_scenes",
+        "no_known_pretraining_overlap_audit"
+      ],
+      "review_notes_fr": "API Zenodo et README interne concordent sur CC BY 4.0. Lot figé de 12 photos portant leakage et 12 sans cette annotation, sélectionné avant inférence. Classe leakage utilisée comme référence visuelle exploratoire seulement. Les 105 fichiers aux boîtes invalides sont exclus de la sélection ; aucune correction silencieuse. Les prédictions ne qualifient pas un détecteur chantier."
+    },
+    {
+      "id": "phele_v3",
+      "name": "PHELE: Completely Labelled Image Dataset for Physical Hazards of the Elderly Living Environment",
+      "url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3",
+      "doi": "10.17632/yzsxcvc8dp.3",
+      "declared_license": "CC-BY-4.0",
+      "authors": [
+        "Peng Gao (鹏 高)"
+      ],
+      "source_page_reviewed": true,
+      "source_page_reviewed_at": "2026-09-22",
+      "archive_inspected": true,
+      "inspection_scope": "Central directory, class file, 720 train/val label files; 64 selected images retrieved by exact byte ranges and CRC checked. Full archive SHA-256 not verified. Reserved test images and labels not opened.",
+      "role": "interior_source_boxes_to_review",
+      "observed_selected_images": 64,
+      "observed_source_boxes": 91,
+      "observed_format": "56 two-frame MPO disguised as .jpg; 8 single JPEG; YOLO boxes in display-oriented coordinates according to visual review",
+      "source_mapping": {
+        "5": "Peeling paint -> peeling_paint",
+        "9": "Mold -> mold_suspected"
+      },
+      "target_classes": [
+        "mold_suspected",
+        "peeling_paint"
+      ],
+      "approved_for_training": false,
+      "preparation_manifest": "config/moisture_collection_v1.json",
+      "required_checks": [
+        "exhaustive_annotation_review",
+        "grouping_across_source_train_val",
+        "distinct_moisture_trace_annotations",
+        "true_negative_and_confusion_examples",
+        "independent_construction_domain_evaluation"
+      ],
+      "domain_limits": [
+        "elderly_living_environment_not_active_construction",
+        "mold_label_is_not_confirmed_moisture",
+        "unknown_original_building_ids",
+        "box_annotations_may_be_wrong_or_incomplete"
+      ],
+      "review_notes_fr": "64 photos réellement préparées avec originaux ; 7 groupes visuels de précaution croisent les lots train/val auteur. Une bâche annotée peinture écaillée est mise de côté. Pas de nouvel entraînement."
+    },
+    {
+      "id": "commons_moisture_selection_v1",
+      "url": "https://commons.wikimedia.org/wiki/Category:Ceilings_damaged_by_water",
+      "declared_license": "Per-image: CC0, CC-BY-3.0, CC-BY-4.0, CC-BY-SA-3.0, CC-BY-SA-4.0",
+      "source_page_reviewed": true,
+      "source_page_reviewed_at": "2026-09-22",
+      "archive_inspected": false,
+      "individual_files_downloaded": 10,
+      "prepared_images": 7,
+      "excluded_images": 3,
+      "role": "interior_water_damage_photos_to_annotate",
+      "declared_annotation_types": [
+        "image_description"
+      ],
+      "target_classes": [
+        "moisture_trace",
+        "mold_suspected",
+        "peeling_paint"
+      ],
+      "approved_for_training": false,
+      "preparation_manifest": "config/moisture_collection_v1.json",
+      "required_checks": [
+        "localization_annotations",
+        "source_description_vs_visual_target_review",
+        "same_building_grouping",
+        "explicit_orientation_decisions_for_three_excluded_images"
+      ],
+      "domain_limits": [
+        "no_boxes_or_masks_provided",
+        "existing_and_abandoned_buildings_not_qualified_construction_captures"
+      ],
+      "review_notes_fr": "Auteur, licence et page source conservés par photo ; SHA-1 Commons vérifié puis SHA-256 épinglé. 3 EXIF orientation=0 exclus du lot préparé, originaux conservés. HTTP 429 pour des téléchargements suivants : collecte arrêtée, aucun contournement. Les variantes déjà vues ne constitueront pas un test aveugle."
+    },
+    {
+      "id": "cubit_det_author_release",
+      "url": "https://github.com/BenyunZhao/CUBIT",
+      "declared_license": "CC-BY-4.0",
+      "source_page_reviewed": true,
+      "source_page_reviewed_at": "2026-09-22",
+      "archive_inspected": false,
+      "role": "exterior_boxes_candidate",
+      "declared_annotation_types": [
+        "bounding_boxes"
+      ],
+      "target_classes": [
+        "crack",
+        "surface_loss",
+        "moisture_trace"
+      ],
+      "approved_for_training": false,
+      "required_checks": [
+        "archive_access",
+        "published_annotation_mapping",
+        "scene_grouping",
+        "domain_review"
+      ],
+      "review_notes_fr": "Le README auteur et le fichier LICENSE affichent CC BY 4.0 pour CUBIT-Det. Les 5527 photos annoncées ne sont pas téléchargées dans cette tranche ; lien Drive consulté sans inventaire exploitable. Cette vérification ne qualifie pas automatiquement les autres sous-ensembles CUBIT."
+    },
+    {
+      "id": "leakagewaterstain_roboflow_candidate",
+      "url": "https://universe.roboflow.com/project-xjzzj/leakagewaterstain-r4rg9",
+      "declared_license": "CC-BY-4.0",
+      "source_page_reviewed": true,
+      "source_page_reviewed_at": "2026-09-22",
+      "archive_inspected": false,
+      "role": "candidate_not_downloaded",
+      "declared_annotation_types": [
+        "instance_segmentation"
+      ],
+      "declared_images": 500,
+      "target_classes": [
+        "moisture_trace"
+      ],
+      "approved_for_training": false,
+      "required_checks": [
+        "download_access",
+        "original_image_provenance",
+        "actual_annotations_and_grouping"
+      ],
+      "review_notes_fr": "Page publique annonce 500 images et une classe LeakageWaterStain ; accès direct 403, aucune image ni poids récupéré, aucune demande de compte ou contournement."
     }
   ]
 }

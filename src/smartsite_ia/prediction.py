@@ -20,12 +20,17 @@ from smartsite_ia.model_assets import CLASS_NAMES
 from smartsite_ia.review import MAX_FILE_BYTES, read_local
 
 
-def decode_photo(raw: bytes) -> Image.Image:
+def decode_photo(raw: bytes, *, allow_primary_mpo: bool = False) -> Image.Image:
     """Les coordonnées du résultat concernent la photo une fois remise à l'endroit."""
     with Image.open(io.BytesIO(raw), formats=["JPEG", "PNG"]) as image:
         if image.width < 32 or image.height < 32 or image.width * image.height > 16_000_000:
             raise ValueError("Prediction expects a photo between 32 pixels and 16 megapixels")
-        if image.mode not in ("RGB", "L") or getattr(image, "n_frames", 1) != 1:
+        frames = getattr(image, "n_frames", 1)
+        # L'inférence ordinaire continue à refuser les fichiers contenant plusieurs images
+        primary_mpo = allow_primary_mpo and image.format == "MPO" and frames == 2
+        if allow_primary_mpo and not primary_mpo:
+            raise ValueError("Expected the reviewed two-frame MPO format")
+        if image.mode not in ("RGB", "L") or (frames != 1 and not primary_mpo):
             raise ValueError("Unsupported photo mode or animation")
         orientation = image.getexif().get(274, 1)
         if type(orientation) is not int or orientation not in range(1, 9):

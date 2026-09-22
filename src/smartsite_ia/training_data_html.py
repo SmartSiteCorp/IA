@@ -18,7 +18,7 @@ def write_training_data_page(output: Path, selection: dict[str, Any]) -> None:
             f"<td>{details['annotations']}</td><td>{details['excluded_annotations']}</td>"
             f"<td>{details['images_without_target_annotations']}</td></tr>"
         )
-        # Ces exemples servent à revoir les données il peut y avoir des defauts 
+        # Ces exemples servent à revoir les données il peut y avoir des defauts
         for sample_id in details["without_target_annotation_ids"][:3]:
             path = html.escape(f"{split}/{sample_id}.jpg", quote=True)
             examples.append(

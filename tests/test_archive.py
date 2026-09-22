@@ -54,3 +54,15 @@ def test_read_member_enforces_bound(archive_factory, monkeypatch):
         monkeypatch.setattr(module, "MAX_MEMBER_BYTES", 1)
         with pytest.raises(ValueError, match="size"):
             read_member(reader, next(iter(members.values())))
+
+
+def test_explicit_limits_only_apply_to_this_import(archive_factory, monkeypatch):
+    path, _ = archive_factory()
+    monkeypatch.setattr(module, "MAX_MEMBERS", 1)
+    monkeypatch.setattr(module, "MAX_EXPANDED_BYTES", 1)
+    with ZipFile(path) as reader:
+        assert checked_members(reader, max_members=100, max_expanded_bytes=1_000_000)
+        with pytest.raises(ValueError):
+            checked_members(reader)
+        with pytest.raises(ValueError):
+            checked_members(reader, max_members=100, max_expanded_bytes=1)

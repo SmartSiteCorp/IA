@@ -9,9 +9,18 @@ MAX_MEMBER_BYTES = 8 * 1024 * 1024
 MAX_EXPANDED_BYTES = 512 * 1024 * 1024
 
 
-def checked_members(archive: ZipFile) -> dict[str, ZipInfo]:
+def checked_members(
+    archive: ZipFile,
+    *,
+    max_members: int | None = None,
+    max_expanded_bytes: int | None = None,
+) -> dict[str, ZipInfo]:
+    if max_members is None:
+        max_members = MAX_MEMBERS
+    if max_expanded_bytes is None:
+        max_expanded_bytes = MAX_EXPANDED_BYTES
     members = archive.infolist()
-    if len(members) > MAX_MEMBERS:
+    if len(members) > max_members:
         raise ValueError("Archive has too many entries")
     result: dict[str, ZipInfo] = {}
     names: set[str] = set()
@@ -38,7 +47,7 @@ def checked_members(archive: ZipFile) -> dict[str, ZipInfo]:
             raise ValueError(f"Unsafe or unsupported ZIP entry: {member.filename!r}")
         names.add(name.casefold())
         total += member.file_size
-        if total > MAX_EXPANDED_BYTES:
+        if total > max_expanded_bytes:
             raise ValueError("Archive exceeds expanded size limit")
         if not member.is_dir():
             result[name] = member

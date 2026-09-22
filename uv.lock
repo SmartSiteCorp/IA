@@ -1918,6 +1918,12 @@ dependencies = [
 ]
 
 [package.optional-dependencies]
+probe = [
+    { name = "safetensors" },
+    { name = "torch" },
+    { name = "torchvision" },
+    { name = "transformers" },
+]
 training = [
     { name = "rfdetr", extra = ["train"] },
 ]
@@ -1936,8 +1942,12 @@ requires-dist = [
     { name = "pillow", specifier = "==12.3.0" },
     { name = "pycocotools", specifier = "==2.0.11" },
     { name = "rfdetr", extras = ["train"], marker = "extra == 'training'", specifier = "==1.10.1" },
+    { name = "safetensors", marker = "extra == 'probe'", specifier = "==0.8.0" },
+    { name = "torch", marker = "extra == 'probe'", specifier = "==2.14.0" },
+    { name = "torchvision", marker = "extra == 'probe'", specifier = "==0.29.0" },
+    { name = "transformers", marker = "extra == 'probe'", specifier = "==5.17.0" },
 ]
-provides-extras = ["training"]
+provides-extras = ["training", "probe"]
 
 [package.metadata.requires-dev]
 dev = [

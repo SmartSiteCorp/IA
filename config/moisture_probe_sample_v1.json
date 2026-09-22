@@ -1,0 +1,774 @@
+{
+  "schema_version": 1,
+  "source": {
+    "id": "mbdd2025_v1",
+    "url": "https://doi.org/10.5281/zenodo.15622584",
+    "license": "CC-BY-4.0",
+    "authors": [
+      "Qikai Zha",
+      "Yiming Yao",
+      "Yufan Zheng",
+      "Wanqi Ma",
+      "Wenkang Zhang"
+    ],
+    "scope": "Échantillon exploratoire de façades drone ; groupes de bâtiments inconnus ; aucun entraînement ni test final SmartSite.",
+    "archive_checksum": "md5:b2dfdce060ef687c327b1f8203b52636",
+    "integrity": "ZIP central directory and per-entry CRC checked; per-file SHA256 recorded; full archive MD5 not verified (HTTP range extraction)."
+  },
+  "selection": {
+    "algorithm": "SHA256(smartsite-moisture-probe-v1:<id>), first 12 per source-annotation stratum",
+    "available_with_leakage": 2457,
+    "available_without_leakage": 11909,
+    "invalid_annotation_files": [
+      "MBDD2025/Annotations/Hefei11420.xml",
+      "MBDD2025/Annotations/Hefei11421.xml",
+      "MBDD2025/Annotations/Hefei11422.xml",
+      "MBDD2025/Annotations/Hefei11423.xml",
+      "MBDD2025/Annotations/Hefei11424.xml",
+      "MBDD2025/Annotations/Hefei11425.xml",
+      "MBDD2025/Annotations/Hefei11426.xml",
+      "MBDD2025/Annotations/Hefei11427.xml",
+      "MBDD2025/Annotations/Hefei11428.xml",
+      "MBDD2025/Annotations/Hefei11429.xml",
+      "MBDD2025/Annotations/Hefei11430.xml",
+      "MBDD2025/Annotations/Hefei11431.xml",
+      "MBDD2025/Annotations/Hefei11432.xml",
+      "MBDD2025/Annotations/Hefei11433.xml",
+      "MBDD2025/Annotations/Hefei11434.xml",
+      "MBDD2025/Annotations/Hefei11435.xml",
+      "MBDD2025/Annotations/Hefei11436.xml",
+      "MBDD2025/Annotations/Hefei11437.xml",
+      "MBDD2025/Annotations/Hefei11438.xml",
+      "MBDD2025/Annotations/Hefei11473.xml",
+      "MBDD2025/Annotations/Hefei11474.xml",
+      "MBDD2025/Annotations/Hefei11475.xml",
+      "MBDD2025/Annotations/Hefei11476.xml",
+      "MBDD2025/Annotations/Hefei11478.xml",
+      "MBDD2025/Annotations/Hefei11480.xml",
+      "MBDD2025/Annotations/Hefei11514.xml",
+      "MBDD2025/Annotations/Hefei11515.xml",
+      "MBDD2025/Annotations/Hefei11516.xml",
+      "MBDD2025/Annotations/Hefei11517.xml",
+      "MBDD2025/Annotations/Hefei11518.xml",
+      "MBDD2025/Annotations/Hefei12555.xml",
+      "MBDD2025/Annotations/Hefei12556.xml",
+      "MBDD2025/Annotations/Hefei12557.xml",
+      "MBDD2025/Annotations/Hefei12558.xml",
+      "MBDD2025/Annotations/Hefei12559.xml",
+      "MBDD2025/Annotations/Hefei12560.xml",
+      "MBDD2025/Annotations/Hefei12561.xml",
+      "MBDD2025/Annotations/Hefei12562.xml",
+      "MBDD2025/Annotations/Hefei12563.xml",
+      "MBDD2025/Annotations/Hefei12740.xml",
+      "MBDD2025/Annotations/Hefei12742.xml",
+      "MBDD2025/Annotations/Hefei12743.xml",
+      "MBDD2025/Annotations/Hefei12744.xml",
+      "MBDD2025/Annotations/Hefei12745.xml",
+      "MBDD2025/Annotations/Hefei12746.xml",
+      "MBDD2025/Annotations/Hefei12747.xml",
+      "MBDD2025/Annotations/Hefei12757.xml",
+      "MBDD2025/Annotations/Hefei12758.xml",
+      "MBDD2025/Annotations/Hefei12759.xml",
+      "MBDD2025/Annotations/Hefei12764.xml",
+      "MBDD2025/Annotations/Hefei12767.xml",
+      "MBDD2025/Annotations/Hefei12773.xml",
+      "MBDD2025/Annotations/Hefei12868.xml",
+      "MBDD2025/Annotations/Hefei12869.xml",
+      "MBDD2025/Annotations/Hefei12872.xml",
+      "MBDD2025/Annotations/Hefei12874.xml",
+      "MBDD2025/Annotations/Hefei12876.xml",
+      "MBDD2025/Annotations/Hefei12877.xml",
+      "MBDD2025/Annotations/Hefei13050.xml",
+      "MBDD2025/Annotations/Hefei13076.xml",
+      "MBDD2025/Annotations/Hefei13077.xml",
+      "MBDD2025/Annotations/Hefei13078.xml",
+      "MBDD2025/Annotations/Hefei13139.xml",
+      "MBDD2025/Annotations/Hefei13140.xml",
+      "MBDD2025/Annotations/Hefei13141.xml",
+      "MBDD2025/Annotations/Hefei13142.xml",
+      "MBDD2025/Annotations/Hefei13143.xml",
+      "MBDD2025/Annotations/Hefei13144.xml",
+      "MBDD2025/Annotations/Hefei13145.xml",
+      "MBDD2025/Annotations/Hefei13228.xml",
+      "MBDD2025/Annotations/Hefei13232.xml",
+      "MBDD2025/Annotations/Hefei13233.xml",
+      "MBDD2025/Annotations/Hefei13234.xml",
+      "MBDD2025/Annotations/Hefei13235.xml",
+      "MBDD2025/Annotations/Hefei13237.xml",
+      "MBDD2025/Annotations/Hefei13238.xml",
+      "MBDD2025/Annotations/Hefei13239.xml",
+      "MBDD2025/Annotations/Hefei13241.xml",
+      "MBDD2025/Annotations/Hefei13242.xml",
+      "MBDD2025/Annotations/Hefei13243.xml",
+      "MBDD2025/Annotations/Hefei13244.xml",
+      "MBDD2025/Annotations/Hefei13245.xml",
+      "MBDD2025/Annotations/Hefei13246.xml",
+      "MBDD2025/Annotations/Hefei13247.xml",
+      "MBDD2025/Annotations/Hefei3471.xml",
+      "MBDD2025/Annotations/Hefei3472.xml",
+      "MBDD2025/Annotations/Hefei3485.xml",
+      "MBDD2025/Annotations/Hefei3486.xml",
+      "MBDD2025/Annotations/Hefei3487.xml",
+      "MBDD2025/Annotations/Hefei3488.xml",
+      "MBDD2025/Annotations/Hefei3489.xml",
+      "MBDD2025/Annotations/Hefei3490.xml",
+      "MBDD2025/Annotations/Hefei3491.xml",
+      "MBDD2025/Annotations/Hefei3492.xml",
+      "MBDD2025/Annotations/Hefei3493.xml",
+      "MBDD2025/Annotations/Hefei3494.xml",
+      "MBDD2025/Annotations/Hefei3495.xml",
+      "MBDD2025/Annotations/Hefei3496.xml",
+      "MBDD2025/Annotations/Hefei3655.xml",
+      "MBDD2025/Annotations/Hefei3656.xml",
+      "MBDD2025/Annotations/Hefei3657.xml",
+      "MBDD2025/Annotations/Hefei3658.xml",
+      "MBDD2025/Annotations/Hefei3659.xml",
+      "MBDD2025/Annotations/Hefei3660.xml",
+      "MBDD2025/Annotations/Hefei3661.xml"
+    ],
+    "source_object_counts": {
+      "corrosion": 9207,
+      "leakage": 6642,
+      "abscission": 22420,
+      "crack": 16926,
+      "bulge": 1997
+    },
+    "ids": [
+      "Hefei2877",
+      "Hefei10933",
+      "Hefei867",
+      "Hefei12526",
+      "Hefei10778",
+      "Hefei728",
+      "Hefei8300",
+      "Hefei11191",
+      "Hefei2683",
+      "Hefei8289",
+      "Hefei2766",
+      "Hefei2910",
+      "Hefei12702",
+      "Hefei3563",
+      "Hefei3335",
+      "Hefei1690",
+      "Hefei11913",
+      "Hefei2948",
+      "Hefei12055",
+      "Hefei4432",
+      "Hefei13707",
+      "Hefei11404",
+      "Hefei3664",
+      "Hefei9300"
+    ]
+  },
+  "records": [
+    {
+      "id": "Hefei2877",
+      "file": "images/Hefei2877.jpg",
+      "sha256": "b188bc815ec19c6a413dde7316117c464c50c76b24ca67318cd323657a8a0c38",
+      "width": 1280,
+      "height": 720,
+      "reference_boxes": [
+        [
+          1062.57,
+          439.62,
+          1221.51,
+          651.54
+        ],
+        [
+          571.79,
+          399.18,
+          1006.8,
+          616.69
+        ],
+        [
+          164.67,
+          445.19,
+          309.67,
+          577.65
+        ],
+        [
+          0.0,
+          427.07,
+          99.14,
+          687.79
+        ]
+      ],
+      "source_classes": [
+        "leakage"
+      ],
+      "source_annotation_sha256": "eae578828fa14b28c856bd1203c2f09d4ca6a73706d5a43638397c86e02905dd",
+      "review_note": "Référence auteur « leakage » ; interprétation visuelle à vérifier. Aucun diagnostic sur place."
+    },
+    {
+      "id": "Hefei10933",
+      "file": "images/Hefei10933.jpg",
+      "sha256": "191d1d510307dcab0a80327dbe68f01c2142063ae911efa31cccf29f5bd0d9c0",
+      "width": 1280,
+      "height": 720,
+      "reference_boxes": [
+        [
+          364.41,
+          143.56,
+          851.28,
+          264.02
+        ],
+        [
+          591.95,
+          260.68,
+          847.94,
+          351.03
+        ],
+        [
+          409.58,
+          260.68,
+          586.93,
+          335.97
+        ],
+        [
+          876.38,
+          264.02,
+          1280.0,
+          391.18
+        ],
+        [
+          101.73,
+          228.89,
+          238.93,
+          346.01
+        ]
+      ],
+      "source_classes": [
+        "leakage"
+      ],
+      "source_annotation_sha256": "40df630c36382a652c066bc9cdaee544b928d09c73a91417dc21df951d2d0c96",
+      "review_note": "Référence auteur « leakage » ; interprétation visuelle à vérifier. Aucun diagnostic sur place."
+    },
+    {
+      "id": "Hefei867",
+      "file": "images/Hefei867.jpg",
+      "sha256": "360b7f6266701e43e7a016541cddf7961dddf2244c9514307f7a422582dbae62",
+      "width": 1280,
+      "height": 720,
+      "reference_boxes": [
+        [
+          119.58,
+          0.0,
+          249.0,
+          720.0
+        ],
+        [
+          570.7,
+          175.05,
+          842.48,
+          483.8
+        ]
+      ],
+      "source_classes": [
+        "leakage"
+      ],
+      "source_annotation_sha256": "0c300896e2ff8ed992343bc4fd44aafe4ba52c06bf77a118e271a1774fac38a6",
+      "review_note": "Référence auteur « leakage » ; interprétation visuelle à vérifier. Aucun diagnostic sur place."
+    },
+    {
+      "id": "Hefei12526",
+      "file": "images/Hefei12526.jpg",
+      "sha256": "ebe00b72b59abce1b5b99eb64108ef80f1f3e468ce8e896f566f0b172f8b9760",
+      "width": 1280,
+      "height": 720,
+      "reference_boxes": [
+        [
+          36.37,
+          191.01,
+          246.29,
+          307.32
+        ],
+        [
+          0.0,
+          395.7,
+          158.1,
+          435.1
+        ]
+      ],
+      "source_classes": [
+        "abscission",
+        "bulge",
+        "crack",
+        "leakage"
+      ],
+      "source_annotation_sha256": "73e6a5d30497cc379754edf34c4f1438755bfd6c504af4264b0859382ebe8b30",
+      "review_note": "Référence auteur « leakage » ; interprétation visuelle à vérifier. Aucun diagnostic sur place."
+    },
+    {
+      "id": "Hefei10778",
+      "file": "images/Hefei10778.jpg",
+      "sha256": "b6a13154a8472f3cde9f1ddbf536e6439947a4f97aff5cb4685def3c1f753b19",
+      "width": 1280,
+      "height": 720,
+      "reference_boxes": [
+        [
+          0.0,
+          600.55,
+          89.19,
+          720.0
+        ],
+        [
+          89.19,
+          560.4,
+          159.46,
+          720.0
+        ],
+        [
+          153.43,
+          544.34,
+          237.76,
+          720.0
+        ],
+        [
+          241.77,
+          492.14,
+          316.06,
+          720.0
+        ],
+        [
+          312.04,
+          496.15,
+          398.38,
+          712.99
+        ],
+        [
+          394.36,
+          451.98,
+          472.66,
+          684.88
+        ],
+        [
+          484.71,
+          403.8,
+          565.02,
+          680.86
+        ],
+        [
+          573.05,
+          391.75,
+          653.36,
+          628.66
+        ],
+        [
+          669.42,
+          337.54,
+          729.65,
+          574.45
+        ],
+        [
+          737.68,
+          297.39,
+          842.08,
+          542.33
+        ],
+        [
+          916.37,
+          172.91,
+          1046.87,
+          466.03999999999996
+        ],
+        [
+          1060.92,
+          121.31,
+          1223.55,
+          382.31
+        ]
+      ],
+      "source_classes": [
+        "leakage"
+      ],
+      "source_annotation_sha256": "74e4e068e66a00ab40da402cc132c7512063f3bd37a5e186a815f0c189df5373",
+      "review_note": "Référence auteur « leakage » ; interprétation visuelle à vérifier. Aucun diagnostic sur place."
+    },
+    {
+      "id": "Hefei728",
+      "file": "images/Hefei728.jpg",
+      "sha256": "e9983875ac92e1b8aa1f7d53cd9243d93e2966ba593637ea1d66bb627a7a7203",
+      "width": 1280,
+      "height": 720,
+      "reference_boxes": [
+        [
+          621.51,
+          0.0,
+          689.31,
+          649.09
+        ]
+      ],
+      "source_classes": [
+        "leakage"
+      ],
+      "source_annotation_sha256": "a8053f59623d2d9438809bd97c640cd49729070434e5ce1cbc623570d2bf247e",
+      "review_note": "Référence auteur « leakage » ; interprétation visuelle à vérifier. Aucun diagnostic sur place."
+    },
+    {
+      "id": "Hefei8300",
+      "file": "images/Hefei8300.jpg",
+      "sha256": "76c5bca155f4475d857df2b2139f31bf478260a7b0ae8db7c1003a1b9f19a19a",
+      "width": 1280,
+      "height": 720,
+      "reference_boxes": [
+        [
+          387.33,
+          378.8,
+          681.8,
+          489.22
+        ],
+        [
+          15.9,
+          378.8,
+          365.58,
+          512.65
+        ],
+        [
+          706.89,
+          382.15,
+          1076.65,
+          522.69
+        ]
+      ],
+      "source_classes": [
+        "crack",
+        "leakage"
+      ],
+      "source_annotation_sha256": "efe431df8ad7fc904ffa1cc542b09f6b02e267c0cfb912ea7f00142a68752885",
+      "review_note": "Référence auteur « leakage » ; interprétation visuelle à vérifier. Aucun diagnostic sur place."
+    },
+    {
+      "id": "Hefei11191",
+      "file": "images/Hefei11191.jpg",
+      "sha256": "b589b79377071b7685fb9268e408efc258c57c461c46fc91b564acf2962ea5c1",
+      "width": 1280,
+      "height": 720,
+      "reference_boxes": [
+        [
+          148.41,
+          371.47,
+          321.08,
+          602.36
+        ],
+        [
+          347.18,
+          357.42,
+          557.99,
+          479.89
+        ],
+        [
+          818.99,
+          437.73,
+          953.51,
+          534.1
+        ],
+        [
+          1113.13,
+          464.63,
+          1239.61,
+          544.94
+        ]
+      ],
+      "source_classes": [
+        "leakage"
+      ],
+      "source_annotation_sha256": "97bb5deff58e733e4a8d7bee2cfed0a42109b4e74e3d0480ba41e9908713346b",
+      "review_note": "Référence auteur « leakage » ; interprétation visuelle à vérifier. Aucun diagnostic sur place."
+    },
+    {
+      "id": "Hefei2683",
+      "file": "images/Hefei2683.jpg",
+      "sha256": "a01453ca978e2e021d382d2d0e9f172db0272285c3d4eca3ed734aa38eac4e56",
+      "width": 1280,
+      "height": 720,
+      "reference_boxes": [
+        [
+          0.0,
+          215.12,
+          541.38,
+          391.73
+        ],
+        [
+          727.28,
+          189.56,
+          1135.09,
+          319.69
+        ]
+      ],
+      "source_classes": [
+        "leakage"
+      ],
+      "source_annotation_sha256": "82f927de7da522c1e86ad336ae39ef442e4b11419bef06e17dae07fd446cdce6",
+      "review_note": "Référence auteur « leakage » ; interprétation visuelle à vérifier. Aucun diagnostic sur place."
+    },
+    {
+      "id": "Hefei8289",
+      "file": "images/Hefei8289.jpg",
+      "sha256": "44546a6cd294353358821e0514507dee4d10756674600be1a258db67c7423f8f",
+      "width": 1280,
+      "height": 720,
+      "reference_boxes": [
+        [
+          0.0,
+          395.53,
+          325.43,
+          529.38
+        ],
+        [
+          723.63,
+          387.17,
+          1063.3,
+          516.0
+        ],
+        [
+          382.33,
+          390.51,
+          663.43,
+          504.28
+        ]
+      ],
+      "source_classes": [
+        "crack",
+        "leakage"
+      ],
+      "source_annotation_sha256": "c03a7b6ce1e656b185a02ae485c8e6eac92992838424ba2165ffb243c71b1a08",
+      "review_note": "Référence auteur « leakage » ; interprétation visuelle à vérifier. Aucun diagnostic sur place."
+    },
+    {
+      "id": "Hefei2766",
+      "file": "images/Hefei2766.jpg",
+      "sha256": "2220b359ef6588aef4693a45953ab06f5786f38b86b5a60cf25b4f9f244ff43c",
+      "width": 1280,
+      "height": 720,
+      "reference_boxes": [
+        [
+          635.79,
+          278.58,
+          1280.0,
+          397.37
+        ],
+        [
+          0.0,
+          281.93,
+          478.52,
+          402.39
+        ],
+        [
+          45.2,
+          402.39,
+          373.11,
+          593.12
+        ],
+        [
+          670.92,
+          387.33,
+          742.87,
+          574.72
+        ]
+      ],
+      "source_classes": [
+        "leakage"
+      ],
+      "source_annotation_sha256": "0d2a72ca4ebdcd5df969acf556631f6295997b397777299ab57e662d1f0031b2",
+      "review_note": "Référence auteur « leakage » ; interprétation visuelle à vérifier. Aucun diagnostic sur place."
+    },
+    {
+      "id": "Hefei2910",
+      "file": "images/Hefei2910.jpg",
+      "sha256": "e2c56d4278cb13dabf84287f0fa0cedb59de9b5e36cd0fbc7fb1f199616ecb4c",
+      "width": 1280,
+      "height": 720,
+      "reference_boxes": [
+        [
+          1195.02,
+          355.96,
+          1280.0,
+          566.49
+        ],
+        [
+          687.52,
+          360.15,
+          1176.9,
+          591.59
+        ],
+        [
+          316.64,
+          397.79,
+          417.03,
+          533.03
+        ],
+        [
+          0.0,
+          414.52,
+          267.85,
+          673.85
+        ]
+      ],
+      "source_classes": [
+        "leakage"
+      ],
+      "source_annotation_sha256": "fd21c6ac016e2f41b6e1a7ad4e61d459350f1d84af50af8bbf6d9b1bf1bba3b8",
+      "review_note": "Référence auteur « leakage » ; interprétation visuelle à vérifier. Aucun diagnostic sur place."
+    },
+    {
+      "id": "Hefei12702",
+      "file": "images/Hefei12702.jpg",
+      "sha256": "7edc6ec91e4ff8cbecf65a1edb731defaaa311e7dcde3cb42eccb24aafb7155e",
+      "width": 1280,
+      "height": 720,
+      "reference_boxes": [],
+      "source_classes": [
+        "abscission"
+      ],
+      "source_annotation_sha256": "516d78848d2d5b8534403681ba67e292e6eed70d82928d4d16906518611acc06",
+      "review_note": "Aucune annotation auteur « leakage » ; ne prouve pas une surface saine."
+    },
+    {
+      "id": "Hefei3563",
+      "file": "images/Hefei3563.jpg",
+      "sha256": "d9d87eb830ddb3f52156c4da129b16fee454d4c27f0305868fcd5f3e7f961199",
+      "width": 1280,
+      "height": 720,
+      "reference_boxes": [],
+      "source_classes": [
+        "crack"
+      ],
+      "source_annotation_sha256": "f9759d6ec44200e5aa0fae6e2e1585d84ca18981f0eef0d046f81bedf0e22604",
+      "review_note": "Aucune annotation auteur « leakage » ; ne prouve pas une surface saine."
+    },
+    {
+      "id": "Hefei3335",
+      "file": "images/Hefei3335.jpg",
+      "sha256": "e06d6674105b05df746af3193e9f46fef0c6d5a2c93a71d5d16b5891c388e3ed",
+      "width": 1280,
+      "height": 720,
+      "reference_boxes": [],
+      "source_classes": [
+        "abscission",
+        "crack"
+      ],
+      "source_annotation_sha256": "100836d8c6cebea050b307e4b94834a329b6b6b713a93be50fe7d0860570a236",
+      "review_note": "Aucune annotation auteur « leakage » ; ne prouve pas une surface saine."
+    },
+    {
+      "id": "Hefei1690",
+      "file": "images/Hefei1690.jpg",
+      "sha256": "2f74b3787572bb6f400c9ffe9a16ad62f5c0b60cf6d05b63a28a2a7937c1ca24",
+      "width": 1280,
+      "height": 720,
+      "reference_boxes": [],
+      "source_classes": [
+        "crack"
+      ],
+      "source_annotation_sha256": "11b78b0283598389455f70768b6286d65617c21c5bd28963e448cc215c9592e7",
+      "review_note": "Aucune annotation auteur « leakage » ; ne prouve pas une surface saine."
+    },
+    {
+      "id": "Hefei11913",
+      "file": "images/Hefei11913.jpg",
+      "sha256": "b7c310452f81748baebb34e335fa4402de01e7e9464a89de8f1c2813e8267245",
+      "width": 1280,
+      "height": 720,
+      "reference_boxes": [],
+      "source_classes": [
+        "abscission"
+      ],
+      "source_annotation_sha256": "fcf4c3649c24694c511ffe936900cb496f044e20dea1c8325d19b46a20943d56",
+      "review_note": "Aucune annotation auteur « leakage » ; ne prouve pas une surface saine."
+    },
+    {
+      "id": "Hefei2948",
+      "file": "images/Hefei2948.jpg",
+      "sha256": "3e42035e25fcd0024709653d9c6fa49b60d5b76d5fbecb91a4299a95ab90dcd3",
+      "width": 1280,
+      "height": 720,
+      "reference_boxes": [],
+      "source_classes": [
+        "abscission",
+        "crack"
+      ],
+      "source_annotation_sha256": "ecd8838b87c3eeffc4387c3003c51875531f04cb84a9ddf28363aaf717f3e55c",
+      "review_note": "Aucune annotation auteur « leakage » ; ne prouve pas une surface saine."
+    },
+    {
+      "id": "Hefei12055",
+      "file": "images/Hefei12055.jpg",
+      "sha256": "b000b46b2d89ae06888336d52b4e72fb05d8f06d532f534ce1961cacce3e56ec",
+      "width": 1280,
+      "height": 720,
+      "reference_boxes": [],
+      "source_classes": [
+        "abscission",
+        "crack"
+      ],
+      "source_annotation_sha256": "25d30a2fe1a951d0610a583ac000da79b13c07c525e58608f2d68f6c6279860e",
+      "review_note": "Aucune annotation auteur « leakage » ; ne prouve pas une surface saine."
+    },
+    {
+      "id": "Hefei4432",
+      "file": "images/Hefei4432.jpg",
+      "sha256": "e22159a4b1e10d005aee15ddfff6c398dd45c653d2eef5ff5de547b74c0261cb",
+      "width": 720,
+      "height": 1280,
+      "reference_boxes": [],
+      "source_classes": [
+        "bulge"
+      ],
+      "source_annotation_sha256": "a8ce409e67eec7f23e8ccc31904a02a58628374f89f1cda220df2e59c9406619",
+      "review_note": "Aucune annotation auteur « leakage » ; ne prouve pas une surface saine."
+    },
+    {
+      "id": "Hefei13707",
+      "file": "images/Hefei13707.jpg",
+      "sha256": "cd17ef4b95543af18b1633f1324d3575ff633ded42e7149f550f30eec6e3e2a1",
+      "width": 1280,
+      "height": 720,
+      "reference_boxes": [],
+      "source_classes": [
+        "corrosion",
+        "crack"
+      ],
+      "source_annotation_sha256": "251508ce9d3f604fe0b594298de084453113a0d6684faaabbb8b06e6c0e780d4",
+      "review_note": "Aucune annotation auteur « leakage » ; ne prouve pas une surface saine."
+    },
+    {
+      "id": "Hefei11404",
+      "file": "images/Hefei11404.jpg",
+      "sha256": "47a6d5764b2f7ae192404b1b762a1b2780a691f4acedcda5cd4d493b59d64d68",
+      "width": 1280,
+      "height": 720,
+      "reference_boxes": [],
+      "source_classes": [
+        "abscission"
+      ],
+      "source_annotation_sha256": "8a18746104628077950370afb09120f5d604e109b14438c654f64e18075dff53",
+      "review_note": "Aucune annotation auteur « leakage » ; ne prouve pas une surface saine."
+    },
+    {
+      "id": "Hefei3664",
+      "file": "images/Hefei3664.jpg",
+      "sha256": "3c595f0c707bb442e37e7bce263cec6890acc1027fe0c4d038fd76244c94ea36",
+      "width": 1280,
+      "height": 720,
+      "reference_boxes": [],
+      "source_classes": [
+        "crack"
+      ],
+      "source_annotation_sha256": "d923027d8d5bc52a03c389a2aee58754573cde0ddab74ee5a3bfb0648b3f4a2d",
+      "review_note": "Aucune annotation auteur « leakage » ; ne prouve pas une surface saine."
+    },
+    {
+      "id": "Hefei9300",
+      "file": "images/Hefei9300.jpg",
+      "sha256": "2b0bd3650c0331aa9a53a410086f430302d9e011cd9fcdfa56d20591f8bb46fb",
+      "width": 1280,
+      "height": 720,
+      "reference_boxes": [],
+      "source_classes": [
+        "abscission"
+      ],
+      "source_annotation_sha256": "5191b036b6e4f87a48ed20df566072068b3196f30e17edd5b54f82f39d35f97f",
+      "review_note": "Aucune annotation auteur « leakage » ; ne prouve pas une surface saine."
+    }
+  ]
+}

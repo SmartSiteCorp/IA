@@ -56,6 +56,7 @@ ALLOWED_HOSTS = {
     "data.mendeley.com",
     "prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com",
     "storage.googleapis.com",  # Hébergement officiel des poids RF-DETR
+    "upload.wikimedia.org",  # Originaux Commons, avec attribution dans le manifeste
 }
 
 
