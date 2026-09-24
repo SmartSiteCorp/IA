@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "purpose": "pilot_box_training",
+  "seed": 42,
+  "epochs": 10,
+  "batch_size": 2,
+  "grad_accum_steps": 2,
+  "lr": 0.0001,
+  "checkpoint_selection": "last_epoch",
+  "corpus_sha256": {
+    "report.json": "73a9014bbed7b3d868f7e9b26e93cb7b5d402ea2dd272d005cf8db2fc7aee9fb",
+    "review.json": "210d7ae591dc56d0a46f891b11069281bfed1a39561ad3476c7eedfcbdc2ceb8",
+    "source/report.json": "7cea670d70728bd7dc10450345e33e24eb6373a2435fd1fbe2bc351d64a98d57",
+    "train/_annotations.coco.json": "2169dbd17cb268c7494a397ae1d4ac1c41f10d21df87fadef228cf653d05f84d",
+    "validation/_annotations.coco.json": "e6c576ea29924c932ee219424ac110ede4199d0ef3107c4327cc3b80288ce581"
+  }
+}

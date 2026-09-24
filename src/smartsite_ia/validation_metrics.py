@@ -144,3 +144,85 @@ def summarize_counts(
             "false_proposals_per_image": fp / len(rows) if rows else None,
         }
     return result
+
+
+def coverage_for_image(
+    references: list[dict[str, Any]],
+    predictions: list[dict[str, Any]],
+    threshold: float,
+    class_names: tuple[str, ...] = CLASS_NAMES,
+) -> dict[str, dict[str, Any]]:
+    """Mesurer le service rendu, en plus de l'appariement un défaut pour un défaut.
+
+    Sur un chantier, l'utilité d'une alerte est d'attirer l'œil sur la bonne zone.
+    L'appariement un-à-un compte une fissure annotée en trois morceaux comme deux
+    manques, même quand la zone est bien couverte. On mesure donc aussi, par classe,
+    si la photo est signalée et quelle part de la zone attendue est couverte.
+    Cette mesure complète la mesure stricte ; elle ne la remplace pas.
+    """
+    result = {}
+    for label, name in enumerate(class_names, 1):
+        gt = [r["segmentation"] for r in references if r["category_id"] == label]
+        dt = [
+            r["segmentation"]
+            for r in predictions
+            if r["category_id"] == label and r["score"] >= threshold
+        ]
+        result[name] = {
+            "expected": bool(gt),
+            "signalled": bool(dt),
+            "pixels": shared_pixels(gt, dt),
+        }
+    return result
+
+
+def shared_pixels(references: list[Any], predictions: list[Any]) -> dict[str, int]:
+    """Fusionner puis croiser les masques sans jamais allouer l'image entière."""
+    reference = coco_mask.merge(references) if references else None
+    proposal = coco_mask.merge(predictions) if predictions else None
+    shared = (
+        coco_mask.merge([reference, proposal], intersect=1)
+        if reference is not None and proposal is not None
+        else None
+    )
+    return {
+        "reference": int(coco_mask.area(reference)) if reference is not None else 0,
+        "proposal": int(coco_mask.area(proposal)) if proposal is not None else 0,
+        "shared": int(coco_mask.area(shared)) if shared is not None else 0,
+    }
+
+
+def summarize_coverage(
+    rows: list[dict[str, dict[str, Any]]], class_names: tuple[str, ...] = CLASS_NAMES
+) -> dict[str, Any]:
+    """Regrouper les photos, en gardant séparés le niveau photo et le niveau zone."""
+    result = {}
+    for name in class_names:
+        per_class = [row[name] for row in rows]
+        expected = [row for row in per_class if row["expected"]]
+        found = [row for row in expected if row["signalled"]]
+        signalled = [row for row in per_class if row["signalled"]]
+        without = [row for row in signalled if not row["expected"]]
+        pixels = {
+            key: sum(row["pixels"][key] for row in per_class)
+            for key in ("reference", "proposal", "shared")
+        }
+        result[name] = {
+            "photos": len(per_class),
+            "photos_expected": len(expected),
+            "photos_found": len(found),
+            "photos_signalled": len(signalled),
+            "photos_signalled_without_reference": len(without),
+            "photo_recall": len(found) / len(expected) if expected else None,
+            "photo_precision": len(found) / len(signalled) if signalled else None,
+            "reference_pixels": pixels["reference"],
+            "proposal_pixels": pixels["proposal"],
+            "shared_pixels": pixels["shared"],
+            "zone_recall": (
+                pixels["shared"] / pixels["reference"] if pixels["reference"] else None
+            ),
+            "zone_precision": (
+                pixels["shared"] / pixels["proposal"] if pixels["proposal"] else None
+            ),
+        }
+    return result

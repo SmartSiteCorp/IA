@@ -1,0 +1,3080 @@
+{
+  "schema_version": 1,
+  "reviewed_at": "2026-09-23",
+  "limitations": "Lot de préparation, pas un corpus autorisé pour l’entraînement. La classe 9 de PHELE s’appelle Mold : elle n’est pas convertie en humidité confirmée. La classe 5 décrit un revêtement écaillé, parfois des pertes d’enduit. Les boîtes peuvent être partielles ou erronées. Les photos Commons n’ont pas encore de boîtes. Les surfaces sans défaut et les confusions ombre/salissure/rouille restent à compléter et annoter. Origines et bâtiments de PHELE inconnus ; indépendance des futurs lots non garantie. Ces scènes sont surtout des bâtiments existants : chantier neuf, téléphone LiDAR et drone restent à qualifier. Complément v2 : photos entières sans cible seulement après revue explicite ; sols mouillés et matériaux ambigus exclus. Humidité toujours sous-représentée. Aucune photo de chantier utilisateur disponible.",
+  "sources": {
+    "phele_v3": {
+      "url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3",
+      "version": 3,
+      "doi": "10.17632/yzsxcvc8dp.3",
+      "license": "CC-BY-4.0",
+      "class_names": [
+        "Animal hair",
+        "Dog",
+        "wires",
+        "steps",
+        "carpets",
+        "Peeling paint",
+        "Chair",
+        "Cat",
+        "Sharp edges or objects",
+        "Mold",
+        "Fire",
+        "Mouse",
+        "Bed bugs",
+        "Wet floor",
+        "Glass fragment"
+      ],
+      "class_map": {
+        "5": "peeling_paint",
+        "9": "mold_suspected"
+      },
+      "coordinate_frame": "display_oriented",
+      "coordinate_evidence": "Comparaison visuelle des boîtes sur vues brutes et orientées, puis planches des 64 images ; convention retenue pour cette sélection, sans confirmation auteur.",
+      "full_archive_sha256_published": "bb9e136133374e4f80eb92193dab275a4aff583d36cec099c8bbe54cca8329a2",
+      "full_archive_sha256_verified": false,
+      "selection_method": "Toutes les 32 images train/val portant la classe 9, puis les 24 premières images train et 8 premières val portant 5 sans 9, dans l’ordre lexicographique des chemins. Sous-ensemble de découverte, non représentatif. Complément v2 : ordre SHA256(smartsite-confusions-v2:<chemin>) ; vingt images train parmi wires/steps/chair sans Mold/Peeling paint/Wet floor, puis huit Wet floor sans Mold/Peeling paint ; trois originaux >8 Mio écartés.",
+      "source_test_images_opened": 0,
+      "original_scene_ids_available": false
+    },
+    "commons": {
+      "url": "https://commons.wikimedia.org/wiki/Category:Ceilings_damaged_by_water",
+      "annotation_type": "image descriptions only; no boxes",
+      "coordinate_frame": null,
+      "selection_method": "Images ciblées avec auteur et licence explicites, JPEG <=8 Mio et <=16 mégapixels. Les fichiers limités par HTTP 429 ne sont pas inclus ; arrêt de la collecte. Complément v2 : dix originaux vérifiés ; arrêt au premier refus HTTP 429, sans reprise ni contournement.",
+      "original_scene_ids_available": "Known building names used where present; others unknown",
+      "additional_category": "https://commons.wikimedia.org/wiki/Category:Mold_on_buildings"
+    }
+  },
+  "groups": [
+    [
+      "phele_train_101",
+      "phele_train_135"
+    ],
+    [
+      "phele_train_109",
+      "phele_train_136",
+      "phele_train_142",
+      "phele_train_158",
+      "phele_train_160"
+    ],
+    [
+      "phele_train_124",
+      "phele_train_161"
+    ],
+    [
+      "phele_train_148",
+      "phele_train_183",
+      "phele_train_339"
+    ],
+    [
+      "phele_train_167",
+      "phele_val_67"
+    ],
+    [
+      "phele_train_189",
+      "phele_train_202",
+      "phele_val_134"
+    ],
+    [
+      "phele_train_187",
+      "phele_val_128"
+    ],
+    [
+      "phele_train_290",
+      "phele_train_352"
+    ],
+    [
+      "phele_train_305",
+      "phele_train_392"
+    ],
+    [
+      "phele_train_306",
+      "phele_train_362",
+      "phele_train_438",
+      "phele_train_54"
+    ],
+    [
+      "phele_train_61",
+      "phele_val_12"
+    ],
+    [
+      "phele_train_354",
+      "phele_val_45"
+    ],
+    [
+      "phele_train_199",
+      "phele_val_103",
+      "phele_val_124"
+    ],
+    [
+      "phele_train_212",
+      "phele_val_10",
+      "phele_val_131"
+    ],
+    [
+      "commons_137521145",
+      "commons_137521159"
+    ],
+    [
+      "commons_56570306",
+      "commons_56570307",
+      "commons_56570315"
+    ],
+    [
+      "commons_116691501",
+      "commons_116691502"
+    ],
+    [
+      "phele_train_267",
+      "phele_train_331"
+    ],
+    [
+      "phele_train_139",
+      "phele_train_63"
+    ]
+  ],
+  "group_evidence": "Groupes de précaution proposés par revue visuelle de l’assistant (pièce, détail, ouverture, mobilier ou plafond similaires) ou même bâtiment nommé dans Commons. Regroupement conservateur à confirmer, pas identification certifiée de bâtiment. Complément : même mur photographié à quelques secondes, même église nommée, même entrée rouge et précaution pour carrelage à motifs proche. Groupes sans identifiant de bâtiment certifié.",
+  "excluded_candidates": [
+    {
+      "id": "commons_147695840",
+      "sha256": "866f2c39676d33c56760ab2f6bed4d38c44c5dcf6cdf7540030f79626bfe05ab",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Abaliget,_elhagyatott_hotel,_17.jpg",
+      "reason": "EXIF orientation 0 invalide ; original conservé dans la collecte locale, correction explicite à revoir avant import."
+    },
+    {
+      "id": "commons_147695847",
+      "sha256": "8bb9f69776b7436caa1946369913d25b9bf73ef7355cc86cd0d38dddf0d93b79",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Abaliget,_elhagyatott_hotel,_20.jpg",
+      "reason": "EXIF orientation 0 invalide ; original conservé dans la collecte locale, correction explicite à revoir avant import."
+    },
+    {
+      "id": "commons_147695852",
+      "sha256": "fab6a278ea31cd5c0dd21f6ee0c2c76d4d5758f99b38cbe152174d227fbd0a44",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Abaliget,_elhagyatott_hotel,_22.jpg",
+      "reason": "EXIF orientation 0 invalide ; original conservé dans la collecte locale, correction explicite à revoir avant import."
+    },
+    {
+      "id": "commons_17140327",
+      "reason": "Original au-dessus des limites : 8 Mio ou 16 mégapixels."
+    },
+    {
+      "id": "commons_69374521",
+      "reason": "HTTP 429 : téléchargement interrompu."
+    },
+    {
+      "id": "phele_train_544",
+      "reason": "Original au-dessus de 8 Mio"
+    },
+    {
+      "id": "phele_train_543",
+      "reason": "Original au-dessus de 8 Mio"
+    },
+    {
+      "id": "phele_train_553",
+      "reason": "Original au-dessus de 8 Mio"
+    }
+  ],
+  "records": [
+    {
+      "id": "phele_train_101",
+      "source_id": "phele_v3",
+      "image_policy": "single_frame",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_101.jpg",
+      "source_label_member": "PHELE/train/labels/train_101.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "1161136ae1ba486d35b4ed7652fd185ccf9cbd8a8153e6a45dbecbab62ebe20f",
+        "size": 1212834,
+        "transfer_size": 1201321,
+        "start": 238344938,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_101.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "5 0.555048 0.415657 0.213942 0.110294\n",
+      "source_label_sha256": "31b262cf1a724207be495c83c9cc89b18e13b00a96fdeab7e5f3c5b103dbf0cb",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Revêtement/enduit abîmé ; candidat de confusion, pas une photo saine garantie."
+    },
+    {
+      "id": "phele_train_108",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_108.jpg",
+      "source_label_member": "PHELE/train/labels/train_108.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "ae2a6b45c9ce2014810e7ea4759188b366af7b39aaadd4e87551161be7b5a9df",
+        "size": 2472549,
+        "transfer_size": 1587922,
+        "start": 253316315,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_108.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "5 0.261905 0.780134 0.448413 0.439732\n",
+      "source_label_sha256": "fbf542436ce1128c10b4aa58be41f80b0d2e91eb0a6169b6cf03d7891359b1ee",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Revêtement/enduit abîmé ; candidat de confusion, pas une photo saine garantie."
+    },
+    {
+      "id": "phele_train_109",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_109.jpg",
+      "source_label_member": "PHELE/train/labels/train_109.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "7333418b495de4ae1f66dd79862996b674ef16b584b46c09c2a040bc4341453b",
+        "size": 6021210,
+        "transfer_size": 3041921,
+        "start": 254904299,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_109.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "5 0.603340 0.397073 0.426918 0.378472\n",
+      "source_label_sha256": "8e4d7e3325d81155b684c9e655b21651d2eec80014c5d58dec0935571918cbde",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Revêtement/enduit abîmé ; candidat de confusion, pas une photo saine garantie."
+    },
+    {
+      "id": "phele_train_113",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_113.jpg",
+      "source_label_member": "PHELE/train/labels/train_113.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "2dbb1be6d03ec3d5f88380766a9daa44db148e969aab657e5addcd09320fa841",
+        "size": 5641636,
+        "transfer_size": 4541780,
+        "start": 260537858,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_113.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "5 0.660218 0.515005 0.606812 0.252232\n",
+      "source_label_sha256": "8286a7af83c8dba5f601bac8d40f968bfda5744da8106719159761d91e92e8ec",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Revêtement/enduit abîmé ; candidat de confusion, pas une photo saine garantie."
+    },
+    {
+      "id": "phele_train_114",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_114.jpg",
+      "source_label_member": "PHELE/train/labels/train_114.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "9b5284f4775a60b25b1d2431c42e85d69f68bbb23cea149c7ca091dce1023cb4",
+        "size": 4762688,
+        "transfer_size": 2755002,
+        "start": 265079700,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_114.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "5 0.681052 0.481647 0.219907 0.196429\n",
+      "source_label_sha256": "8140ff3532536da1ce2b51c23043a299f9d87ccda436f744750ba1a62f04eaa7",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Revêtement/enduit abîmé ; candidat de confusion, pas une photo saine garantie."
+    },
+    {
+      "id": "phele_train_117",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_117.jpg",
+      "source_label_member": "PHELE/train/labels/train_117.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "30d499c807977c5e9f5953329f655533f002ec52334c9f2a691a9264353d2204",
+        "size": 6246810,
+        "transfer_size": 3880851,
+        "start": 272835287,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_117.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "5 0.581019 0.537574 0.626984 0.924851\n",
+      "source_label_sha256": "48dc604e09bb98a370a511f4fb785ea9ce893c24d1b40d1672b859459b377718",
+      "decision": "quarantine",
+      "note": "Le cadre Peeling paint englobe une bâche/feuille bleue devant une ouverture. Annotation non retenue en l’état ; revoir la zone et le sens de la classe."
+    },
+    {
+      "id": "phele_train_124",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_124.jpg",
+      "source_label_member": "PHELE/train/labels/train_124.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "8108a24c800b0c2f3b6104f11f60d36bec012cb17ee455e46dd54e6b9e318aa1",
+        "size": 4642384,
+        "transfer_size": 2685625,
+        "start": 292105350,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_124.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "5 0.394015 0.404514 0.566468 0.516369\n5 0.797288 0.874504 0.314815 0.250992\n",
+      "source_label_sha256": "e470605dd3c290c9566ee1937e3b7ff5b25c6d7543e7259a8b38bf6ba563934e",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Revêtement/enduit abîmé ; candidat de confusion, pas une photo saine garantie."
+    },
+    {
+      "id": "phele_train_134",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_134.jpg",
+      "source_label_member": "PHELE/train/labels/train_134.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "80eebfe4234d92c6827542448c8d9d4230015fa5b8f241008a6f96f07c1fdad0",
+        "size": 7158270,
+        "transfer_size": 3832777,
+        "start": 319706340,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_134.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "9 0.465278 0.435681 0.832837 0.752976\n",
+      "source_label_sha256": "b622f761b01432c81b3a548150e351692756d03182a75d9cbb98b308e112d7f4",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Zones tachées étiquetées Mold par la source ; la cause ne peut pas être confirmée sur photo."
+    },
+    {
+      "id": "phele_train_135",
+      "source_id": "phele_v3",
+      "image_policy": "single_frame",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_135.jpg",
+      "source_label_member": "PHELE/train/labels/train_135.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "4be617417f08f76ca6af4fd1ae6d06642caaee15745fe5bf8e1163212f1f857e",
+        "size": 113458,
+        "transfer_size": 111607,
+        "start": 323539179,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_135.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "5 0.730208 0.398047 0.270833 0.303906\n",
+      "source_label_sha256": "d04401acc8e462a82fb446d5e090ead0cfee0f3cd8d9da39959f721f19506333",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Revêtement/enduit abîmé ; candidat de confusion, pas une photo saine garantie."
+    },
+    {
+      "id": "phele_train_136",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_136.jpg",
+      "source_label_member": "PHELE/train/labels/train_136.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "3b970cf2d3aaa90928598cb2639fc3fa101532e4ae44c895230fa2e271afe230",
+        "size": 5432448,
+        "transfer_size": 2880909,
+        "start": 323650848,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_136.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "5 0.589616 0.565724 0.143519 0.172619\n",
+      "source_label_sha256": "9012695b6f3329468fc02ecee62bf14672b036fe9ad8fcec30b11810649e370b",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Revêtement/enduit abîmé ; candidat de confusion, pas une photo saine garantie."
+    },
+    {
+      "id": "phele_train_142",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_142.jpg",
+      "source_label_member": "PHELE/train/labels/train_142.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "f9e2a7163c993af0b5f27ef877683c5327c260c02f94b6efc277298a47541f37",
+        "size": 7463132,
+        "transfer_size": 3409929,
+        "start": 342963186,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_142.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "5 0.850694 0.609375 0.237103 0.167163\n5 0.911210 0.319444 0.177579 0.335317\n",
+      "source_label_sha256": "db9bfe61c1948c18a21e19bf83d7f68f4f29921538e4b2e193a98232e253ee22",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Revêtement/enduit abîmé ; candidat de confusion, pas une photo saine garantie."
+    },
+    {
+      "id": "phele_train_145",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_145.jpg",
+      "source_label_member": "PHELE/train/labels/train_145.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "dcd2a35981670015be0d7cc51445d0f4af915816a607df4ce54d6f744d0c2bce",
+        "size": 4897724,
+        "transfer_size": 3042887,
+        "start": 352746537,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_145.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "9 0.558036 0.462798 0.411045 0.600694\n",
+      "source_label_sha256": "5396238c67a50d8ca8999bbeec55a1de06eb0aa39023e9676144f4c11597b31c",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Zones tachées étiquetées Mold par la source ; la cause ne peut pas être confirmée sur photo."
+    },
+    {
+      "id": "phele_train_148",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_148.jpg",
+      "source_label_member": "PHELE/train/labels/train_148.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "a3bd146e1535cfa469908c1cfb9a0ba79293e7417f6250c1137c42c823535ea4",
+        "size": 4007052,
+        "transfer_size": 3178898,
+        "start": 357832920,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_148.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "5 0.560847 0.408358 0.511905 0.530506\n6 0.343750 0.711682 0.635251 0.576637\n6 0.837302 0.583085 0.325397 0.515377\n",
+      "source_label_sha256": "abc06250fde655135f17105ecae22864804600ab3326f1872e2b0873f858a149",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Revêtement/enduit abîmé ; candidat de confusion, pas une photo saine garantie."
+    },
+    {
+      "id": "phele_train_158",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_158.jpg",
+      "source_label_member": "PHELE/train/labels/train_158.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "16b7b62b4c532a904b29e54d374987cc437fc10a7b0fb04edec0ab5fb5432c3e",
+        "size": 4527037,
+        "transfer_size": 2541262,
+        "start": 392657145,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_158.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "5 0.851190 0.136533 0.189815 0.157490\n5 0.474537 0.436384 0.379630 0.357887\n5 0.895833 0.502108 0.146825 0.120784\n",
+      "source_label_sha256": "29bc2e01756f49bf8fb1332eea345040296edbeaf9002fe7a4d075eefea7ee6c",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Revêtement/enduit abîmé ; candidat de confusion, pas une photo saine garantie."
+    },
+    {
+      "id": "phele_train_160",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_160.jpg",
+      "source_label_member": "PHELE/train/labels/train_160.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "d2158b941a22f5f7f8f1aeff90b4cc762814e70184f045a82c8dd894253f80e3",
+        "size": 4085280,
+        "transfer_size": 2540666,
+        "start": 404217458,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_160.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "5 0.260417 0.431424 0.161045 0.208085\n5 0.453042 0.638021 0.232804 0.228423\n",
+      "source_label_sha256": "aeee7274a9324abd130a097bb408c34d807ad813e6afa5962285df228cbcfcd5",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Revêtement/enduit abîmé ; candidat de confusion, pas une photo saine garantie."
+    },
+    {
+      "id": "phele_train_161",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_161.jpg",
+      "source_label_member": "PHELE/train/labels/train_161.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "5f2ffd599a6bb6f53f89bab072dbce54ab9ff21e239b7fbe56960ab1fffb1360",
+        "size": 4150178,
+        "transfer_size": 2463693,
+        "start": 406758186,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_161.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "5 0.291336 0.274554 0.444444 0.366567\n5 0.570933 0.614211 0.224537 0.189732\n",
+      "source_label_sha256": "b566d5e0a8961c91c289d195ce367b509a2219905abdfe2d22e079dcbba23ddd",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Revêtement/enduit abîmé ; candidat de confusion, pas une photo saine garantie."
+    },
+    {
+      "id": "phele_train_167",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_167.jpg",
+      "source_label_member": "PHELE/train/labels/train_167.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "7d0d9378cb0151702718a8062fa184f6e4f5e77dbf82b0f71fc2a513850b0de3",
+        "size": 7918780,
+        "transfer_size": 3992085,
+        "start": 422139385,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_167.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "5 0.553241 0.488095 0.893519 0.934028\n9 0.714782 0.544767 0.526124 0.697669\n",
+      "source_label_sha256": "1f520e031e25637d4e3711060482d50af778c3c29e60c37be8e4ca5ac1067fbd",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Zones tachées étiquetées Mold par la source ; la cause ne peut pas être confirmée sur photo."
+    },
+    {
+      "id": "phele_train_183",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_183.jpg",
+      "source_label_member": "PHELE/train/labels/train_183.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "4803cbf0b3e1f079ff013cac78087e27955ed7c86fecb3585f842b0c02b69f4f",
+        "size": 4213782,
+        "transfer_size": 2985398,
+        "start": 475494955,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_183.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "5 0.302249 0.714410 0.603836 0.571181\n",
+      "source_label_sha256": "b663f2cacbf79e2256b2e539a8caa58b8baf374cd4a81a56d5b2a7e29893ba6d",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Revêtement/enduit abîmé ; candidat de confusion, pas une photo saine garantie."
+    },
+    {
+      "id": "phele_train_187",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_187.jpg",
+      "source_label_member": "PHELE/train/labels/train_187.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "690be18213d5be0305727b8569bfc4271640cf6c9957e7fccb0ed9ccf2be0e61",
+        "size": 5225014,
+        "transfer_size": 3102656,
+        "start": 489638702,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_187.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "5 0.226521 0.654762 0.208333 0.180060\n5 0.042659 0.487599 0.084656 0.128472\n",
+      "source_label_sha256": "176155f0c70fac31820204e71ede70c617eef7b8230c995077028d7991647606",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Revêtement/enduit abîmé ; candidat de confusion, pas une photo saine garantie."
+    },
+    {
+      "id": "phele_train_189",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_189.jpg",
+      "source_label_member": "PHELE/train/labels/train_189.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "5b2751dd385181294d3402185071084a1b2757e976911d75adec6ba560b43414",
+        "size": 4496000,
+        "transfer_size": 2733984,
+        "start": 497172787,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_189.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "3 0.495370 0.550595 0.734788 0.191964\n5 0.822586 0.390005 0.195437 0.207093\n",
+      "source_label_sha256": "bea039cf06e702615493ba512eb63e68effcf4d7ffef8f7c9aa8720bd6e6a7df",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Revêtement/enduit abîmé ; candidat de confusion, pas une photo saine garantie."
+    },
+    {
+      "id": "phele_train_199",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_199.jpg",
+      "source_label_member": "PHELE/train/labels/train_199.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "94eebb66a35196e1f0d1ccde125e6cad68a2faacf09f6cb6351808a2d10176d0",
+        "size": 5324556,
+        "transfer_size": 3272177,
+        "start": 531778165,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_199.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "5 0.554067 0.520461 0.891865 0.741815\n5 0.346065 0.818576 0.202712 0.113343\n",
+      "source_label_sha256": "466aedf44d993d0943ff3d37576715a79cfd5d54d6f8200b572cf460af8bf5f9",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Revêtement/enduit abîmé ; candidat de confusion, pas une photo saine garantie."
+    },
+    {
+      "id": "phele_train_202",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_202.jpg",
+      "source_label_member": "PHELE/train/labels/train_202.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "50f35343d4aad2717b12b9568b328a35c2593a707dc3019c54f607d33470028b",
+        "size": 6043880,
+        "transfer_size": 3496343,
+        "start": 547479177,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_202.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "3 0.461310 0.550430 0.557540 0.284722\n3 0.650174 0.219246 0.175347 0.322090\n5 0.823041 0.385582 0.212054 0.215608\n",
+      "source_label_sha256": "f2c8760d9be04a90025d8bd77c1d8c8c6fe75f07d1a1cdaaf72f6fb6e54682a1",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Revêtement/enduit abîmé ; candidat de confusion, pas une photo saine garantie."
+    },
+    {
+      "id": "phele_train_208",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_208.jpg",
+      "source_label_member": "PHELE/train/labels/train_208.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "46287524cfa69fdea12478b1c068b402047f62f475ef40998b74f15fbbe8e13d",
+        "size": 4938814,
+        "transfer_size": 2654282,
+        "start": 573384897,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_208.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "5 0.444444 0.503224 0.744709 0.441964\n",
+      "source_label_sha256": "258f8b64cf00ca53a285df9f0514f8f0091a5fff42edd9cce35c07d605241981",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Revêtement/enduit abîmé ; candidat de confusion, pas une photo saine garantie."
+    },
+    {
+      "id": "phele_train_212",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_212.jpg",
+      "source_label_member": "PHELE/train/labels/train_212.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "ffdb199fb45f98d8b0ab4e7ed1b1cce0ce0d6944dfa88210f3b391a38b8fc55c",
+        "size": 5716846,
+        "transfer_size": 3749649,
+        "start": 592077954,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_212.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "5 0.468626 0.449570 0.936756 0.543981\n",
+      "source_label_sha256": "912a228003d72ae6f10c0af10eb9577ac9a88df4810cdeb08001efc480e04912",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Revêtement/enduit abîmé ; candidat de confusion, pas une photo saine garantie."
+    },
+    {
+      "id": "phele_train_219",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_219.jpg",
+      "source_label_member": "PHELE/train/labels/train_219.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "99ba2bbc0e4bc5e308636743e5054af3431d68aefbaf0d9dc8d79c85dcf176c3",
+        "size": 4322768,
+        "transfer_size": 1646309,
+        "start": 610245986,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_219.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "5 0.472553 0.485739 0.148148 0.970982\n",
+      "source_label_sha256": "f83f60de3ad0965b3dc722499b380a8c97d27037147fc2894f6b9af0c206c55a",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Revêtement/enduit abîmé ; candidat de confusion, pas une photo saine garantie."
+    },
+    {
+      "id": "phele_train_22",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_22.jpg",
+      "source_label_member": "PHELE/train/labels/train_22.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "e541d34f27381f7f0656ce5ad28f7c33e574be2d0725249e46887b316d16c343",
+        "size": 8121478,
+        "transfer_size": 3514833,
+        "start": 611892356,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_22.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "5 0.384755 0.462178 0.217262 0.209077\n",
+      "source_label_sha256": "d4dbbe5b023d550eb19c22c2d8e761d9b6a8d7b1a9f13c237f95740d632636f7",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Revêtement/enduit abîmé ; candidat de confusion, pas une photo saine garantie."
+    },
+    {
+      "id": "phele_train_225",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_225.jpg",
+      "source_label_member": "PHELE/train/labels/train_225.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "f5c0f21965b900e547ee350b3d52b1a466e72e1567904135d5ec1aa8ac10c2f7",
+        "size": 5179216,
+        "transfer_size": 3229514,
+        "start": 625336592,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_225.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "5 0.686839 0.659474 0.553571 0.366567\n",
+      "source_label_sha256": "005da9dfd012477e2eca5afcd19230d0ab74265460223b954b12c4184c80dd5a",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Revêtement/enduit abîmé ; candidat de confusion, pas une photo saine garantie."
+    },
+    {
+      "id": "phele_train_263",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_263.jpg",
+      "source_label_member": "PHELE/train/labels/train_263.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "06429deebf86ee809fc2882d84437c6bfb501c6eed142d108e8a35987a72c3a8",
+        "size": 2869608,
+        "transfer_size": 1559852,
+        "start": 722616678,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_263.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "9 0.685185 0.426587 0.395503 0.334325\n",
+      "source_label_sha256": "5622f168fafde1b89e3885fc39971c90a2f9fb07057a8182e50b5ecb869a0c40",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Zones tachées étiquetées Mold par la source ; la cause ne peut pas être confirmée sur photo."
+    },
+    {
+      "id": "phele_train_290",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_290.jpg",
+      "source_label_member": "PHELE/train/labels/train_290.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "1a3dd0cf1d9f352326855b148cb7e0f1925ebbc0fe723b0ce036ee83b2985a54",
+        "size": 5368324,
+        "transfer_size": 3272890,
+        "start": 800210696,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_290.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "9 0.652654 0.430390 0.552827 0.503638\n9 0.199777 0.560020 0.399058 0.681548\n",
+      "source_label_sha256": "f500e8688bf053665f0875aed54acae9da72a474c869b876ddcacf2dda9f6f09",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Zones tachées étiquetées Mold par la source ; la cause ne peut pas être confirmée sur photo."
+    },
+    {
+      "id": "phele_train_301",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_301.jpg",
+      "source_label_member": "PHELE/train/labels/train_301.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "f003df7d018a7bee44f80ef1538f8600eecbed463b4b0bfd423e5698feef7f5d",
+        "size": 4125367,
+        "transfer_size": 2477655,
+        "start": 827795955,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_301.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "9 0.320106 0.426091 0.447090 0.734127\n",
+      "source_label_sha256": "425e99754c29b0ab2e5e8dc3e2e93e0a94c9030b8bb6944c98da69a84f8c5db2",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Zones tachées étiquetées Mold par la source ; la cause ne peut pas être confirmée sur photo."
+    },
+    {
+      "id": "phele_train_305",
+      "source_id": "phele_v3",
+      "image_policy": "single_frame",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_305.jpg",
+      "source_label_member": "PHELE/train/labels/train_305.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "343fee53282ab4c1932632746888cc8e215a2d7070efa3d35ce067062ddf55c1",
+        "size": 7067655,
+        "transfer_size": 7051136,
+        "start": 840134814,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_305.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "9 0.463790 0.412574 0.225860 0.131696\n",
+      "source_label_sha256": "a0a4daa27e41c2459b40472a893dc280c8f308d8807d2c1a2263323932db9bc9",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Zones tachées étiquetées Mold par la source ; la cause ne peut pas être confirmée sur photo."
+    },
+    {
+      "id": "phele_train_306",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_306.jpg",
+      "source_label_member": "PHELE/train/labels/train_306.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "4b06d34ca0e6215374a7deedf849e77cb2603fc8dc247d991c2dce17e21c61ba",
+        "size": 6508760,
+        "transfer_size": 3458131,
+        "start": 847186012,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_306.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "9 0.738757 0.213666 0.522487 0.339534\n5 0.481812 0.536706 0.236111 0.211310\n",
+      "source_label_sha256": "13eeaae486803a291375b32a417ae03211f3b7ea05f1aed02a997d4551af54e9",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Zones tachées étiquetées Mold par la source ; la cause ne peut pas être confirmée sur photo."
+    },
+    {
+      "id": "phele_train_308",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_308.jpg",
+      "source_label_member": "PHELE/train/labels/train_308.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "a52c2cdf1faa3df33615e7c83816f26155a7c3d856bfd49cc15706d618b2c418",
+        "size": 7531278,
+        "transfer_size": 4004755,
+        "start": 852463502,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_308.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "9 0.503472 0.603919 0.166336 0.372024\n",
+      "source_label_sha256": "4a013ccc5217394c12d9675ca37d22fa0255ace403fbd3fe5d3fdf479868d88f",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Zones tachées étiquetées Mold par la source ; la cause ne peut pas être confirmée sur photo."
+    },
+    {
+      "id": "phele_train_309",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_309.jpg",
+      "source_label_member": "PHELE/train/labels/train_309.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "14b17d01daf4b33197df9fa9d2d7c96b3e1fb7822b24fdd7eb5765ee89600915",
+        "size": 6052122,
+        "transfer_size": 3284893,
+        "start": 856468319,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_309.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "9 0.688823 0.755580 0.394180 0.295387\n",
+      "source_label_sha256": "a34d140aaf4345d53132446e1b00b88600324014fa72001ee2f77a66cb59574c",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Zones tachées étiquetées Mold par la source ; la cause ne peut pas être confirmée sur photo."
+    },
+    {
+      "id": "phele_train_337",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_337.jpg",
+      "source_label_member": "PHELE/train/labels/train_337.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "ebcfbd48eea3da007fb0624130f7afa9044d55bd46e0e7c3a89086bbfa4eef33",
+        "size": 4623882,
+        "transfer_size": 2597269,
+        "start": 928648623,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_337.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "9 0.524058 0.340774 0.951885 0.606151\n",
+      "source_label_sha256": "9b235c4f0b62e5438e36f2c7fc0038b78a5ffabcdb1dda7d6d041f36abc61ef4",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Zones tachées étiquetées Mold par la source ; la cause ne peut pas être confirmée sur photo."
+    },
+    {
+      "id": "phele_train_339",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_339.jpg",
+      "source_label_member": "PHELE/train/labels/train_339.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "4a4e781adcaab31e88616d38bbf7e8a0671e7790278397303b71a376fcf1917d",
+        "size": 4147803,
+        "transfer_size": 2622723,
+        "start": 931271240,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_339.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "5 0.387731 0.736607 0.450066 0.451885\n9 0.519841 0.340898 0.283069 0.382688\n",
+      "source_label_sha256": "54ffaba366e33db6b425cca1e739c18a989af6eb0af0e1b8f94c23ca1d8ebf1e",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Zones tachées étiquetées Mold par la source ; la cause ne peut pas être confirmée sur photo."
+    },
+    {
+      "id": "phele_train_344",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_344.jpg",
+      "source_label_member": "PHELE/train/labels/train_344.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "bb947f25c156b3a21cbd5f350ed5c8863dde1fcb799fb6fc2c6131036f3ddf29",
+        "size": 4877818,
+        "transfer_size": 2601318,
+        "start": 951585585,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_344.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "9 0.705026 0.667659 0.589947 0.568452\n",
+      "source_label_sha256": "04fa03c30a9f5e9a78c9f23d4f2bc60322c85170ced392748bf94db96935811e",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Zones tachées étiquetées Mold par la source ; la cause ne peut pas être confirmée sur photo."
+    },
+    {
+      "id": "phele_train_352",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_352.jpg",
+      "source_label_member": "PHELE/train/labels/train_352.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "d359e0b18292cabcc9356c9ddcd357599b2d8326d2ce50bfe4ff28219a3b337f",
+        "size": 5839850,
+        "transfer_size": 3452073,
+        "start": 971994713,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_352.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "9 0.898189 0.156250 0.128720 0.200728\n9 0.311012 0.649967 0.500000 0.448082\n9 0.766617 0.744048 0.305556 0.511905\n",
+      "source_label_sha256": "1589095441ba3baf03640b29fe59619c831ac03bce05af23666916a08979829d",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Zones tachées étiquetées Mold par la source ; la cause ne peut pas être confirmée sur photo."
+    },
+    {
+      "id": "phele_train_354",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_354.jpg",
+      "source_label_member": "PHELE/train/labels/train_354.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "e51e6158dc97d00ae76442d5c2b051de96dae59462f02e8fdf6edef7d1cf65e4",
+        "size": 4991354,
+        "transfer_size": 2511852,
+        "start": 979263588,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_354.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "9 0.585317 0.389385 0.597884 0.745040\n",
+      "source_label_sha256": "0fba5f9b2571a104b251b0129b0226624e742a51307650b560fde97517f46cb6",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Zones tachées étiquetées Mold par la source ; la cause ne peut pas être confirmée sur photo."
+    },
+    {
+      "id": "phele_train_362",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_362.jpg",
+      "source_label_member": "PHELE/train/labels/train_362.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "26dc2e0d769fd4d03342df4c743f0f461a5bea9086637d6c104d80ee7cc15b38",
+        "size": 6868732,
+        "transfer_size": 3707419,
+        "start": 1008351931,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_362.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "9 0.534226 0.627232 0.311839 0.336310\n",
+      "source_label_sha256": "32741395e19b929db0d20fc1c74ae900bd9a49d0313695f6f40f0cb9ed4024c3",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Zones tachées étiquetées Mold par la source ; la cause ne peut pas être confirmée sur photo."
+    },
+    {
+      "id": "phele_train_364",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_364.jpg",
+      "source_label_member": "PHELE/train/labels/train_364.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "b223fc95c7d81f2be107ad719d7ea41a2cd87c447d1621620584a7d651047f9d",
+        "size": 4291140,
+        "transfer_size": 2702200,
+        "start": 1013377707,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_364.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "9 0.497768 0.309854 0.614583 0.492725\n",
+      "source_label_sha256": "a14af99a61e9f8e5cb717b823f25fc2d42f0bf5f541f1ab8eee4bb913cc0a386",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Zones tachées étiquetées Mold par la source ; la cause ne peut pas être confirmée sur photo."
+    },
+    {
+      "id": "phele_train_368",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_368.jpg",
+      "source_label_member": "PHELE/train/labels/train_368.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "22e30db8151b9ac09ec7daba6f180d8ea24611e5616100c0bc8d10d11c003778",
+        "size": 4829266,
+        "transfer_size": 2812532,
+        "start": 1023264000,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_368.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "9 0.223710 0.264633 0.225860 0.528770\n",
+      "source_label_sha256": "f2312c43bc9157e45fc88ddbb6862c36ad12545107d023f77b0d0e90d7edaaad",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Zones tachées étiquetées Mold par la source ; la cause ne peut pas être confirmée sur photo."
+    },
+    {
+      "id": "phele_train_372",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_372.jpg",
+      "source_label_member": "PHELE/train/labels/train_372.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "4a09eab460db3147d071fbee4447fd747a54e999ef201873782ac6a39a2445e0",
+        "size": 4841350,
+        "transfer_size": 2723396,
+        "start": 1043171215,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_372.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "5 0.339451 0.222718 0.374008 0.248016\n5 0.710648 0.428695 0.578704 0.219990\n9 0.509094 0.587798 0.664352 0.223214\n5 0.775959 0.736731 0.110780 0.119792\n",
+      "source_label_sha256": "08e206ba7a1e97db67252060b7199424980ef140aa086230933be919d5d043d9",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Zones tachées étiquetées Mold par la source ; la cause ne peut pas être confirmée sur photo."
+    },
+    {
+      "id": "phele_train_373",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_373.jpg",
+      "source_label_member": "PHELE/train/labels/train_373.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "9714de99afa3bc2fa9fb1b78c7f559bed75db71b01b0b1e6303ce9d14bff5bbc",
+        "size": 4850542,
+        "transfer_size": 2580553,
+        "start": 1045894673,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_373.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "9 0.352348 0.423363 0.270172 0.211310\n5 0.492725 0.457961 0.148148 0.183284\n",
+      "source_label_sha256": "3126e97870247e1dbaea09bfd336f28c197c274c600c4575a5fe4a452d0c13ee",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Zones tachées étiquetées Mold par la source ; la cause ne peut pas être confirmée sur photo."
+    },
+    {
+      "id": "phele_train_392",
+      "source_id": "phele_v3",
+      "image_policy": "single_frame",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_392.jpg",
+      "source_label_member": "PHELE/train/labels/train_392.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "98ab4b2c4d03ff977284cbf786154385a5852e33e499baa6d70daadde3d31589",
+        "size": 7260557,
+        "transfer_size": 7240193,
+        "start": 1099179324,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_392.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "9 0.613426 0.484871 0.346561 0.166171\n",
+      "source_label_sha256": "769a1d0f29e2794cc3635da1b90293dd80df90e4482b672309c1f222230d434a",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Zones tachées étiquetées Mold par la source ; la cause ne peut pas être confirmée sur photo."
+    },
+    {
+      "id": "phele_train_40",
+      "source_id": "phele_v3",
+      "image_policy": "single_frame",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_40.jpg",
+      "source_label_member": "PHELE/train/labels/train_40.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "5e4f9ded00a7b77f4b70c0302ca2781a53c0e17fe63089767527ba700e7d4e24",
+        "size": 203176,
+        "transfer_size": 202983,
+        "start": 1134616626,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_40.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "9 0.451172 0.597890 0.588281 0.804220\n5 0.232813 0.517585 0.464062 0.728019\n5 0.690625 0.365768 0.309375 0.288394\n",
+      "source_label_sha256": "1a06124ac87ce1b8f526d8d63421b2c73083df85d7970089f5ac7d85d76068d4",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Zones tachées étiquetées Mold par la source ; la cause ne peut pas être confirmée sur photo."
+    },
+    {
+      "id": "phele_train_419",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_419.jpg",
+      "source_label_member": "PHELE/train/labels/train_419.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "ae4e62e6f1bbee50815a78efd4fcfc875224c798987da17d47dad517eb29aa96",
+        "size": 7663274,
+        "transfer_size": 3982122,
+        "start": 1175257390,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_419.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "9 0.602017 0.248636 0.392526 0.207093\n9 0.782242 0.718378 0.284722 0.350446\n",
+      "source_label_sha256": "f4170e13095743361943e916421a5d4ea942f5d5aeca4f76a72876cc15527f80",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Zones tachées étiquetées Mold par la source ; la cause ne peut pas être confirmée sur photo."
+    },
+    {
+      "id": "phele_train_438",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_438.jpg",
+      "source_label_member": "PHELE/train/labels/train_438.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "4250472208c0a361f899609bb6af37ba7228c2799cb6b63fdf0e4e366c6f7d2f",
+        "size": 4385354,
+        "transfer_size": 3410182,
+        "start": 1217057302,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_438.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "9 0.634921 0.254299 0.730159 0.507937\n",
+      "source_label_sha256": "e72079b868ebb8acdba40dc6ac7103832e292a3f89f9ad5c3c6cf9007f3e38f1",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Zones tachées étiquetées Mold par la source ; la cause ne peut pas être confirmée sur photo."
+    },
+    {
+      "id": "phele_train_458",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_458.jpg",
+      "source_label_member": "PHELE/train/labels/train_458.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "680cee4c3525f79f6d299f7f553906c60d9cf4833801354385758b691087ac2c",
+        "size": 7852280,
+        "transfer_size": 3633719,
+        "start": 1273059376,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_458.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "9 0.562252 0.616071 0.861607 0.388228\n",
+      "source_label_sha256": "28b7efa4b099dffc9c16269ff1e86a51e4ca613589f7b6c835f39e4d60c5a8d3",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Zones tachées étiquetées Mold par la source ; la cause ne peut pas être confirmée sur photo."
+    },
+    {
+      "id": "phele_train_48",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_48.jpg",
+      "source_label_member": "PHELE/train/labels/train_48.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "68a27dae79d324784ba35440b6b95d0a161a0c9c4e4849e77e32eb4143e6d941",
+        "size": 7413426,
+        "transfer_size": 3531552,
+        "start": 1318860521,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_48.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "9 0.507275 0.905382 0.985450 0.187748\n",
+      "source_label_sha256": "8749c76323b315a9de9b7a6801c174add2c1c7a4d4eb4f6dc94c032cb6a8349b",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Zones tachées étiquetées Mold par la source ; la cause ne peut pas être confirmée sur photo."
+    },
+    {
+      "id": "phele_train_54",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_54.jpg",
+      "source_label_member": "PHELE/train/labels/train_54.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "d066cb9e64a38e5a808d71bf0cf38ac901789aac72ef64a3f197441772368ac7",
+        "size": 7348974,
+        "transfer_size": 3982162,
+        "start": 1484111880,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_54.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "9 0.554191 0.524802 0.613839 0.346561\n",
+      "source_label_sha256": "ab861c15a23861c0909e693348f35eeb85f0ef02c7b8a9452be39ecd90f2b106",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Zones tachées étiquetées Mold par la source ; la cause ne peut pas être confirmée sur photo."
+    },
+    {
+      "id": "phele_train_61",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_61.jpg",
+      "source_label_member": "PHELE/train/labels/train_61.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "ca4bc8c8ccf3e45a674a096c08d74bfabd63c27b2d35bc149f1e92be4f65959e",
+        "size": 4548876,
+        "transfer_size": 2796574,
+        "start": 1645623241,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_61.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "9 0.672619 0.177455 0.654762 0.338542\n",
+      "source_label_sha256": "a53571d7a0547b580116151366aaeb79348f71c86d6a925d47d096d3d5baf9fe",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Zones tachées étiquetées Mold par la source ; la cause ne peut pas être confirmée sur photo."
+    },
+    {
+      "id": "phele_train_75",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_75.jpg",
+      "source_label_member": "PHELE/train/labels/train_75.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "a09a57c00c2fb05a13854ccce3fe053b678c0d8b1d10792ec0e8e1f627bff103",
+        "size": 4630078,
+        "transfer_size": 2318584,
+        "start": 1683907178,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_75.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "9 0.532903 0.429936 0.590939 0.547867\n",
+      "source_label_sha256": "67dc7968bb9d508e367680ef163d27496d5deca286aaffed78a67179a83ef55d",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Zones tachées étiquetées Mold par la source ; la cause ne peut pas être confirmée sur photo."
+    },
+    {
+      "id": "phele_val_10",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "val",
+      "source_member": "PHELE/val/images/val_10.jpg",
+      "source_label_member": "PHELE/val/labels/val_10.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "ae954270c3c462d9c3b0213a3dba26dda04e94c0ee35ed2177c2e1f3368b3478",
+        "size": 2496930,
+        "transfer_size": 1748391,
+        "start": 1777415455,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/val/images/val_10.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "5 0.446677 0.144015 0.892857 0.208003\n",
+      "source_label_sha256": "8e94a5dec119afa5109b4d8079fd65a7cc545845b0dd0be96bea14ee6e1ed03c",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Revêtement/enduit abîmé ; candidat de confusion, pas une photo saine garantie."
+    },
+    {
+      "id": "phele_val_103",
+      "source_id": "phele_v3",
+      "image_policy": "single_frame",
+      "source_split": "val",
+      "source_member": "PHELE/val/images/val_103.jpg",
+      "source_label_member": "PHELE/val/labels/val_103.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "bb54e081f3e08306f73bef9db87ec30d0557f4673ee419e382602fef8d383ec2",
+        "size": 5943916,
+        "transfer_size": 3216644,
+        "start": 1788313069,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/val/images/val_103.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "5 0.664517 0.333333 0.350860 0.274802\n5 0.197917 0.729167 0.395172 0.279266\n5 0.227348 0.262773 0.454034 0.381696\n",
+      "source_label_sha256": "5fc932f822e8a2c7001220e66cb92aaa347130a8a638255011587a40124b4280",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Revêtement/enduit abîmé ; candidat de confusion, pas une photo saine garantie."
+    },
+    {
+      "id": "phele_val_108",
+      "source_id": "phele_v3",
+      "image_policy": "single_frame",
+      "source_split": "val",
+      "source_member": "PHELE/val/images/val_108.jpg",
+      "source_label_member": "PHELE/val/labels/val_108.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "db89e47a0b8e1bbfd70bf72e22acb670421560a90eb1f0b55acc1f66c5c7f949",
+        "size": 6472514,
+        "transfer_size": 3053993,
+        "start": 1799494816,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/val/images/val_108.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "5 0.540013 0.498884 0.240079 0.323661\n",
+      "source_label_sha256": "725537c0e6ac88a8aa28e0ee9cec73d9e508ed7610ac5c4e4d0c9cba2db0ef60",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Revêtement/enduit abîmé ; candidat de confusion, pas une photo saine garantie."
+    },
+    {
+      "id": "phele_val_12",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "val",
+      "source_member": "PHELE/val/images/val_12.jpg",
+      "source_label_member": "PHELE/val/labels/val_12.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "402627645e7263a9e625e79d817bcd2dfeb93fc6f6a82f1b23fc8fbf68917f51",
+        "size": 7544806,
+        "transfer_size": 3765273,
+        "start": 1830822860,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/val/images/val_12.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "9 0.607143 0.534474 0.785714 0.349206\n",
+      "source_label_sha256": "8a54b1453c94cec05ddecbd37db82615674df66ef67afd3699dd8c9a5901d7e3",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Zones tachées étiquetées Mold par la source ; la cause ne peut pas être confirmée sur photo."
+    },
+    {
+      "id": "phele_val_123",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "val",
+      "source_member": "PHELE/val/images/val_123.jpg",
+      "source_label_member": "PHELE/val/labels/val_123.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "cc22b53e76e94741f674e142e2295b6c94ee9738cb57b9d1b2920dfbd060b864",
+        "size": 2322876,
+        "transfer_size": 1405198,
+        "start": 1841707278,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/val/images/val_123.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "5 0.529266 0.505332 0.474537 0.165923\n",
+      "source_label_sha256": "032273ade90eb8bf8f4bcc71577de8180a061eb7c7237f6803008e6957061337",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Revêtement/enduit abîmé ; candidat de confusion, pas une photo saine garantie."
+    },
+    {
+      "id": "phele_val_124",
+      "source_id": "phele_v3",
+      "image_policy": "single_frame",
+      "source_split": "val",
+      "source_member": "PHELE/val/images/val_124.jpg",
+      "source_label_member": "PHELE/val/labels/val_124.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "c90a4f88df234d7352e222f7c1f139b2a6563804dc088d49311eecec53df7546",
+        "size": 6326126,
+        "transfer_size": 3411178,
+        "start": 1843112534,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/val/images/val_124.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "5 0.303571 0.340898 0.339286 0.410962\n5 0.442295 0.723090 0.593585 0.232887\n5 0.951554 0.379216 0.096892 0.228671\n",
+      "source_label_sha256": "812fcef4a2e95ca7f30a6c5536410c78a0927045e08a281ddb87df0ff1c0170c",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Revêtement/enduit abîmé ; candidat de confusion, pas une photo saine garantie."
+    },
+    {
+      "id": "phele_val_128",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "val",
+      "source_member": "PHELE/val/images/val_128.jpg",
+      "source_label_member": "PHELE/val/labels/val_128.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "5b1669a74ff6de54e7da5534b82789a44f1d1c5cab93f4cec581e459a402fe98",
+        "size": 5961752,
+        "transfer_size": 3768926,
+        "start": 1857801774,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/val/images/val_128.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "5 0.582507 0.468130 0.344907 0.404514\n",
+      "source_label_sha256": "6b5870d9066ee613715a75b497a9a6635d05d1dc45df67bd2bc143f13eb2462d",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Revêtement/enduit abîmé ; candidat de confusion, pas une photo saine garantie."
+    },
+    {
+      "id": "phele_val_131",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "val",
+      "source_member": "PHELE/val/images/val_131.jpg",
+      "source_label_member": "PHELE/val/labels/val_131.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "cbeb270a8fdfddab91665bc95cfc118a1372d85d39838cc2341dd33437bf8be7",
+        "size": 8160918,
+        "transfer_size": 5147082,
+        "start": 1871330166,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/val/images/val_131.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "5 0.330481 0.458168 0.478423 0.458664\n",
+      "source_label_sha256": "dc86f6e1c40111595c5989ae0c4adf5bb67dc801e22f20bffec194c9f5c18c98",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Revêtement/enduit abîmé ; candidat de confusion, pas une photo saine garantie."
+    },
+    {
+      "id": "phele_val_134",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "val",
+      "source_member": "PHELE/val/images/val_134.jpg",
+      "source_label_member": "PHELE/val/labels/val_134.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "a8f97d7b729b45d05bfa38496425d689a4ae24708f8ffc13ff168036de7b3e60",
+        "size": 6547884,
+        "transfer_size": 3832564,
+        "start": 1879548267,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/val/images/val_134.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "5 0.879340 0.379134 0.241319 0.290013\n3 0.383805 0.351356 0.767113 0.277447\n",
+      "source_label_sha256": "7cfde009fd117c71bb06fde402ee228bf13723f0dc741317222c7a4ef34dfe8f",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Revêtement/enduit abîmé ; candidat de confusion, pas une photo saine garantie."
+    },
+    {
+      "id": "phele_val_45",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "val",
+      "source_member": "PHELE/val/images/val_45.jpg",
+      "source_label_member": "PHELE/val/labels/val_45.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "ab670e2a737f885e26d78aa04cba73bbf1b990f26dbfef1925eea4c5f051d787",
+        "size": 5065930,
+        "transfer_size": 2671232,
+        "start": 2039260827,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/val/images/val_45.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "5 0.524306 0.485367 0.493056 0.581349\n9 0.543651 0.471974 0.328042 0.351687\n",
+      "source_label_sha256": "203016b1cb64ab1444f8a2204714bdf5e828b566fb1dc6a83a643b9c4e023404",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Zones tachées étiquetées Mold par la source ; la cause ne peut pas être confirmée sur photo."
+    },
+    {
+      "id": "phele_val_67",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "val",
+      "source_member": "PHELE/val/images/val_67.jpg",
+      "source_label_member": "PHELE/val/labels/val_67.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "e0d7338f7dd606bf9dfbaa6d901d25a7cb962fa2f45b99d86d1c429d15024e66",
+        "size": 7846800,
+        "transfer_size": 3668520,
+        "start": 2098955638,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/val/images/val_67.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "9 0.572421 0.510293 0.402778 0.479911\n5 0.540840 0.475694 0.874008 0.730159\n",
+      "source_label_sha256": "5f85105a1103c843f61ad4dd598f871bb479d3fee544cc522071b0402fd0c8b0",
+      "decision": "review",
+      "note": "Revue visuelle par l’assistant sur planche avec cadres source ; validation humaine et annotation exhaustive en attente. Zones tachées étiquetées Mold par la source ; la cause ne peut pas être confirmée sur photo."
+    },
+    {
+      "id": "commons_158222207",
+      "source_id": "commons",
+      "source_split": "unassigned",
+      "asset": {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/6/60/Berlin_Wasserschaden_lub_2025-01-19.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "sha256": "a95144a63848c7e7fcbc0b710a0ec57d63dd6e91a94107fe462cefd0764528e0",
+        "size": 3180578,
+        "transfer_size": 3180578,
+        "start": null,
+        "total": 3180578,
+        "encoding": "identity"
+      },
+      "credit": {
+        "title": "File:Berlin Wasserschaden lub 2025-01-19.jpg",
+        "author": "Lukas Beck",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Berlin_Wasserschaden_lub_2025-01-19.jpg"
+      },
+      "source_description": "Wasserschaden an einer Wohnungsdecke in Berlin-Wedding, Deutschland",
+      "decision": "review",
+      "note": "Description de la source : Wasserschaden an einer Wohnungsdecke in Berlin-Wedding, Deutschland. Aucune boîte fournie ; à annoter sans confondre trace d’eau, moisissure et revêtement abîmé."
+    },
+    {
+      "id": "commons_22227712",
+      "source_id": "commons",
+      "source_split": "unassigned",
+      "asset": {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/1/1a/Ceiling_sheetrock_damaged_by_water_so_paint_was_peeling.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "sha256": "dabfd2227a33efa7b085d6f8519bec47f43b1542c7eaafed81047abb3d52eb8d",
+        "size": 89371,
+        "transfer_size": 89371,
+        "start": null,
+        "total": 89371,
+        "encoding": "identity"
+      },
+      "credit": {
+        "title": "File:Ceiling sheetrock damaged by water so paint was peeling.jpg",
+        "author": "Tomwsulcer",
+        "license": "CC0",
+        "license_url": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Ceiling_sheetrock_damaged_by_water_so_paint_was_peeling.jpg"
+      },
+      "source_description": "Most likely moisture, possibly from a vaporizer, caused the paint to peel off of a sheetrocked ceiling.",
+      "decision": "review",
+      "note": "Description de la source : Most likely moisture, possibly from a vaporizer, caused the paint to peel off of a sheetrocked ceiling.. Aucune boîte fournie ; à annoter sans confondre trace d’eau, moisissure et revêtement abîmé."
+    },
+    {
+      "id": "commons_67025365",
+      "source_id": "commons",
+      "source_split": "unassigned",
+      "asset": {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/b/b9/Ceiling_water_damage.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "sha256": "4f1ad9a780a1cb2a28ef1230e8f4c094d544615ef8e8da97edb0739af2f7d6dd",
+        "size": 1134902,
+        "transfer_size": 1134902,
+        "start": null,
+        "total": 1134902,
+        "encoding": "identity"
+      },
+      "credit": {
+        "title": "File:Ceiling water damage.jpg",
+        "author": "Atomicdragon136",
+        "license": "CC BY 3.0",
+        "license_url": "https://creativecommons.org/licenses/by/3.0",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Ceiling_water_damage.jpg"
+      },
+      "source_description": "Damage of a ceiling panel caused by a leaking pipe",
+      "decision": "review",
+      "note": "Description de la source : Damage of a ceiling panel caused by a leaking pipe. Aucune boîte fournie ; à annoter sans confondre trace d’eau, moisissure et revêtement abîmé."
+    },
+    {
+      "id": "commons_61970335",
+      "source_id": "commons",
+      "source_split": "unassigned",
+      "asset": {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/d/dc/Frischwassereinbruch_durch_Geschossdecke_von_dar%C3%BCberliegender_Wohnung.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "sha256": "e76db929ef483c5317d704577e6a40595043a1ea51ac6d0cec883184f10f71c5",
+        "size": 683059,
+        "transfer_size": 683059,
+        "start": null,
+        "total": 683059,
+        "encoding": "identity"
+      },
+      "credit": {
+        "title": "File:Frischwassereinbruch durch Geschossdecke von darüberliegender Wohnung.jpg",
+        "author": "Johann H. Addicks",
+        "license": "CC BY-SA 3.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Frischwassereinbruch_durch_Geschossdecke_von_dar%C3%BCberliegender_Wohnung.jpg"
+      },
+      "source_description": "Akuter Wasserschaden durch Frischwasser in Mietwohnung",
+      "decision": "review",
+      "note": "Description de la source : Akuter Wasserschaden durch Frischwasser in Mietwohnung. Aucune boîte fournie ; à annoter sans confondre trace d’eau, moisissure et revêtement abîmé."
+    },
+    {
+      "id": "commons_395051",
+      "source_id": "commons",
+      "source_split": "unassigned",
+      "asset": {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/0/02/Mold_on_Ceiling_on_House_on_Dublin_Street_New_Orleans_after_Katrina.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "sha256": "63b2b0d7c458858d5cf159cffdb14424a043f187bdee0e3fd1b58e6f325deb3f",
+        "size": 2927239,
+        "transfer_size": 2927239,
+        "start": null,
+        "total": 2927239,
+        "encoding": "identity"
+      },
+      "credit": {
+        "title": "File:Mold on Ceiling on House on Dublin Street New Orleans after Katrina.jpg",
+        "author": "Infrogmation",
+        "license": "CC BY 3.0",
+        "license_url": "https://creativecommons.org/licenses/by/3.0",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Mold_on_Ceiling_on_House_on_Dublin_Street_New_Orleans_after_Katrina.jpg"
+      },
+      "source_description": "New Orleans  after  Hurricane Katrina : \n Mold sprouted from minor storm leaks in bedroom of an unflooded home.  (People evacuated were not allowed back in the city for more than a month, so many returned to sights like this.)\n \nCarrollton neighborhood,  Uptown.",
+      "decision": "review",
+      "note": "Description de la source : New Orleans  after  Hurricane Katrina : \n Mold sprouted from minor storm leaks in bedroom of an unflooded home.  (People evacuated were not allowed back in the city for more than a month, so many returned to sights like this.)\n \nCarrollton neighborhood,  Uptown.. Aucune boîte fournie ; à annoter sans confondre trace d’eau, moisissure et revêtement abîmé."
+    },
+    {
+      "id": "commons_137521145",
+      "source_id": "commons",
+      "source_split": "unassigned",
+      "asset": {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/d/dd/Budapest%2C_D%C3%B3sa_utca_2%2C_V%C3%A9nusz_Hotel%2C_14.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "sha256": "98f7399b010585e9dc3042da502529a0e8ac7a9fefc1190b4c6c1f3eaee4d88e",
+        "size": 5813955,
+        "transfer_size": 5813955,
+        "start": null,
+        "total": 5813955,
+        "encoding": "identity"
+      },
+      "credit": {
+        "title": "File:Budapest, Dósa utca 2, Vénusz Hotel, 14.jpg",
+        "author": "Random photos 1989",
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Budapest,_D%C3%B3sa_utca_2,_V%C3%A9nusz_Hotel,_14.jpg"
+      },
+      "source_description": "Budapest, Dósa utca 2, Vénusz Hotel",
+      "decision": "review",
+      "note": "Description de la source : Budapest, Dósa utca 2, Vénusz Hotel. Aucune boîte fournie ; à annoter sans confondre trace d’eau, moisissure et revêtement abîmé."
+    },
+    {
+      "id": "commons_137521159",
+      "source_id": "commons",
+      "source_split": "unassigned",
+      "asset": {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/8/88/Budapest%2C_D%C3%B3sa_utca_2%2C_V%C3%A9nusz_Hotel%2C_16.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "sha256": "7c8a00e91293c489ff80fbd5ce3a6c634cc408bfa48567f4b30032e651f2a3da",
+        "size": 5413375,
+        "transfer_size": 5413375,
+        "start": null,
+        "total": 5413375,
+        "encoding": "identity"
+      },
+      "credit": {
+        "title": "File:Budapest, Dósa utca 2, Vénusz Hotel, 16.jpg",
+        "author": "Random photos 1989",
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Budapest,_D%C3%B3sa_utca_2,_V%C3%A9nusz_Hotel,_16.jpg"
+      },
+      "source_description": "Budapest, Dósa utca 2, Vénusz Hotel",
+      "decision": "review",
+      "note": "Description de la source : Budapest, Dósa utca 2, Vénusz Hotel. Aucune boîte fournie ; à annoter sans confondre trace d’eau, moisissure et revêtement abîmé."
+    },
+    {
+      "id": "phele_train_266",
+      "source_id": "phele_v3",
+      "image_policy": "single_frame",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_266.jpg",
+      "source_label_member": "PHELE/train/labels/train_266.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "1714912ab953dbe48dd9231d54cd67d6ea97dc317cfe66f9a1e9dddf3dc0b817",
+        "size": 1294062,
+        "transfer_size": 1288047,
+        "start": 729259009,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_266.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "4 0.509375 0.418901 0.564904 0.108131\n3 0.551442 0.346994 0.754808 0.089749\n",
+      "source_label_sha256": "f9494a8eea2a67f32e6807591b2b1e672e563c833d354c013c048ab4fbb9cc84",
+      "decision": "review",
+      "note": "Sélection complémentaire de confusions et fonds potentiels. Aucune absence de label source ne constitue une validation négative."
+    },
+    {
+      "id": "phele_train_486",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_486.jpg",
+      "source_label_member": "PHELE/train/labels/train_486.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "02d1e4aa7e10359920bf55e48cb42be3de987233f9107c56b1e5197d824c4d38",
+        "size": 5998944,
+        "transfer_size": 3169302,
+        "start": 1338413602,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_486.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "6 0.632771 0.517733 0.480489 0.331101\n",
+      "source_label_sha256": "1bc3baecf8fee8323d1857d83dcee124c8df067fce2ecc00959b961d8ccfa97f",
+      "decision": "review",
+      "note": "Sélection complémentaire de confusions et fonds potentiels. Aucune absence de label source ne constitue une validation négative."
+    },
+    {
+      "id": "phele_train_180",
+      "source_id": "phele_v3",
+      "image_policy": "single_frame",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_180.jpg",
+      "source_label_member": "PHELE/train/labels/train_180.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "493cccebdda32208b682f37629cc8129d6a3e184db8d89b81b8ec405939b349a",
+        "size": 139915,
+        "transfer_size": 139648,
+        "start": 467751216,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_180.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "2 0.546250 0.364063 0.907500 0.726875\n",
+      "source_label_sha256": "a799e76d093a2e87f0ec4899f43840dde06f03ff533276d11b6d11082d24c84c",
+      "decision": "review",
+      "note": "Sélection complémentaire de confusions et fonds potentiels. Aucune absence de label source ne constitue une validation négative."
+    },
+    {
+      "id": "phele_train_31",
+      "source_id": "phele_v3",
+      "image_policy": "single_frame",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_31.jpg",
+      "source_label_member": "PHELE/train/labels/train_31.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "f02d86684f0cc8731a6ec46056954211575f9a2a4028b720efb89208f887382b",
+        "size": 140332,
+        "transfer_size": 138356,
+        "start": 859753273,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_31.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "2 0.725391 0.096368 0.549219 0.182191\n",
+      "source_label_sha256": "5417282facda4baaec3ab452f0345fe0a46e8be9f51c396613191b7378010557",
+      "decision": "review",
+      "note": "Sélection complémentaire de confusions et fonds potentiels. Aucune absence de label source ne constitue une validation négative."
+    },
+    {
+      "id": "phele_train_74",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_74.jpg",
+      "source_label_member": "PHELE/train/labels/train_74.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "b50cc75440962c7c7e0c4a6e8a0689d25a26b232cfa700d744d2541229ad77b6",
+        "size": 7298648,
+        "transfer_size": 5012012,
+        "start": 1678895105,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_74.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "6 0.497520 0.187872 0.261574 0.257688\n6 0.536376 0.338170 0.497354 0.487351\n",
+      "source_label_sha256": "4586d8adeaf2578e6db44845f08df6666841844ddf3359e59f7079afea8712e8",
+      "decision": "review",
+      "note": "Sélection complémentaire de confusions et fonds potentiels. Aucune absence de label source ne constitue une validation négative."
+    },
+    {
+      "id": "phele_train_3",
+      "source_id": "phele_v3",
+      "image_policy": "single_frame",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_3.jpg",
+      "source_label_member": "PHELE/train/labels/train_3.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "fb5df56d8309215fdbb4c054337e0c0d7eddae5fb68ed830c4462195e822ef01",
+        "size": 1359023,
+        "transfer_size": 1358794,
+        "start": 821006931,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_3.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "2 0.516106 0.475670 0.967788 0.924524\n",
+      "source_label_sha256": "0c9eac68b189891c360dbcf38b269e3541e44929466e929dc3c761704960c310",
+      "decision": "review",
+      "note": "Sélection complémentaire de confusions et fonds potentiels. Aucune absence de label source ne constitue une validation négative."
+    },
+    {
+      "id": "phele_train_181",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_181.jpg",
+      "source_label_member": "PHELE/train/labels/train_181.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "e50979b9c9e4a1ee559c6c6594e8ae026c369f61d5cc3b351498375154cdd771",
+        "size": 4380360,
+        "transfer_size": 2933191,
+        "start": 467890926,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_181.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "6 0.605489 0.602927 0.583995 0.466766\n",
+      "source_label_sha256": "de3b77f691bc6120d0abd3bb51d034bafbef1200e27e559bc0e9334fe4907ba0",
+      "decision": "review",
+      "note": "Sélection complémentaire de confusions et fonds potentiels. Aucune absence de label source ne constitue une validation négative."
+    },
+    {
+      "id": "phele_train_487",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_487.jpg",
+      "source_label_member": "PHELE/train/labels/train_487.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "1568a94e1b8a872273880a4af6883aeac209dd7979cff3368d0ba73c4d23209a",
+        "size": 7240972,
+        "transfer_size": 3678580,
+        "start": 1341582966,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_487.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "2 0.402778 0.441096 0.353836 0.251240\n",
+      "source_label_sha256": "606353cd00b0a9a99fd8072b42c01c8af20bded1229f4cc88cb48e105bc7ba46",
+      "decision": "review",
+      "note": "Sélection complémentaire de confusions et fonds potentiels. Aucune absence de label source ne constitue une validation négative."
+    },
+    {
+      "id": "phele_train_464",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_464.jpg",
+      "source_label_member": "PHELE/train/labels/train_464.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "ac50b4485baf61854096000be57af0dc79a11f7894ec090bcbbc84dda2c64e45",
+        "size": 2602834,
+        "transfer_size": 1691877,
+        "start": 1289738879,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_464.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "6 0.554398 0.540923 0.708664 0.494048\n",
+      "source_label_sha256": "6434d31ccee723c9c803b705f6d4a1ffbb7b61b06edca73fd0187c6b4e34ca64",
+      "decision": "review",
+      "note": "Sélection complémentaire de confusions et fonds potentiels. Aucune absence de label source ne constitue une validation négative."
+    },
+    {
+      "id": "phele_train_267",
+      "source_id": "phele_v3",
+      "image_policy": "single_frame",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_267.jpg",
+      "source_label_member": "PHELE/train/labels/train_267.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "d75d4e6f308e5ab557c94f3a6bea800f8e222cc1da8fd5913f561e37be11bfd0",
+        "size": 197305,
+        "transfer_size": 191366,
+        "start": 730547118,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_267.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "4 0.506641 0.437083 0.986719 0.251318\n3 0.465625 0.320914 0.743750 0.066081\n",
+      "source_label_sha256": "dbaa0ec6a6c9baff3a31d17f3f8330dca66f269292af067ffd296893a068dff3",
+      "decision": "review",
+      "note": "Sélection complémentaire de confusions et fonds potentiels. Aucune absence de label source ne constitue une validation négative."
+    },
+    {
+      "id": "phele_train_261",
+      "source_id": "phele_v3",
+      "image_policy": "single_frame",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_261.jpg",
+      "source_label_member": "PHELE/train/labels/train_261.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "4e3bfa6b3471b98976d17fdb8eb9451f7130837678d2f1fca050002c2ff82ee2",
+        "size": 134651,
+        "transfer_size": 134435,
+        "start": 717055572,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_261.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "2 0.489063 0.445417 0.976875 0.869167\n",
+      "source_label_sha256": "f387fd0974b625c53be7a402d2ec58fdec23a2bdc90ffe3aee868d1a9cbe60b8",
+      "decision": "review",
+      "note": "Sélection complémentaire de confusions et fonds potentiels. Aucune absence de label source ne constitue une validation négative."
+    },
+    {
+      "id": "phele_train_294",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_294.jpg",
+      "source_label_member": "PHELE/train/labels/train_294.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "c02ad0f3371a78d53a262d905967d655f47df715d0d423fd532caff8c7101d10",
+        "size": 265039,
+        "transfer_size": 220550,
+        "start": 812579105,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_294.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "2 0.553750 0.680417 0.370833 0.625833\n",
+      "source_label_sha256": "31243972e7d9614b9fc6a9cf66d338466685011decfbb7171fb3be186a68719d",
+      "decision": "review",
+      "note": "Sélection complémentaire de confusions et fonds potentiels. Aucune absence de label source ne constitue une validation négative."
+    },
+    {
+      "id": "phele_train_336",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_336.jpg",
+      "source_label_member": "PHELE/train/labels/train_336.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "43d07df6845fe3c4592ed53b2767de3b3f552abb90ee775346d5a615af2c1a85",
+        "size": 5409048,
+        "transfer_size": 3400283,
+        "start": 925248278,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_336.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "3 0.378307 0.220610 0.612434 0.170387\n7 0.534226 0.048611 0.084987 0.061508\n",
+      "source_label_sha256": "22739b15add6c73d0f01e27c2a6c84cfb475f3ba7fc18287d4ab7f6eef3d615e",
+      "decision": "review",
+      "note": "Sélection complémentaire de confusions et fonds potentiels. Aucune absence de label source ne constitue une validation négative."
+    },
+    {
+      "id": "phele_train_125",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_125.jpg",
+      "source_label_member": "PHELE/train/labels/train_125.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "57147456e9789dec95cf3391f96ee02a6cd0d4e5324de0f74ce549960071a97a",
+        "size": 4051468,
+        "transfer_size": 3640995,
+        "start": 294791037,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_125.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "6 0.399967 0.519345 0.517526 0.485119\n",
+      "source_label_sha256": "ea928fa95f3f95f9d607f6ee98d97e628b1c6c5183075827be49da6538c78e66",
+      "decision": "review",
+      "note": "Sélection complémentaire de confusions et fonds potentiels. Aucune absence de label source ne constitue une validation négative."
+    },
+    {
+      "id": "phele_train_434",
+      "source_id": "phele_v3",
+      "image_policy": "single_frame",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_434.jpg",
+      "source_label_member": "PHELE/train/labels/train_434.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "7c8ad51c215ec67092e86be4ab9c7b29c700471e2c4aa9f456fab973e803251e",
+        "size": 232169,
+        "transfer_size": 231911,
+        "start": 1210190482,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_434.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "3 0.499706 0.469436 0.998237 0.517241\n",
+      "source_label_sha256": "f14c75be82a225a94506e6d1f24e19944e4dd95eff90d0fcf765e055e7c90a40",
+      "decision": "review",
+      "note": "Sélection complémentaire de confusions et fonds potentiels. Aucune absence de label source ne constitue une validation négative."
+    },
+    {
+      "id": "phele_train_501",
+      "source_id": "phele_v3",
+      "image_policy": "single_frame",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_501.jpg",
+      "source_label_member": "PHELE/train/labels/train_501.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "8022ef1e447614e2e44e7547d02c782b4c5534550d4c5db8390a2f97f6619204",
+        "size": 6744757,
+        "transfer_size": 6743914,
+        "start": 1444540736,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_501.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "6 0.865575 0.659392 0.087302 0.152116\n6 0.719246 0.672619 0.137897 0.146825\n6 0.511409 0.867725 0.234127 0.246032\n6 0.269345 0.882275 0.222222 0.235450\n6 0.171627 0.730159 0.185516 0.153439\n6 0.488591 0.587963 0.075397 0.083333\n8 0.390873 0.690476 0.038690 0.039683\n8 0.233135 0.640212 0.026786 0.029101\n8 0.562996 0.618386 0.029762 0.048942\n8 0.657738 0.539683 0.024802 0.037037\n8 0.845238 0.528439 0.018849 0.033069\n8 0.348214 0.525794 0.024802 0.033069\n8 0.263393 0.560185 0.023810 0.027778\n8 0.043155 0.580688 0.029762 0.034392\n",
+      "source_label_sha256": "0157a7312c2054e8d6bd2b634562c07f5b63bf5f4a266a0015fb771da19715a2",
+      "decision": "review",
+      "note": "Sélection complémentaire de confusions et fonds potentiels. Aucune absence de label source ne constitue une validation négative."
+    },
+    {
+      "id": "phele_train_139",
+      "source_id": "phele_v3",
+      "image_policy": "single_frame",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_139.jpg",
+      "source_label_member": "PHELE/train/labels/train_139.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "7ba45641c18040065cc2f834dd23c4b159e076222ca060a7b99856c330734edc",
+        "size": 2727166,
+        "transfer_size": 2724171,
+        "start": 332566415,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_139.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "6 0.502315 0.433672 0.392747 0.243768\n",
+      "source_label_sha256": "9a9c32a07989a04c04fd2cc8a83e2f271f003387cde9deac3d2e58a2093f7c39",
+      "decision": "review",
+      "note": "Sélection complémentaire de confusions et fonds potentiels. Aucune absence de label source ne constitue une validation négative."
+    },
+    {
+      "id": "phele_train_331",
+      "source_id": "phele_v3",
+      "image_policy": "single_frame",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_331.jpg",
+      "source_label_member": "PHELE/train/labels/train_331.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "cd4072288944f67a18bd60fe4a2c2082ff878267a85957000e83e758eefc7ced",
+        "size": 1406761,
+        "transfer_size": 1405867,
+        "start": 911024036,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_331.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "3 0.380769 0.389706 0.384615 0.043253\n4 0.500962 0.428093 0.634615 0.109213\n",
+      "source_label_sha256": "84a00022e29c1dcc3539e57d733164137e940d28f6cd897c74e4e74f3aa93be7",
+      "decision": "review",
+      "note": "Sélection complémentaire de confusions et fonds potentiels. Aucune absence de label source ne constitue une validation négative."
+    },
+    {
+      "id": "phele_train_63",
+      "source_id": "phele_v3",
+      "image_policy": "mpo_primary_of_two",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_63.jpg",
+      "source_label_member": "PHELE/train/labels/train_63.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "b5616d2427670beae3dfd83cd0ad5836e7e74b8e8329d48626120be5092eaa64",
+        "size": 3697613,
+        "transfer_size": 2644936,
+        "start": 1651188115,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_63.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "3 0.435847 0.508557 0.204365 0.610367\n",
+      "source_label_sha256": "f88fdb521023149455a2da04cf80ba84b91a8b56ef90a97bbb58bfc3204f2204",
+      "decision": "review",
+      "note": "Sélection complémentaire de confusions et fonds potentiels. Aucune absence de label source ne constitue une validation négative."
+    },
+    {
+      "id": "phele_train_465",
+      "source_id": "phele_v3",
+      "image_policy": "single_frame",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_465.jpg",
+      "source_label_member": "PHELE/train/labels/train_465.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "2527235c5c05a9b11caf9506a4023376c5d0e39a4b252b6152f68719498e4555",
+        "size": 67314,
+        "transfer_size": 67047,
+        "start": 1291430818,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_465.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "6 0.522667 0.501779 0.482667 0.989324\n",
+      "source_label_sha256": "6ff0ba517a9d558d048707cd58ebf6998803d65aac3f5ab921016af162fd0c12",
+      "decision": "review",
+      "note": "Sélection complémentaire de confusions et fonds potentiels. Aucune absence de label source ne constitue une validation négative."
+    },
+    {
+      "id": "phele_train_536",
+      "source_id": "phele_v3",
+      "image_policy": "single_frame",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_536.jpg",
+      "source_label_member": "PHELE/train/labels/train_536.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "42967020a94f5a7f28625462873f7f6f03652b0e9ebe2052b29dee3441d648f8",
+        "size": 19018,
+        "transfer_size": 18417,
+        "start": 1484041619,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_536.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "13 0.352500 0.619444 0.462500 0.761111\n",
+      "source_label_sha256": "d8434b6b5a31de77d15a83bf2eea85cca216aa7eddfb4023bb700ed776328994",
+      "decision": "review",
+      "note": "Sélection complémentaire de confusions et fonds potentiels. Aucune absence de label source ne constitue une validation négative."
+    },
+    {
+      "id": "phele_train_533",
+      "source_id": "phele_v3",
+      "image_policy": "single_frame",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_533.jpg",
+      "source_label_member": "PHELE/train/labels/train_533.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "8c62e3d547a95b076359a757183acc9908c440bd66c19ab5d338b4c8236f1b7e",
+        "size": 23749,
+        "transfer_size": 23254,
+        "start": 1483926193,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_533.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "14 0.364745 0.363125 0.281596 0.253750\n13 0.705100 0.695625 0.589800 0.608750\n",
+      "source_label_sha256": "0625e7e49ec3fd180b6f3fab2cb65a8e249ef7d518fb93386aae910fdc70527b",
+      "decision": "review",
+      "note": "Sélection complémentaire de confusions et fonds potentiels. Aucune absence de label source ne constitue une validation négative."
+    },
+    {
+      "id": "phele_train_547",
+      "source_id": "phele_v3",
+      "image_policy": "single_frame",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_547.jpg",
+      "source_label_member": "PHELE/train/labels/train_547.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "6b9fca3f446aacb26585843ecca2ad936f6b2664e43a9314d9c4f906db026244",
+        "size": 3766564,
+        "transfer_size": 3757584,
+        "start": 1544240183,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_547.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "13 0.485780 0.397817 0.269180 0.136409\n",
+      "source_label_sha256": "e19858e511ca0983fd671f847d12c5e128ac26bebd87994a5fabd3d6e44e9cb4",
+      "decision": "review",
+      "note": "Sélection complémentaire de confusions et fonds potentiels. Aucune absence de label source ne constitue une validation négative."
+    },
+    {
+      "id": "phele_train_522",
+      "source_id": "phele_v3",
+      "image_policy": "single_frame",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_522.jpg",
+      "source_label_member": "PHELE/train/labels/train_522.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "cdbc695c9e42e350cf77d1aa538b7d8d1ea3e44691258fba58ab882b24caa813",
+        "size": 442168,
+        "transfer_size": 442148,
+        "start": 1472063044,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_522.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "13 0.318102 0.491406 0.635032 0.962500\n",
+      "source_label_sha256": "f51f9348ed531745958fbdb7ea577f79929dac543669810c78cf317ba683d453",
+      "decision": "review",
+      "note": "Sélection complémentaire de confusions et fonds potentiels. Aucune absence de label source ne constitue une validation négative."
+    },
+    {
+      "id": "phele_train_526",
+      "source_id": "phele_v3",
+      "image_policy": "single_frame",
+      "source_split": "train",
+      "source_member": "PHELE/train/images/train_526.jpg",
+      "source_label_member": "PHELE/train/labels/train_526.txt",
+      "asset": {
+        "url": "https://data.mendeley.com/public-files/datasets/yzsxcvc8dp/files/fa3f6bf8-4bfc-4046-a29f-e30ec52d2159/file_downloaded",
+        "sha256": "234dc8111aab78f9a98f12c2b403b73a91746aa066b69ba652ec62a2df028488",
+        "size": 204341,
+        "transfer_size": 185733,
+        "start": 1479268769,
+        "total": 2298974468,
+        "encoding": "deflate"
+      },
+      "credit": {
+        "title": "PHELE v3 — PHELE/train/images/train_526.jpg",
+        "author": "Peng Gao (鹏 高), Chuzhou University",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "source_url": "https://data.mendeley.com/datasets/yzsxcvc8dp/3"
+      },
+      "source_label_text": "13 0.491091 0.418902 0.405428 0.823171\n",
+      "source_label_sha256": "5928987a3a912a4136196691f0a77353a7d112776e82be833d0de616789baf1d",
+      "decision": "review",
+      "note": "Sélection complémentaire de confusions et fonds potentiels. Aucune absence de label source ne constitue une validation négative."
+    },
+    {
+      "id": "commons_56570306",
+      "source_id": "commons",
+      "source_split": "unassigned",
+      "asset": {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/d/df/Mold_on_wall1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "sha256": "31f72f7d68b40d418d7ed3bc10696a912001c3aae240397823bc7e9f5a4d3b18",
+        "size": 2870007,
+        "transfer_size": 2870007,
+        "start": null,
+        "total": 2870007,
+        "encoding": "identity"
+      },
+      "credit": {
+        "title": "File:Mold on wall1.jpg",
+        "author": "שי אבידן",
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Mold_on_wall1.jpg"
+      },
+      "source_description": "Mold on a wall",
+      "decision": "review",
+      "note": "Description Commons conservée ; pas de diagnostic ni de boîte source. Revue visuelle nécessaire."
+    },
+    {
+      "id": "commons_56570307",
+      "source_id": "commons",
+      "source_split": "unassigned",
+      "asset": {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/c/c9/Mold_on_wall2.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "sha256": "fa689fdb8e9a1a3e778fc480783d59850020987379c6ca0cd287e738eb246cd1",
+        "size": 2882327,
+        "transfer_size": 2882327,
+        "start": null,
+        "total": 2882327,
+        "encoding": "identity"
+      },
+      "credit": {
+        "title": "File:Mold on wall2.jpg",
+        "author": "שי אבידן",
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Mold_on_wall2.jpg"
+      },
+      "source_description": "Mold on a wall",
+      "decision": "review",
+      "note": "Description Commons conservée ; pas de diagnostic ni de boîte source. Revue visuelle nécessaire."
+    },
+    {
+      "id": "commons_56570315",
+      "source_id": "commons",
+      "source_split": "unassigned",
+      "asset": {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/1/10/Mold_on_wall3.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "sha256": "fc7107fa734f456eccc1f636263a986ecf1c64776147a187e539c6492e2548a2",
+        "size": 2819301,
+        "transfer_size": 2819301,
+        "start": null,
+        "total": 2819301,
+        "encoding": "identity"
+      },
+      "credit": {
+        "title": "File:Mold on wall3.jpg",
+        "author": "שי אבידן",
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Mold_on_wall3.jpg"
+      },
+      "source_description": "Mold on a wall",
+      "decision": "review",
+      "note": "Description Commons conservée ; pas de diagnostic ni de boîte source. Revue visuelle nécessaire."
+    },
+    {
+      "id": "commons_69965989",
+      "source_id": "commons",
+      "source_split": "unassigned",
+      "asset": {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/6/69/Indoor_Mold.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "sha256": "03eb908343c98ace0265aec20c7ced82aec35506f066c0e1043aee0a0cb11457",
+        "size": 953246,
+        "transfer_size": 953246,
+        "start": null,
+        "total": 953246,
+        "encoding": "identity"
+      },
+      "credit": {
+        "title": "File:Indoor Mold.jpg",
+        "author": "Alexander Davronov",
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Indoor_Mold.jpg"
+      },
+      "source_description": "Indoor mold on the head jamb of the inner window in multi storey building. The mold grew during winter.",
+      "decision": "review",
+      "note": "Description Commons conservée ; pas de diagnostic ni de boîte source. Revue visuelle nécessaire."
+    },
+    {
+      "id": "commons_71467317",
+      "source_id": "commons",
+      "source_split": "unassigned",
+      "asset": {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/b/be/Molded_Wall_%28200941007%29.jpeg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "sha256": "c96bd407410a66319fcdb40f3d746d200d4940bb43071fb415b444730b77db7d",
+        "size": 2153953,
+        "transfer_size": 2153953,
+        "start": null,
+        "total": 2153953,
+        "encoding": "identity"
+      },
+      "credit": {
+        "title": "File:Molded Wall (200941007).jpeg",
+        "author": "Martin Kopta",
+        "license": "CC BY 3.0",
+        "license_url": "https://creativecommons.org/licenses/by/3.0",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Molded_Wall_(200941007).jpeg"
+      },
+      "source_description": "500px provided description: Molded Wall [#abstract ,#colors ,#green ,#wall ,#mold]",
+      "decision": "review",
+      "note": "Description Commons conservée ; pas de diagnostic ni de boîte source. Revue visuelle nécessaire."
+    },
+    {
+      "id": "commons_72256931",
+      "source_id": "commons",
+      "source_split": "unassigned",
+      "asset": {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/0/0a/Fungus_staining_and_mold_growth_on_the_walls.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "sha256": "5b6ae0897c9edcde4f113c31086300cb18031e24117d49e30fb6edffbe163e83",
+        "size": 3407846,
+        "transfer_size": 3407846,
+        "start": null,
+        "total": 3407846,
+        "encoding": "identity"
+      },
+      "credit": {
+        "title": "File:Fungus staining and mold growth on the walls.jpg",
+        "author": "RASHIKA AGARWAL",
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Fungus_staining_and_mold_growth_on_the_walls.jpg"
+      },
+      "source_description": "This is a photo of    ASI monument    number",
+      "decision": "review",
+      "note": "Description Commons conservée ; pas de diagnostic ni de boîte source. Revue visuelle nécessaire."
+    },
+    {
+      "id": "commons_195827911",
+      "source_id": "commons",
+      "source_split": "unassigned",
+      "asset": {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/b/b2/Mold_spores.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "sha256": "2df2bd72648407fcee8852070b4ec43477215f1edb50e06efb7cf654e14809b6",
+        "size": 249107,
+        "transfer_size": 249107,
+        "start": null,
+        "total": 249107,
+        "encoding": "identity"
+      },
+      "credit": {
+        "title": "File:Mold spores.jpg",
+        "author": "1015saturdaynight",
+        "license": "CC0",
+        "license_url": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Mold_spores.jpg"
+      },
+      "source_description": "Green mold spores on an apartment bedroom wall.",
+      "decision": "review",
+      "note": "Description Commons conservée ; pas de diagnostic ni de boîte source. Revue visuelle nécessaire."
+    },
+    {
+      "id": "commons_37820167",
+      "source_id": "commons",
+      "source_split": "unassigned",
+      "asset": {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/c/c0/Black_mold_in_a_building.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "sha256": "14d29a6af0355f51c6423ee3ff32eeb30f5f027fb91db8e6b5771371b393d516",
+        "size": 2662117,
+        "transfer_size": 2662117,
+        "start": null,
+        "total": 2662117,
+        "encoding": "identity"
+      },
+      "credit": {
+        "title": "File:Black mold in a building.JPG",
+        "author": "NordhornerII",
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Black_mold_in_a_building.JPG"
+      },
+      "source_description": "This picture shows black mold in the corner of a German building in Steinfurt. Its is related to a faulty facade and the pic \"Moldy Housecorner both Sides\" was made only little later and shows the progress",
+      "decision": "review",
+      "note": "Description Commons conservée ; pas de diagnostic ni de boîte source. Revue visuelle nécessaire."
+    },
+    {
+      "id": "commons_116691502",
+      "source_id": "commons",
+      "source_split": "unassigned",
+      "asset": {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/a/ae/Davidstow_Church_16.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "sha256": "47b9d0a4b1d872da594f033e281b8451b632b4fbc3cf06fa43845e1d10db98db",
+        "size": 2630088,
+        "transfer_size": 2630088,
+        "start": null,
+        "total": 2630088,
+        "encoding": "identity"
+      },
+      "credit": {
+        "title": "File:Davidstow Church 16.jpg",
+        "author": "Jowaninpensans",
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Davidstow_Church_16.jpg"
+      },
+      "source_description": "Death of Charlotte Dymond, St David's Church, Davidstow, Cornwall",
+      "decision": "review",
+      "note": "Description Commons conservée ; pas de diagnostic ni de boîte source. Revue visuelle nécessaire."
+    },
+    {
+      "id": "commons_116691501",
+      "source_id": "commons",
+      "source_split": "unassigned",
+      "asset": {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/1/1b/Davidstow_Church_17.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "sha256": "d49870a5d3219405e6042eb26d31c43539d1e5e671fd89ce55f97b1078d5c47f",
+        "size": 2339167,
+        "transfer_size": 2339167,
+        "start": null,
+        "total": 2339167,
+        "encoding": "identity"
+      },
+      "credit": {
+        "title": "File:Davidstow Church 17.jpg",
+        "author": "Jowaninpensans",
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Davidstow_Church_17.jpg"
+      },
+      "source_description": "St David's Church, Davidstow, Cornwall",
+      "decision": "review",
+      "note": "Description Commons conservée ; pas de diagnostic ni de boîte source. Revue visuelle nécessaire."
+    }
+  ]
+}

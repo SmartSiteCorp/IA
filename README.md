@@ -113,6 +113,134 @@ Choisir un nouveau dossier de sortie à chaque exécution : aucune sortie exista
 
 Les tests couvrent notamment les groupes transitifs, les doubles présents dans plusieurs difficultés, la propagation des exclusions, les corruptions, l'orientation EXIF, les seuils de masques, les conflits entre variantes et la reproductibilité des sorties.
 
+## Préparer les nouvelles surfaces et leurs annotations
+
+La sélection `config/moisture_collection_v1.json` décrit 71 photos PHELE v3/Commons,
+avec origine, licence, empreinte et groupes de précaution. Les cadres fournis par
+PHELE sont des **annotations de dataset**, pas des prédictions de notre modèle.
+Le téléchargement est séquentiel et reprend les fichiers déjà vérifiés ; une erreur
+réseau arrête la collecte. La préparation suivante fonctionne ensuite hors réseau :
+
+```sh
+.venv/bin/python -m smartsite_ia.collection fetch \
+  --selection config/moisture_collection_v1.json \
+  --cache data/raw/moisture_collection_v1/assets
+
+.venv/bin/python -m smartsite_ia.collection_review \
+  --selection config/moisture_collection_v1.json \
+  --cache data/raw/moisture_collection_v1/assets \
+  --review config/moisture_review_v1.json \
+  --output artifacts/predictions/moisture_annotations_v1
+```
+
+Choisir un dossier de sortie neuf. Après installation du paquet, la deuxième commande
+est aussi disponible sous le nom `smartsite-review-collection`.
+La [galerie locale des corrections](http://127.0.0.1:8768/moisture_annotations_v1/)
+s'ouvre avec le serveur de rapports sur le port 8768 décrit plus bas.
+
+Cette revue visuelle est réalisée **par l'assistant**, sans validation experte ni
+confirmation terrain. Chaque photo a une décision motivée ; chaque ancien cadre
+est conservé, modifié ou retiré explicitement. Le dossier `source/` garde la collecte
+complète, les originaux, les annotations et les attributions. Les corrections sont
+séparées dans `review.json` et `report.json`.
+
+Résultat du manifeste livré : 38 photos candidates et 33 écartées. Les 91 cadres
+source ont 32 décisions de conservation, 13 de modification et 46 de retrait du lot
+pilote, souvent par prudence plutôt que parce que l'annotation serait prouvée fausse.
+Les sept Commons ont des propositions de rectangles ; deux restent exclues du pilote.
+Deux recadrages revus (motif du sol et texture de plafond) constituent des négatifs
+pour les trois cibles seulement ; ce ne sont pas de nouvelles scènes indépendantes.
+
+| Lot pilote | Images | Groupes de précaution | Boîtes |
+|---|---:|---:|---:|
+| `train` | 32, dont 2 recadrages | 21 | 45 |
+| `validation` | 8 | 5 | 13 |
+
+Chaque lot contient ses JPEG et `_annotations.coco.json` : `1=mold_suspected`,
+`2=moisture_trace`, `3=peeling_paint`. Coordonnées COCO en pixels `x, y, largeur, hauteur`
+dans la photo orientée ; aire du rectangle, aucun masque inventé. Les sous-types
+`surface_loss` et `peeling_paint` partagent une famille d'affichage `surface_damage`,
+mais les classes et poids de l'ancien modèle restent inchangés.
+
+**Ce corpus permet de préparer un essai de détection par boîtes, pas de qualifier
+la fonctionnalité.** Il n'est pas compatible tel quel avec la commande actuelle
+`smartsite-model train`, dédiée au corpus DamSegment et à ses masques. Le prochain
+parcours est `smartsite-boxes`, décrit ci-dessous : il vérifie les empreintes,
+charge ces boîtes et respecte ces groupes, sans lire les exclusions comme du fond sain.
+
+Limites : seulement quatre groupes de moisissures dans l'apprentissage et un dans
+la validation ; deux groupes de traces d'eau de chaque côté ; aucun exemple négatif
+complet dans la validation. Les bâtiments PHELE sont souvent inconnus et les groupes
+restent prudents. Aucun test final créé, aucune nouvelle performance mesurée, aucun
+entraînement lancé. Les annotations proposent des signes visibles, jamais un diagnostic
+d'humidité, de gravité ou une preuve de conformité. La convention complète figure
+dans le manifeste de revue et le rapport exporté.
+
+## Entraîner le pilote par rectangles
+
+Ce parcours utilise **RF-DETR Nano 1.10.1**, en détection à 384 pixels, avec les
+poids COCO officiels distincts du modèle historique de segmentation. Il apprend les
+trois catégories de la revue ; il ne fusionne pas les poids fissures/perte de matière.
+Le moteur et les poids Nano sont publiés sous Apache 2.0 selon la
+[documentation auteur](https://rfdetr.roboflow.com/latest/learn/run/detection/).
+Les licences des photos restent conservées dans les exports.
+
+Prérequis : extra `training` installé (`uv sync --locked --extra training`) et
+corpus de la section précédente présent. Les poids officiels peuvent être récupérés
+explicitement ; leur taille et leur SHA-256 sont vérifiés, puis tous les calculs
+utilisent les fichiers locaux :
+
+```sh
+.venv/bin/python -m smartsite_ia.box_cli weights \
+  --output artifacts/models/pretrained/rf-detr-nano.pth
+
+PYTORCH_ENABLE_MPS_FALLBACK=1 .venv/bin/python -m smartsite_ia.box_cli check \
+  artifacts/predictions/moisture_annotations_v1 \
+  --config config/moisture_boxes_v1.json \
+  --weights artifacts/models/pretrained/rf-detr-nano.pth --device mps
+```
+
+`check` vérifie les entrées et le matériel sans entraîner. Sur ce Mac, poids et corpus
+sont déjà préparés. Le premier essai fixé dans `config/moisture_boxes_v1.json` utilise
+5 passages, 32 images train (dont 2 recadrages), 8 images de validation, batch 2,
+accumulation 2 et graine 42. Aucun test réservé n'est lu. Le dernier passage est retenu,
+sans recherche du meilleur passage ni promotion automatique :
+
+```sh
+PYTORCH_ENABLE_MPS_FALLBACK=1 .venv/bin/python -m smartsite_ia.box_cli train \
+  artifacts/predictions/moisture_annotations_v1 \
+  --config config/moisture_boxes_v1.json \
+  --weights artifacts/models/pretrained/rf-detr-nano.pth \
+  --device mps --output artifacts/training/moisture_boxes_v1
+```
+
+Sur un autre matériel, choisir explicitement `--device cpu` ou `--device cuda`.
+Ne pas annoncer la durée ou la précision d'un autre matériel sans mesure.
+L'exécutable installé `smartsite-boxes` accepte les mêmes arguments.
+
+Le dossier doit être neuf. Les copies vérifiées de `train` et `valid`, les attributions
+et les groupes sont conservés sous `data/`. `run.json` indique l'état réel, les
+versions, empreintes, métriques finales et limites. `checkpoints/metrics.csv` conserve
+les mesures de chaque passage : AP des boîtes, AP par catégorie, pertes et métriques
+natives du moteur. Son F1 utilise le seuil choisi par l'évaluateur RF-DETR ; ce n'est
+pas un résultat au score fixe 0,30 ni un seuil chantier. Les AP de boîtes ne sont pas
+directement comparables aux anciennes AP de masques.
+
+`checkpoints/checkpoint_best_total.pth` contient ici les poids du **dernier passage**,
+malgré son nom imposé par le moteur. `checkpoints/last.ckpt` conserve l'état complet
+pour une interruption. Après un arrêt enregistré dans `run.json`, reprendre avec la
+même commande en ajoutant `--resume` : données, configuration, périphérique, versions
+et checkpoint doivent être inchangés. Si aucun checkpoint vérifié n'existe (arrêt très
+précoce ou arrêt brutal non enregistré), conserver le dossier et choisir une nouvelle
+sortie pour recommencer. Un essai terminé n'est pas prolongé par `--resume` ; deux
+processus ne peuvent pas écrire simultanément dans ce même essai.
+
+Ce lancement est un pilote technique sur un petit corpus revu par l'assistant,
+**sans validation experte ni qualification chantier**. Aucun négatif complet dans la
+validation ; seulement un groupe de moisissures et deux groupes de traces d'eau.
+Examiner ensuite les résultats par classe et les erreurs visuelles avant de décider
+d'une suite ; aucune réussite logicielle ne prouve la qualité de ces détections.
+
 ## Premier entraînement et prédictions
 
 Le moteur est une dépendance **optionnelle** : les commandes de données et les tests habituels ne nécessitent ni PyTorch ni GPU. Pour l'apprentissage, installer l'extra verrouillé :
@@ -197,6 +325,76 @@ L'évaluation conserve l'AP COCO des masques et les comptages fixes (score ≥ 0
 
 Sur les 149 photos internes avec les poids de l'essai complet, aucun des profils alignés testés à 0,4 / 0,5 / 0,6 / 0,7 n'améliore les fissures par rapport à la référence (915 instances retrouvées, AP 0,091842). Le meilleur candidat en retrouve 909 (AP 0,090689). Le traitement actuel reste donc le réglage par défaut. Les candidats et leurs régressions restent consultables dans le [rapport local des essais](http://127.0.0.1:8768/inference_study_v1/) après génération locale ; ces artefacts ne sont pas distribués dans Git. Aucun test final n'a servi à ces choix.
 
+### Analyser une photo entière par fenêtres
+
+Une façade de douze mégapixels ramenée à 432 pixels perd ses fissures fines. L'option
+`--windowed` découpe la photo en fenêtres de 640 pixels, la taille des images d'apprentissage,
+avec 128 pixels de recouvrement pour qu'un défaut coupé par une frontière reste entier dans la
+fenêtre voisine :
+
+```sh
+.venv/bin/smartsite-model external data/prepared/ccsd_v1 \
+  --run artifacts/training/damsegment_full_v1 --windowed \
+  --output artifacts/predictions/windowed_v1 --device mps
+```
+
+Le recollage se fait en coordonnées de la photo d'origine. Deux sorties sont tenues séparément,
+parce qu'elles ne coûtent pas la même mémoire : la zone couverte par classe, accumulée dans un
+seul masque, et les propositions réduites à leur boîte et leur score. Garder un masque pleine
+taille par proposition saturerait la mémoire sur une grande photo.
+
+Les propositions d'une même classe qui décrivent le même défaut sont fusionnées. Le critère est
+la part recouverte de la plus petite des deux boîtes, pas l'IoU : quand une fenêtre voit un défaut
+entier et sa voisine seulement un morceau, l'IoU reste faible alors qu'il s'agit du même défaut.
+
+Le découpage multiplie les passages du moteur, donc le temps par photo. Comparer les deux modes
+sur le même corpus avant de choisir : le gain n'est pas acquis, et la charge d'alertes compte
+autant que la couverture.
+
+### Mesurer les fausses alertes sur des surfaces saines
+
+SDNET2018 découpe 230 photos de béton en extraits de 256 pixels, étiquetés fissuré ou sain par
+ses auteurs. L'éditeur refuse les téléchargements automatisés : l'archive se récupère à la main
+depuis [sa page](https://digitalcommons.usu.edu/all_datasets/48/), puis le module la vérifie par
+son empreinte.
+
+```sh
+.venv/bin/smartsite-data prepare-patches ~/Downloads/SDNET2018.zip \
+  --output data/prepared/sdnet_walls_v1 --surface W --per-photo 10
+
+.venv/bin/smartsite-model patch-alerts data/prepared/sdnet_walls_v1 \
+  --run artifacts/training/damsegment_full_v1 \
+  --output artifacts/predictions/sdnet_alerts_v1 --device mps
+```
+
+Le tirage prend le même nombre d'extraits par photo d'origine, pour qu'une scène ne pèse pas plus
+qu'une autre, et écarte les extraits publiés deux fois. Les extraits fissurés sont mesurés dans
+les mêmes conditions : sans ce contrôle, un taux d'alerte nul sur les surfaces saines pourrait
+seulement vouloir dire que le modèle ne voit rien à cette échelle.
+
+Les étiquettes des auteurs ne portent que sur la fissure : un extrait dit sain peut montrer de
+l'écaillage ou un trou. Ces extraits ne servent ni à l'apprentissage ni au choix d'un seuil.
+
+### Mesurer un modèle hors de son domaine d'entraînement
+
+Les poids de référence ont appris sur un seul ouvrage en béton. `external` les mesure sur une
+source indépendante, jamais utilisée pour l'apprentissage ni pour choisir un seuil :
+
+```sh
+.venv/bin/smartsite-model external data/prepared/ccsd_v1 \
+  --run artifacts/training/damsegment_full_v1 \
+  --output artifacts/predictions/external_coverage_v1 --device mps
+```
+
+Les références de cette source sont des masques sémantiques : il n'y a pas d'instances, donc pas
+d'appariement un défaut pour un défaut. La commande mesure la **zone couverte** et le fait qu'une
+photo soit signalée. Ces deux mesures complètent l'appariement strict d'`evaluate` ; elles ne le
+remplacent pas et ne constituent pas une qualification chantier.
+
+Une réserve importante accompagne la précision de zone : un masque de référence incomplet fait
+compter une vraie fissure comme fausse alerte. Le corpus reste refusé à l'apprentissage, et la
+commande s'arrête si son rapport de préparation l'autorise.
+
 Les tests courants restent sans moteur. Les tests d'intégration CPU utilisent les vraies transformations et le vrai décodage RF-DETR avec des sorties synthétiques identifiées, sans téléchargement de poids ni GPU. Ils vérifient notamment les photos non carrées, les masques vides et la séparation des scores objets/pixels :
 
 ```sh
@@ -212,3 +410,175 @@ Le répertoire `tests/integration` n'est pas parcouru par défaut ; il faut le d
 - [Concrete Crack Segmentation Dataset v1](https://data.mendeley.com/datasets/jwsn7tfbrp/1), DOI `10.17632/jwsn7tfbrp.1`, Çağlar Fırat Özgenel.
 
 Les publications annoncent CC BY 4.0. Les exports conservent l'attribution et la description des modifications. Les images, archives et sorties volumineuses ne sont pas distribuées avec le code.
+
+## Examiner les prédictions du pilote par boîtes
+
+Après un entraînement par boîtes terminé, générer une galerie sur sa validation :
+
+```sh
+PYTORCH_ENABLE_MPS_FALLBACK=1 .venv/bin/python -m smartsite_ia.box_cli review \
+  artifacts/training/moisture_boxes_v1 \
+  --corpus artifacts/predictions/moisture_annotations_v1 \
+  --config config/moisture_boxes_v1.json \
+  --device mps --threshold 0.3 \
+  --output artifacts/predictions/moisture_box_review_v1
+```
+
+La sortie doit être nouvelle. Le parcours vérifie les empreintes du modèle terminé, des données et des métriques, ainsi que les versions du moteur. Il utilise uniquement la validation (64 images maximum), reprend ses transformations déterministes et restitue les boîtes dans les pixels de la photo originale. Le chargement sûr des poids n'autorise pas de désérialisation arbitraire. Aucun apprentissage, téléchargement de poids ou service distant n'est nécessaire.
+
+La galerie conserve les photos, références, prédictions, scores et attributions. Une zone est retrouvée si sa catégorie correspond et si l'IoU des boîtes atteint 0,5, avec un appariement un-à-un par score décroissant. Les sorties sont filtrées au score strictement supérieur au seuil choisi ; le seuil 0,3 est un réglage d'inspection non calibré. Les propositions non appariées ne prouvent pas à elles seules une fausse alerte physique : les annotations restent à confirmer. Ce comptage à seuil fixe n'est pas le F1 natif optimisé sur la validation, ni une AP de segmentation.
+
+Les entrées et les poids restent inchangés. Une erreur ou interruption retire la sortie partielle ; relancer vers une sortie absente recommence seulement l'inférence. Les coordonnées brutes, les éventuels débordements tronqués et les sorties sans objet ou sans surface écartées sont tracés. Un modèle limité à cette petite validation n'est pas qualifié pour le chantier.
+
+## Complément de données et contrôle des fausses alertes — v2
+
+`config/moisture_collection_v2.json` conserve les 71 photos initiales et ajoute
+35 originaux vérifiés. La revue de l'assistant retient 4 nouvelles photos de
+moisissures suspectées, 11 photos entières sans cible visible et un recadrage
+supplémentaire ; 20 nouvelles photos ambiguës ou hors périmètre sont exclues.
+Les photos négatives font l'objet d'une décision explicite `negative`, d'une revue
+des trois classes et de l'audit des annotations source. Une photo exclue ne devient
+jamais automatiquement un exemple négatif. La validation humaine reste en attente.
+
+La v2 comporte 44 images train et 12 validation, dont 4 nouvelles photos entières
+sans cible. Les 8 photos de validation précédentes, leurs boîtes, leurs groupes
+et leurs partitions restent inchangés. Les négatifs ne prouvent pas une conformité :
+les fissures, risques électriques et défauts de carrelage sortent du périmètre de
+ce détecteur à trois classes. Le corpus conserve seulement 2 boîtes de traces
+d'humidité en apprentissage et un seul groupe de moisissures en validation.
+
+Reconstitution depuis les originaux épinglés (le téléchargement reste explicite) :
+
+```sh
+.venv/bin/python -m smartsite_ia.collection fetch \
+  --selection config/moisture_collection_v2.json \
+  --cache data/raw/moisture_collection_v2/assets
+.venv/bin/python -m smartsite_ia.collection_review \
+  --selection config/moisture_collection_v2.json \
+  --cache data/raw/moisture_collection_v2/assets \
+  --review config/moisture_review_v2.json \
+  --output artifacts/predictions/moisture_annotations_v2
+```
+
+Le pilote `config/moisture_boxes_v2.json` fixe 10 passages, la dernière époque,
+la même graine et les mêmes paramètres que la v1, avec les nouvelles empreintes du
+corpus. L'évaluation conserve un seuil de score de 0,30 et un IoU de 0,50. Les résultats
+sur les huit anciennes photos et les quatre nouveaux négatifs se lisent séparément ;
+les données et la durée d'apprentissage changent ensemble, donc il ne s'agit pas
+d'une mesure de l'effet des seules données. Les commandes `smartsite-boxes` ci-dessus
+acceptent ces chemins v2 dans de nouveaux dossiers, sans écraser les sorties v1.
+
+La [galerie de revue v2](http://127.0.0.1:8768/moisture_annotations_v2/) conserve
+les images, les rectangles proposés, les exclusions et les attributions. Aucun
+modèle n'est promu automatiquement. L'objectif de notification avec photo et zone
+suspecte nécessite encore des données représentatives du chantier, des annotations
+validées et des critères mesurés de rappel et de fausses alertes.
+
+Résultat de l'essai v2 exécuté : sur les huit photos communes, 4 références retrouvées
+sur 13 pour chaque version, avec 6 propositions non appariées en v2 contre 5 en v1.
+Les deux versions proposent quatre cadres sur deux des quatre nouveaux négatifs.
+La v2 n'est pas promue. La [comparaison photo par photo](http://127.0.0.1:8768/moisture_comparison_v2/)
+conserve les résultats et leurs limites ; aucun modèle n'est qualifié pour les notifications.
+
+
+## Revue et préparation v3 — historique avant l’essai v3.1
+
+La sélection `config/moisture_collection_v3.json` reprend les 53 photos utiles de v2
+et ajoute 130 vues MBDD2025 et 9 Commons. Les 139 nouvelles photos sont revues :
+10 candidates positives et 129 exclusions motivées. Les mousses sur bois, les vues
+répétées et les cas ambigus ne sont pas convertis en négatifs. Les autres anciennes
+photos restent documentées dans la revue v2.
+
+`config/moisture_review_v3.json` conserve les annotations et partitions utiles de v2.
+Le lot exporté propose 52 images d’apprentissage et 16 de validation : 63 photos
+entières (52 positives, 11 négatives) et 5 recadrages négatifs, dont 2 nouveaux.
+Les groupes visuels sont disjoints entre les lots, mais les bâtiments ne sont pas
+certifiés. Les traces compatibles avec l’humidité passent de 2 à 18 boîtes train ;
+les moisissures passent de 13 à 17. Ce sont des annotations proposées, pas des gains
+mesurés du modèle. La préparation v3 initiale n’a pas été entraînée ; le résultat
+de la version corrigée v3.1 figure plus bas. Aucun test final n’a été réalisé.
+
+Rejouer la revue depuis le cache vérifié, vers un dossier absent :
+
+```sh
+.venv/bin/python -m smartsite_ia.collection_review \
+  --selection config/moisture_collection_v3.json \
+  --cache data/raw/moisture_collection_v3/assets \
+  --review config/moisture_review_v3.json \
+  --output artifacts/predictions/moisture_annotations_v3
+```
+
+Le téléchargement reste une commande séparée `smartsite-collection fetch`, avec
+la même sélection et le même cache. Les limitations HTTP des sources sont à
+respecter ; les originaux utilisés ici sont déjà reçus et vérifiés. Zenodo est
+accepté sur son hôte HTTPS exact, avec les mêmes limites, plages et empreintes
+que les autres fichiers. Les catégories et couleurs des trois cibles sont communes
+à la collecte, à la revue et aux prédictions.
+
+Contrôle technique sans entraîner :
+
+```sh
+.venv/bin/python -m smartsite_ia.box_cli check \
+  artifacts/predictions/moisture_annotations_v3 \
+  --config config/moisture_boxes_v3.json \
+  --weights artifacts/models/pretrained/rf-detr-nano.pth --device mps
+```
+
+La recette v3 fixe dix passages, la dernière époque et les empreintes du lot.
+La [revue des dix ajouts](http://127.0.0.1:8768/moisture_review_v3/) et la
+[revue complète](http://127.0.0.1:8768/moisture_annotations_v3/) permettent de
+contrôler catégories, rectangles et omissions ; elles conservent l’état préparatoire.
+La validation humaine des annotations reste en attente, y compris sur les exemples
+hérités. Les poids v1/v2 sont conservés ; aucune notification automatique n’est
+qualifiée par cette préparation.
+
+
+### Seconde vérification des annotations — v3.1
+
+`config/moisture_review_v3_1.json` reprend la sélection v3 et corrige trois des dix
+nouvelles photos après relecture détaillée : contours de coulures, séparation de
+petites pertes de revêtement et deux omissions. Deux nouveaux recadrages négatifs
+ont aussi été relus. Les 52 images train et 16 validation gardent leurs pixels,
+groupes et partitions. Les annotations héritées et les exclusions sont inchangées.
+
+Pour la préparation corrigée, la commande de revue précédente utilise toujours
+`config/moisture_collection_v3.json` et son cache, avec la revue
+`config/moisture_review_v3_1.json` et la sortie absente
+`artifacts/predictions/moisture_annotations_v3_1`. La recette correspondante est
+`config/moisture_boxes_v3_1.json`. La v3 précédente reste conservée.
+
+La [comparaison avant/après](http://127.0.0.1:8768/moisture_review_v3_1/) explique
+les corrections et les incertitudes. Cette seconde lecture est celle de l’assistant,
+pas une validation humaine indépendante. Un essai exploratoire a ensuite été
+exécuté sur cette préparation, sans changement de son statut de validation.
+
+
+### Résultat exploratoire v3.1
+
+Dix passages sur 52 images terminés en 181,45 secondes sur MPS, réseau désactivé,
+dernier passage conservé. Sur les huit photos historiques : 2 zones retrouvées sur
+13, contre 4 pour v1/v2. Sur les quatre négatifs : une proposition sur une photo,
+contre quatre sur deux. Sur les seize validations : 3/26 références retrouvées,
+5 propositions non appariées, 23 références manquées. Aucune des cinq moisissures
+ni des treize traces n’est retrouvée dans sa classe au score > 0,30 et IoU ≥ 0,50.
+
+La v3.1 n’est pas promue. La baisse des fausses propositions s’accompagne d’une
+perte de rappel ; aucune notification automatique n’est qualifiée. Les modèles,
+photos et annotations antérieurs sont conservés. La
+[comparaison sur les mêmes photos](http://127.0.0.1:8768/moisture_comparison_v3_1/)
+et le [rapport détaillé](http://127.0.0.1:8768/moisture_box_review_v3_1/)
+présentent les résultats, les attributions et les limites. Les anciennes versions
+ont aussi été exécutées sur les quatre nouveaux exemples, dans des rapports
+complémentaires distincts de leurs validations originales.
+
+Diagnostic séparé sur les images déjà apprises : 1/17 moisissure, 13/18 traces et
+25/42 revêtements retrouvés. Ces chiffres ne mesurent pas la généralisation ; ils
+montrent un apprentissage encore faible des moisissures et un écart train/validation
+pour les traces. Les causes restent à isoler. Les comptes ont été vérifiés avec
+COCO par photo, pour les trois modèles et pour le diagnostic. Annotations humaines
+toujours en attente, aucun test final ni donnée chantier utilisateur disponible.
+
+Pour reproduire une revue du modèle terminé, les commandes `smartsite-boxes review`
+utilisent les chemins v3.1 indiqués plus haut et un dossier de sortie absent. Les
+résultats de ce calcul local restent dans `artifacts/` ; ils ne sont pas distribués
+avec le dépôt. Aucun code fonctionnel ni dépendance modifié pour cet essai.

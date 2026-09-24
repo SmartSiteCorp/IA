@@ -6,6 +6,30 @@ from typing import Any
 CLASS_NAMES = ("crack", "surface_loss")
 CLASS_LABELS = {"crack": "Fissures", "surface_loss": "Pertes de matière"}
 
+# Une famille sert à l'affichage. Elle ne fusionne pas les classes apprises.
+COLLECTION_LABELS = {
+    "mold_suspected": "Moisissures suspectées",
+    "moisture_trace": "Traces compatibles avec l'humidité",
+    "peeling_paint": "Revêtement écaillé ou décollé",
+}
+COLLECTION_COLORS = {
+    "mold_suspected": "#db3a55",
+    "moisture_trace": "#b65a00",
+    "peeling_paint": "#236fc3",
+}
+DEFECT_FAMILIES = {
+    "crack": "crack",
+    "surface_loss": "surface_damage",
+    "peeling_paint": "surface_damage",
+    "moisture_trace": "moisture_trace",
+    "mold_suspected": "mold_suspected",
+}
+FAMILY_LABELS = {
+    **CLASS_LABELS,
+    **COLLECTION_LABELS,
+    "surface_damage": "Éclats et dégradation du revêtement",
+}
+
 
 def class_legend(names: tuple[str, ...]) -> str:
     labels = {"crack": "Rouge : fissure", "surface_loss": "Bleu : perte de matière"}

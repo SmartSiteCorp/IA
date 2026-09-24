@@ -63,3 +63,12 @@ def test_incompatible_engine_refused_before_inference(monkeypatch, change):
         engine.model_config.segmentation_head = False
     with pytest.raises(ValueError, match="segmenter|class names"):
         inference.configure_inference(engine, "training-v1")
+
+
+def test_box_adapter_refuses_wrong_labels_and_mask_threshold(monkeypatch):
+    monkeypatch.setattr(inference, "version", lambda name: inference.MODEL_VERSION)
+    engine = SimpleNamespace(model=object(), model_config=object(), class_names=["mold_suspected"])
+    with pytest.raises(ValueError, match="class names"):
+        inference.AlignedPredictor(engine, box_classes=("moisture_trace",))
+    with pytest.raises(ValueError, match="no mask threshold"):
+        inference.AlignedPredictor(engine, mask_threshold=0.7, box_classes=("mold_suspected",))

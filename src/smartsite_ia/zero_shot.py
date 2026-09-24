@@ -10,11 +10,11 @@ from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from typing import Any
 
-import numpy as np
 from PIL import Image, ImageDraw
-from pycocotools import mask as coco_mask
 
 from smartsite_ia.annotations import number
+from smartsite_ia.box_metrics import box_counts as box_counts
+from smartsite_ia.box_metrics import checked_box as checked_box
 from smartsite_ia.curation import digest, read_document, require_text, staged_output
 from smartsite_ia.importer import write_json
 from smartsite_ia.prediction import decode_photo
@@ -77,15 +77,6 @@ def load_protocol(path: Path) -> tuple[dict[str, Any], str]:
     if set(names) != MODEL_FILES:
         raise ValueError("Duplicate or missing model files")
     return config, checksum
-
-
-def checked_box(raw: object, width: int, height: int) -> list[float]:
-    if not isinstance(raw, list) or len(raw) != 4:
-        raise ValueError("Expected an XYXY box")
-    box = [number(value) for value in raw]
-    if not (0 <= box[0] < box[2] <= width and 0 <= box[1] < box[3] <= height):
-        raise ValueError("Box is empty or outside the oriented image")
-    return box
 
 
 def load_sample(path: Path, limit: int) -> tuple[dict[str, Any], str]:
@@ -187,7 +178,6 @@ class GroundingEngine:
             result["text_labels"],
             strict=True,
         ):
-
             raw = [number(value) for value in box]
             clipped = [
                 max(0.0, min(value, bound))
@@ -213,32 +203,6 @@ def check_predictions(records: object, photo: Image.Image) -> list[dict[str, Any
         if not isinstance(record.get("text_label"), str) or len(record["text_label"]) > 200:
             raise ValueError("Invalid prediction label")
     return records
-
-
-def box_counts(
-    references: list[list[float]], predictions: list[dict[str, Any]], overlap: float
-) -> dict[str, int]:
-    """Compter l'accord avec les boîtes auteur, sans l'appeler une vérité terrain."""
-    ordered = sorted(predictions, key=lambda item: item["score"], reverse=True)
-
-    def xywh(box: list[float]) -> list[float]:
-        return [box[0], box[1], box[2] - box[0], box[3] - box[1]]
-
-    ious = (
-        coco_mask.iou(
-            [xywh(p["bbox_xyxy"]) for p in ordered],
-            [xywh(box) for box in references],
-            [0] * len(references),
-        )
-        if references and ordered
-        else np.zeros((len(ordered), len(references)))
-    )
-    used: set[int] = set()
-    for row in ious:
-        candidates = [i for i in range(len(references)) if i not in used and row[i] >= overlap]
-        if candidates:
-            used.add(max(candidates, key=lambda i: row[i]))
-    return {"tp": len(used), "fp": len(predictions) - len(used), "fn": len(references) - len(used)}
 
 
 def draw_boxes(photo: Image.Image, boxes: list[list[float]], color: str) -> Image.Image:

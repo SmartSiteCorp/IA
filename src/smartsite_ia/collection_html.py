@@ -54,12 +54,14 @@ details{{font-size:14px;overflow-wrap:anywhere}}.muted{{color:#506878}}
 <p><strong>{summary["images"]} photos</strong> · {summary["with_source_boxes"]} avec des boîtes
 source à revoir · {summary["to_annotate"]} à annoter · {summary["quarantined"]} cas mis de côté.</p>
 <p class="notice"><strong>Ce sont des données, pas des détections du modèle.</strong>
-Rouge : moisissures suspectées. Bleu : revêtement écaillé. Aucun nouvel entraînement.</p>
+Rouge : moisissures suspectées. Orange : traces d'humidité possibles.
+Bleu : revêtement écaillé. Aucun nouvel entraînement.</p>
 <details><summary>Préparation, limites et prochaine étape</summary>
 <p>{summary["orientation_corrected"]} orientations corrigées ; {summary["groups"]} groupes
 de précaution. {len(report["source_split_conflicts"])} groupes croisent les lots train/validation
 de l'auteur : ils devront rester ensemble dans notre future séparation.</p>
-<p>Les cadres viennent des classes source « Mold » et « Peeling paint ».
+<p>Les cadres viennent des annotations des sources, selon la correspondance de catégories
+documentée dans la sélection. Ils restent à corriger ; ils ne confirment aucune cause physique.
 Aucune photo n'est encore approuvée pour l'apprentissage.</p>
 <p>{html.escape(report["limitations"])}</p>
 <details><summary>{summary["excluded_before_preparation"]}

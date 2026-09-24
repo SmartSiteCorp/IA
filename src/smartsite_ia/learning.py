@@ -77,13 +77,20 @@ def runtime(device: str) -> dict[str, Any]:
 
 
 def fit_engine(
-    data: Path, output: Path, weights: Path, config: dict[str, Any], device: str
+    data: Path,
+    output: Path,
+    weights: Path,
+    config: dict[str, Any],
+    device: str,
+    *,
+    model_name: str = MODEL_NAME,
+    class_names: tuple[str, ...] | None = None,
 ) -> None:
     """Utiliser l'API du moteur, sans réécrire ses calculs d'apprentissage."""
     lightning = importlib.import_module("pytorch_lightning")
     lightning.seed_everything(config["seed"], workers=True)
-    names = get_class_names(config)
-    engine = importlib.import_module("rfdetr").RFDETRSegMedium(
+    names = get_class_names(config) if class_names is None else class_names
+    engine = getattr(importlib.import_module("rfdetr"), model_name)(
         pretrain_weights=str(weights.resolve()),
         device=device,
         amp=False,
@@ -130,10 +137,11 @@ def fit_engine(
     )
 
 
-def summarize_metrics(path: Path) -> dict[str, float]:
+def summarize_metrics(path: Path, *, segmentation: bool = True) -> dict[str, float]:
     """Le CSV reste la référence complète ; le résumé garde la dernière valeur finie."""
     if path.stat().st_size > 10_000_000:
         raise ValueError("Training metrics file is too large")
+    metric = "val/segm_mAP_50_95" if segmentation else "val/mAP_50_95"
     result = {}
     with path.open(newline="", encoding="utf-8") as stream:
         for row in csv.DictReader(stream):
@@ -143,10 +151,10 @@ def summarize_metrics(path: Path) -> dict[str, float]:
                     if not math.isfinite(number):
                         raise ValueError("Non-finite training metric")
                     result[key] = number
-            if row.get("val/segm_mAP_50_95") and row.get("epoch"):
+            if row.get(metric) and row.get("epoch"):
                 result["last_validation_epoch"] = float(row["epoch"])
-    if not result or "train/loss" not in result or "val/segm_mAP_50_95" not in result:
-        raise ValueError("Training did not produce expected loss and segmentation metrics")
+    if not result or "train/loss" not in result or metric not in result:
+        raise ValueError("Training did not produce expected loss and detection metrics")
     return result
 
 

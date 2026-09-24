@@ -47,19 +47,34 @@ def configure_inference(engine: Any, profile: str, mask_threshold: float = 0.5) 
 class AlignedPredictor:
     """Réutiliser les transformations et le décodage RF-DETR, avec les pixels d'origine."""
 
-    def __init__(self, engine: Any, mask_threshold: float = 0.5) -> None:
+    def __init__(
+        self,
+        engine: Any,
+        mask_threshold: float = 0.5,
+        *,
+        box_classes: tuple[str, ...] | None = None,
+    ) -> None:
         inference_metadata("training-v1", mask_threshold)
         self.mask_logit = math.log(mask_threshold / (1 - mask_threshold))
         if version("rfdetr") != MODEL_VERSION:
             raise ValueError("Aligned inference requires the pinned RF-DETR version")
         self.context = engine.model
         config = engine.model_config
-        self.class_names = get_class_names({"class_names": list(engine.class_names)})
+        self.segmentation = box_classes is None
+        self.class_names = (
+            get_class_names({"class_names": list(engine.class_names)})
+            if self.segmentation
+            else tuple(box_classes or ())
+        )
+        if not self.class_names or list(engine.class_names) != list(self.class_names):
+            raise ValueError("Unexpected checkpoint class names")
+        if not self.segmentation and mask_threshold != 0.5:
+            raise ValueError("Box inference has no mask threshold")
         if (
             self.context.model is None
             or engine._is_optimized_for_inference
             or self.context.args.num_classes != len(self.class_names)
-            or not config.segmentation_head
+            or bool(config.segmentation_head) != self.segmentation
         ):
             raise ValueError("Aligned inference expects the unoptimized SmartSite segmenter")
         self.torch = importlib.import_module("torch")
@@ -90,12 +105,17 @@ class AlignedPredictor:
             # On redimensionne les logits directement vers la photo originale.
             # Agrandir un masque déjà binaire abîmerait les contours fins.
             result = self.context.postprocess(raw, sizes, score_threshold=threshold)[0]
+            if not self.segmentation:
+                # Le post-traitement natif n'applique ce seuil qu'aux masques.
+                # Pour les boîtes, on filtre nous-mêmes les lignes correspondantes.
+                keep = result["scores"] > threshold
+                result = {key: value[keep] for key, value in result.items()}
             labels = result["labels"].cpu().numpy()
             return self.detections(
                 xyxy=result["boxes"].float().cpu().numpy(),
                 confidence=result["scores"].float().cpu().numpy(),
                 class_id=labels,
-                mask=result["masks"].squeeze(1).cpu().numpy(),
+                mask=result["masks"].squeeze(1).cpu().numpy() if self.segmentation else None,
                 data={
                     "class_name": np.array(
                         [

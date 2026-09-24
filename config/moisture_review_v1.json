@@ -1,0 +1,1655 @@
+{
+  "schema_version": 1,
+  "selection_sha256": "d0970afcc9fd3052004e07dbf45c1a699a5bd058932e90f6fadd46b484ea8e75",
+  "reviewer": "assistant_visual_review",
+  "human_validation": "pending",
+  "scope": [
+    "mold_suspected",
+    "moisture_trace",
+    "peeling_paint"
+  ],
+  "coordinate_frame": "display_oriented",
+  "protocol": {
+    "purpose": "pilot_training_only",
+    "annotation_unit": "Zone visible continue ; séparer les plages clairement disjointes. Rectangles approximatifs, pas des masques. Une cause physique n’est jamais déduite. Quand une auréole se confond avec une plage mouchetée, retenir seulement moisissures suspectées ; ajouter une trace d’eau uniquement si elle constitue une zone distincte lisible.",
+    "coverage": "Revue visuelle des 71 photos, zoom ciblé sur les ambiguïtés. Exhaustivité proposée uniquement pour les trois cibles et les candidates retenues ; pas de validation experte.",
+    "limits": "Petit lot de convenance, scènes en grande partie dégradées ; groupes prudents et bâtiments souvent inconnus. Pas de test final. Les crops négatifs ne sont pas de nouvelles photos indépendantes. Les fissures seules sont hors périmètre de ce nouveau détecteur. Les exclusions ne sont jamais du fond négatif.",
+    "class_rules": {
+      "mold_suspected": "Plage de petites ponctuations irrégulières compatibles avec des moisissures ; ne pas confondre support sombre, trous, texture ou salissure incertaine. Suspicion visuelle uniquement.",
+      "moisture_trace": "Auréole ou coulure visible compatible avec l’eau ; pas de diagnostic d’humidité actuelle. Une différence de peinture seule ne suffit pas.",
+      "peeling_paint": "Revêtement visible écaillé, décollé ou manquant, y compris enduit de surface ; matériau précis inconnu si non documenté. Fissure seule exclue."
+    }
+  },
+  "group_partitions": {
+    "phele_train_101": "validation",
+    "phele_train_108": "train",
+    "phele_train_109": "train",
+    "phele_train_113": "train",
+    "phele_train_114": "train",
+    "phele_train_117": "train",
+    "phele_train_124": "validation",
+    "phele_train_134": "train",
+    "phele_train_145": "train",
+    "phele_train_148": "train",
+    "phele_train_167": "train",
+    "phele_train_187": "train",
+    "phele_train_189": "train",
+    "phele_train_199": "train",
+    "phele_train_208": "train",
+    "phele_train_212": "train",
+    "phele_train_219": "train",
+    "phele_train_22": "train",
+    "phele_train_225": "train",
+    "phele_train_263": "train",
+    "phele_train_290": "validation",
+    "phele_train_301": "train",
+    "phele_train_305": "train",
+    "phele_train_306": "train",
+    "phele_train_308": "train",
+    "phele_train_309": "train",
+    "phele_train_337": "train",
+    "phele_train_344": "train",
+    "phele_train_354": "train",
+    "phele_train_364": "validation",
+    "phele_train_368": "train",
+    "phele_train_372": "train",
+    "phele_train_373": "train",
+    "phele_train_40": "train",
+    "phele_train_419": "train",
+    "phele_train_458": "train",
+    "phele_train_48": "train",
+    "phele_train_61": "train",
+    "phele_train_75": "train",
+    "phele_val_108": "train",
+    "phele_val_123": "train",
+    "commons_158222207": "validation",
+    "commons_22227712": "train",
+    "commons_67025365": "train",
+    "commons_61970335": "train",
+    "commons_395051": "train",
+    "commons_137521145": "train"
+  },
+  "records": [
+    {
+      "id": "phele_train_101",
+      "decision": "candidate",
+      "note": "Plaque de revêtement manquante au pied du mur ; cadre source conservé.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.448077,
+            0.36051,
+            0.662019,
+            0.470804
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_108",
+      "decision": "candidate",
+      "note": "Revêtement décollé autour du bas de la fenêtre et au pied du mur ; cadre étendu aux parties visibles.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.04,
+            0.48,
+            1,
+            1
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_109",
+      "decision": "candidate",
+      "note": "Plaques aux bords soulevés au centre du mur ; traces grises non assimilées à des moisissures.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.389881,
+            0.20783700000000002,
+            0.816799,
+            0.586309
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_113",
+      "decision": "excluded",
+      "note": "Fissuration autour du linteau ; le rectangle source ne démontre pas un écaillage. Conservée comme confusion à examiner, hors apprentissage.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Fissuration autour du linteau ; le rectangle source ne démontre pas un écaillage. Conservée comme confusion à examiner, hors apprentissage."
+        }
+      ]
+    },
+    {
+      "id": "phele_train_114",
+      "decision": "candidate",
+      "note": "Écaillage près de la porte ; ajout de la bande décollée au pied du mur. Débris au sol hors cible.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.5710985,
+            0.3834325,
+            0.7910055,
+            0.5798615
+          ],
+          "source_indices": [
+            0
+          ]
+        },
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.05,
+            0.66,
+            0.68,
+            0.86
+          ],
+          "source_indices": []
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_117",
+      "decision": "excluded",
+      "note": "Le cadre couvre une bâche/feuille bleue et une ouverture. Pas de revêtement mural écaillé établi ; quarantaine conservée.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Le cadre couvre une bâche/feuille bleue et une ouverture. Pas de revêtement mural écaillé établi ; quarantaine conservée."
+        }
+      ]
+    },
+    {
+      "id": "phele_train_124",
+      "decision": "candidate",
+      "note": "Deux plaques de revêtement manquantes au plafond ; cadres source conservés.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.11078100000000002,
+            0.1463295,
+            0.677249,
+            0.6626985
+          ],
+          "source_indices": [
+            0
+          ]
+        },
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.6398805,
+            0.7490079999999999,
+            0.9546955,
+            1.0
+          ],
+          "source_indices": [
+            1
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_134",
+      "decision": "excluded",
+      "note": "Mélange de taches, surface décapée et changements de couleur ; moisissure et revêtement ne se séparent pas assez sûrement sur cette vue.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Mélange de taches, surface décapée et changements de couleur ; moisissure et revêtement ne se séparent pas assez sûrement sur cette vue."
+        }
+      ]
+    },
+    {
+      "id": "phele_train_135",
+      "decision": "candidate",
+      "note": "Même pied de mur que train_101, autre cadrage ; garder le même groupe.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.5947914999999999,
+            0.24609399999999998,
+            0.8656245,
+            0.55
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_136",
+      "decision": "candidate",
+      "note": "Plusieurs petites plaques décollées au plafond. Ajout de la zone basse oubliée ; fissures seules hors des trois cibles.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.5178565,
+            0.4794145,
+            0.6613755,
+            0.6520335
+          ],
+          "source_indices": [
+            0
+          ]
+        },
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.13,
+            0.71,
+            0.32,
+            0.89
+          ],
+          "source_indices": []
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_142",
+      "decision": "candidate",
+      "note": "Les deux rectangles source ne couvrent pas le décollement central ; regroupement de la zone continue.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.3,
+            0.12,
+            1,
+            0.73
+          ],
+          "source_indices": [
+            0,
+            1
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_145",
+      "decision": "candidate",
+      "note": "Coulures verticales visibles sous la fenêtre : trace compatible avec de l’humidité, sans cause ni moisissure confirmée. Cadre recentré sur le mur.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "moisture_trace",
+          "xyxy_normalized": [
+            0.36,
+            0.24,
+            0.76,
+            0.78
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_148",
+      "decision": "excluded",
+      "note": "Revêtement décollé visible, mais taches diffuses sur le reste du mur difficiles à classer. Hors lot pilote pour éviter des cibles omises.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Revêtement décollé visible, mais taches diffuses sur le reste du mur difficiles à classer. Hors lot pilote pour éviter des cibles omises."
+        }
+      ]
+    },
+    {
+      "id": "phele_train_158",
+      "decision": "candidate",
+      "note": "Trois zones franches de décollement ; ajout de la petite plaque au fond du plafond.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.7562825,
+            0.05778799999999999,
+            0.9460975,
+            0.21527799999999997
+          ],
+          "source_indices": [
+            0
+          ]
+        },
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.284722,
+            0.25744049999999996,
+            0.664352,
+            0.6153275
+          ],
+          "source_indices": [
+            1
+          ]
+        },
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.8224205,
+            0.441716,
+            0.9692455,
+            0.5625
+          ],
+          "source_indices": [
+            2
+          ]
+        },
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.13,
+            0.71,
+            0.36,
+            0.79
+          ],
+          "source_indices": []
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_160",
+      "decision": "candidate",
+      "note": "Deux zones de revêtement décollé autour de la fenêtre ; cadres source conservés.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.1798945,
+            0.3273815,
+            0.3409395,
+            0.5354665
+          ],
+          "source_indices": [
+            0
+          ]
+        },
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.33664,
+            0.5238094999999999,
+            0.5694440000000001,
+            0.7522325
+          ],
+          "source_indices": [
+            1
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_161",
+      "decision": "candidate",
+      "note": "Deux pertes du revêtement au plafond, même scène que train_124 ; cadres conservés.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.06911399999999998,
+            0.09127050000000003,
+            0.513558,
+            0.4578375
+          ],
+          "source_indices": [
+            0
+          ]
+        },
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.45866450000000003,
+            0.519345,
+            0.6832015,
+            0.709077
+          ],
+          "source_indices": [
+            1
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_167",
+      "decision": "candidate",
+      "note": "La zone grise suit le support mis à nu. Garder la dégradation du revêtement ; retirer Mold qui ne montre pas de foyer distinct convaincant.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.1064815,
+            0.021081000000000016,
+            1.0,
+            0.955109
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": [
+        {
+          "index": 1,
+          "reason": "La zone grise suit le support mis à nu. Garder la dégradation du revêtement ; retirer Mold qui ne montre pas de foyer distinct convaincant."
+        }
+      ]
+    },
+    {
+      "id": "phele_train_183",
+      "decision": "excluded",
+      "note": "Même mur que train_148 et train_339 ; mélange de revêtement et taches ambiguës, hors lot pilote.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Même mur que train_148 et train_339 ; mélange de revêtement et taches ambiguës, hors lot pilote."
+        }
+      ]
+    },
+    {
+      "id": "phele_train_187",
+      "decision": "excluded",
+      "note": "Encadrement rugueux et revêtement incomplet : impossible de séparer une finition en cours d’une dégradation avec cette seule vue.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Encadrement rugueux et revêtement incomplet : impossible de séparer une finition en cours d’une dégradation avec cette seule vue."
+        },
+        {
+          "index": 1,
+          "reason": "Encadrement rugueux et revêtement incomplet : impossible de séparer une finition en cours d’une dégradation avec cette seule vue."
+        }
+      ]
+    },
+    {
+      "id": "phele_train_189",
+      "decision": "candidate",
+      "note": "Plaque de revêtement décollée au pied de la porte ; cadre source conservé.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.7248675,
+            0.2864585,
+            0.9203045000000001,
+            0.4935515
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_199",
+      "decision": "candidate",
+      "note": "Deux zones de revêtement manquant ; le grand cadre source englobait la petite. Séparation sans double comptage.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.13,
+            0.19,
+            1,
+            0.8
+          ],
+          "source_indices": [
+            0
+          ]
+        },
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.244709,
+            0.7619045,
+            0.447421,
+            0.8752475
+          ],
+          "source_indices": [
+            1
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_202",
+      "decision": "candidate",
+      "note": "Dégradation au pied de porte, autre vue du groupe train_189 ; cadre conservé.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.717014,
+            0.27777799999999997,
+            0.929068,
+            0.493386
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_208",
+      "decision": "candidate",
+      "note": "Bords soulevés du revêtement sur le mur ; cadre étendu à la partie basse visible.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.04,
+            0.26,
+            0.9,
+            1
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_212",
+      "decision": "candidate",
+      "note": "Revêtement extérieur décollé ; ombres des arbres conservées dans le contexte, sans label humidité.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.00024799999999997047,
+            0.1775795,
+            0.937004,
+            0.7215605
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_219",
+      "decision": "excluded",
+      "note": "Trait vertical surtout fissuré ; pas assez de preuve visuelle de décollement pour conserver Peeling paint.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Trait vertical surtout fissuré ; pas assez de preuve visuelle de décollement pour conserver Peeling paint."
+        }
+      ]
+    },
+    {
+      "id": "phele_train_22",
+      "decision": "candidate",
+      "note": "Petite plaque décollée au plafond ; source conservée. Les traits fins seuls restent hors cible.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.27612400000000004,
+            0.3576395,
+            0.493386,
+            0.5667165
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_225",
+      "decision": "candidate",
+      "note": "Revêtement abîmé au pied de l’angle ; cadre source conservé, sans diagnostic d’humidité.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.41005349999999996,
+            0.4761905,
+            0.9636245,
+            0.8427575
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_263",
+      "decision": "excluded",
+      "note": "Zone sombre au passage de tuyau pouvant être un trou/une ombre ; revêtement et traces mélangés. Label Mold non retenu.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Zone sombre au passage de tuyau pouvant être un trou/une ombre ; revêtement et traces mélangés. Label Mold non retenu."
+        }
+      ]
+    },
+    {
+      "id": "phele_train_290",
+      "decision": "candidate",
+      "note": "Deux plages de ponctuations sombres sur les carreaux, compatibles avec des moisissures ; suspicion visuelle seulement.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "mold_suspected",
+          "xyxy_normalized": [
+            0.3762405,
+            0.17857099999999998,
+            0.9290674999999999,
+            0.6822090000000001
+          ],
+          "source_indices": [
+            0
+          ]
+        },
+        {
+          "class": "mold_suspected",
+          "xyxy_normalized": [
+            0.0002479999999999982,
+            0.21924599999999994,
+            0.39930600000000005,
+            0.900794
+          ],
+          "source_indices": [
+            1
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_301",
+      "decision": "candidate",
+      "note": "Décollement du revêtement autour de la fenêtre, pas de foyer de moisissure distinct établi. Remplacement de Mold et ajout de la zone basse.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.02,
+            0,
+            0.61,
+            0.62
+          ],
+          "source_indices": [
+            0
+          ]
+        },
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.02,
+            0.56,
+            0.62,
+            0.89
+          ],
+          "source_indices": []
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_305",
+      "decision": "excluded",
+      "note": "Petits points et angle sombre pouvant être des fixations/salissures ; murs possiblement en préparation. Mold trop incertain.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Petits points et angle sombre pouvant être des fixations/salissures ; murs possiblement en préparation. Mold trop incertain."
+        }
+      ]
+    },
+    {
+      "id": "phele_train_306",
+      "decision": "candidate",
+      "note": "Plage de ponctuations sombres près de la fenêtre et plaque de revêtement manquante en dessous ; deux catégories conservées.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "mold_suspected",
+          "xyxy_normalized": [
+            0.4775135,
+            0.043898999999999994,
+            1.0,
+            0.383433
+          ],
+          "source_indices": [
+            0
+          ]
+        },
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.36375650000000004,
+            0.431051,
+            0.5998675,
+            0.642361
+          ],
+          "source_indices": [
+            1
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_308",
+      "decision": "excluded",
+      "note": "Taches diffuses sur presque tout le mur, câbles et décapage ; la boîte source est partielle et la convention reste incertaine.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Taches diffuses sur presque tout le mur, câbles et décapage ; la boîte source est partielle et la convention reste incertaine."
+        }
+      ]
+    },
+    {
+      "id": "phele_train_309",
+      "decision": "candidate",
+      "note": "Le cadre Mold entoure une plaque dont les bords se décollent. Reclassement en revêtement écaillé ; ajout du petit éclat au plafond.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.47,
+            0.59,
+            0.93,
+            0.98
+          ],
+          "source_indices": [
+            0
+          ]
+        },
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.19,
+            0.55,
+            0.31,
+            0.6
+          ],
+          "source_indices": []
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_337",
+      "decision": "excluded",
+      "note": "Grande zone de teinte différente sous fenêtre, compatible aussi avec reprise d’enduit/ancienne peinture. Mold non justifié par la vue.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Grande zone de teinte différente sous fenêtre, compatible aussi avec reprise d’enduit/ancienne peinture. Mold non justifié par la vue."
+        }
+      ]
+    },
+    {
+      "id": "phele_train_339",
+      "decision": "excluded",
+      "note": "Même mur que train_148/183 ; dégradations mêlées à des taches diffuses. Conserver pour revue approfondie, hors lot pilote.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Même mur que train_148/183 ; dégradations mêlées à des taches diffuses. Conserver pour revue approfondie, hors lot pilote."
+        },
+        {
+          "index": 1,
+          "reason": "Même mur que train_148/183 ; dégradations mêlées à des taches diffuses. Conserver pour revue approfondie, hors lot pilote."
+        }
+      ]
+    },
+    {
+      "id": "phele_train_344",
+      "decision": "candidate",
+      "note": "Plage de ponctuations sombres sur le bas du mur ; cadre source conservé comme moisissures suspectées. Fissure latérale hors cible.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "mold_suspected",
+          "xyxy_normalized": [
+            0.41005250000000004,
+            0.383433,
+            0.9999995,
+            0.951885
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_352",
+      "decision": "candidate",
+      "note": "Deux plages de ponctuations sombres sur carreaux conservées. Le petit cadre autour du raccord/robinet est retiré : rouille, joint et ombre non distinguables.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "mold_suspected",
+          "xyxy_normalized": [
+            0.06101200000000001,
+            0.42592599999999997,
+            0.5610120000000001,
+            0.8740079999999999
+          ],
+          "source_indices": [
+            1
+          ]
+        },
+        {
+          "class": "mold_suspected",
+          "xyxy_normalized": [
+            0.613839,
+            0.4880955,
+            0.919395,
+            1.0
+          ],
+          "source_indices": [
+            2
+          ]
+        }
+      ],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Deux plages de ponctuations sombres sur carreaux conservées. Le petit cadre autour du raccord/robinet est retiré : rouille, joint et ombre non distinguables."
+        }
+      ]
+    },
+    {
+      "id": "phele_train_354",
+      "decision": "excluded",
+      "note": "Contours de peinture/reprise et fissure verticale ; ni foyer de moisissure net ni décollement assez certain sur cette vue.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Contours de peinture/reprise et fissure verticale ; ni foyer de moisissure net ni décollement assez certain sur cette vue."
+        }
+      ]
+    },
+    {
+      "id": "phele_train_362",
+      "decision": "candidate",
+      "note": "Plage mouchetée du bas du mur plus large que la boîte source ; extension à la surface visible, sans qualifier les zones lisses de moisissures.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "mold_suspected",
+          "xyxy_normalized": [
+            0,
+            0.32,
+            0.79,
+            1
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_364",
+      "decision": "candidate",
+      "note": "Auréoles et front de coloration en pied de mur ; reclassés en trace compatible avec l’humidité. Pas de diagnostic de matériau humide.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "moisture_trace",
+          "xyxy_normalized": [
+            0.19,
+            0.02,
+            0.8,
+            0.56
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_368",
+      "decision": "excluded",
+      "note": "Surface cloquée et traces diffuses ; le seul cadre Mold ne suffit pas à établir une annotation complète et fiable.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Surface cloquée et traces diffuses ; le seul cadre Mold ne suffit pas à établir une annotation complète et fiable."
+        }
+      ]
+    },
+    {
+      "id": "phele_train_372",
+      "decision": "excluded",
+      "note": "Plafond très dégradé, zones sombres et éléments masqués ; séparation moisissure/support exposé trop incertaine pour ce premier lot.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Plafond très dégradé, zones sombres et éléments masqués ; séparation moisissure/support exposé trop incertaine pour ce premier lot."
+        },
+        {
+          "index": 1,
+          "reason": "Plafond très dégradé, zones sombres et éléments masqués ; séparation moisissure/support exposé trop incertaine pour ce premier lot."
+        },
+        {
+          "index": 2,
+          "reason": "Plafond très dégradé, zones sombres et éléments masqués ; séparation moisissure/support exposé trop incertaine pour ce premier lot."
+        },
+        {
+          "index": 3,
+          "reason": "Plafond très dégradé, zones sombres et éléments masqués ; séparation moisissure/support exposé trop incertaine pour ce premier lot."
+        }
+      ]
+    },
+    {
+      "id": "phele_train_373",
+      "decision": "excluded",
+      "note": "Fente d’angle, ombres de fenêtre et joint ; les labels Mold/Peeling paint ne sont pas assez certains.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Fente d’angle, ombres de fenêtre et joint ; les labels Mold/Peeling paint ne sont pas assez certains."
+        },
+        {
+          "index": 1,
+          "reason": "Fente d’angle, ombres de fenêtre et joint ; les labels Mold/Peeling paint ne sont pas assez certains."
+        }
+      ]
+    },
+    {
+      "id": "phele_train_392",
+      "decision": "excluded",
+      "note": "Même angle que train_305 ; trous/points sombres et revêtement en préparation difficiles à distinguer de moisissures.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Même angle que train_305 ; trous/points sombres et revêtement en préparation difficiles à distinguer de moisissures."
+        }
+      ]
+    },
+    {
+      "id": "phele_train_40",
+      "decision": "excluded",
+      "note": "Écaillage et surface noire très étendus, chevauchement des catégories peu fiable ; image gardée pour une revue plus précise.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Écaillage et surface noire très étendus, chevauchement des catégories peu fiable ; image gardée pour une revue plus précise."
+        },
+        {
+          "index": 1,
+          "reason": "Écaillage et surface noire très étendus, chevauchement des catégories peu fiable ; image gardée pour une revue plus précise."
+        },
+        {
+          "index": 2,
+          "reason": "Écaillage et surface noire très étendus, chevauchement des catégories peu fiable ; image gardée pour une revue plus précise."
+        }
+      ]
+    },
+    {
+      "id": "phele_train_419",
+      "decision": "excluded",
+      "note": "Traces de frottement, salissures et ponctuations mêlées ; ne pas prendre les deux boîtes Mold pour une vérité exhaustive.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Traces de frottement, salissures et ponctuations mêlées ; ne pas prendre les deux boîtes Mold pour une vérité exhaustive."
+        },
+        {
+          "index": 1,
+          "reason": "Traces de frottement, salissures et ponctuations mêlées ; ne pas prendre les deux boîtes Mold pour une vérité exhaustive."
+        }
+      ]
+    },
+    {
+      "id": "phele_train_438",
+      "decision": "excluded",
+      "note": "Cadre Mold englobant fenêtre et téléviseur ; annotations insuffisantes et zones peu lisibles.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Cadre Mold englobant fenêtre et téléviseur ; annotations insuffisantes et zones peu lisibles."
+        }
+      ]
+    },
+    {
+      "id": "phele_train_458",
+      "decision": "excluded",
+      "note": "Rectangle de peinture sous le climatiseur, traces et trous : aucune preuve visuelle suffisante de Mold. Confusion conservée.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Rectangle de peinture sous le climatiseur, traces et trous : aucune preuve visuelle suffisante de Mold. Confusion conservée."
+        }
+      ]
+    },
+    {
+      "id": "phele_train_48",
+      "decision": "excluded",
+      "note": "Bande grise pouvant être salissure/reprise de finition ; label Mold incertain.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bande grise pouvant être salissure/reprise de finition ; label Mold incertain."
+        }
+      ]
+    },
+    {
+      "id": "phele_train_54",
+      "decision": "excluded",
+      "note": "Support très remanié et taches mêlées au-dessus de la fenêtre ; impossible de séparer les catégories proprement dans ce lot.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Support très remanié et taches mêlées au-dessus de la fenêtre ; impossible de séparer les catégories proprement dans ce lot."
+        }
+      ]
+    },
+    {
+      "id": "phele_train_61",
+      "decision": "excluded",
+      "note": "Décollement, assombrissement et ombre autour du rideau ; garder la scène avec val_12 en revue, hors lot pilote.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Décollement, assombrissement et ombre autour du rideau ; garder la scène avec val_12 en revue, hors lot pilote."
+        }
+      ]
+    },
+    {
+      "id": "phele_train_75",
+      "decision": "excluded",
+      "note": "Photo floue ; le contour évoque une surface décollée ou tachée, mais la classe ne peut pas être tranchée.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Photo floue ; le contour évoque une surface décollée ou tachée, mais la classe ne peut pas être tranchée."
+        }
+      ]
+    },
+    {
+      "id": "phele_val_10",
+      "decision": "excluded",
+      "note": "Décollements sous la couverture ; cadre source conservé. La bande sombre au sol reste ambiguë, donc image exclue du lot pilote.",
+      "reviewed_scope": false,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.00024849999999998484,
+            0.04001350000000001,
+            0.8931055,
+            0.2480165
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_val_103",
+      "decision": "excluded",
+      "note": "Nombreux petits décollements et ponctuations répartis au plafond ; annotation source trop partielle pour un apprentissage exhaustif.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Nombreux petits décollements et ponctuations répartis au plafond ; annotation source trop partielle pour un apprentissage exhaustif."
+        },
+        {
+          "index": 1,
+          "reason": "Nombreux petits décollements et ponctuations répartis au plafond ; annotation source trop partielle pour un apprentissage exhaustif."
+        },
+        {
+          "index": 2,
+          "reason": "Nombreux petits décollements et ponctuations répartis au plafond ; annotation source trop partielle pour un apprentissage exhaustif."
+        }
+      ]
+    },
+    {
+      "id": "phele_val_108",
+      "decision": "excluded",
+      "note": "Trait ondulé pouvant être fissure ou bord de revêtement ; absence de preuve suffisante de décollement.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Trait ondulé pouvant être fissure ou bord de revêtement ; absence de preuve suffisante de décollement."
+        }
+      ]
+    },
+    {
+      "id": "phele_val_12",
+      "decision": "excluded",
+      "note": "Même scène que train_61 ; taches et revêtement mêlés, pas de classe imposée.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Même scène que train_61 ; taches et revêtement mêlés, pas de classe imposée."
+        }
+      ]
+    },
+    {
+      "id": "phele_val_123",
+      "decision": "candidate",
+      "note": "Zone de revêtement manquante derrière les chaussures ; cadre étendu jusqu’au bord visible à droite.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.29,
+            0.38,
+            0.89,
+            0.63
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_val_124",
+      "decision": "excluded",
+      "note": "Même plafond que val_103/train_199 ; petites dégradations et ponctuations non exhaustivement séparables sur cette vue.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Même plafond que val_103/train_199 ; petites dégradations et ponctuations non exhaustivement séparables sur cette vue."
+        },
+        {
+          "index": 1,
+          "reason": "Même plafond que val_103/train_199 ; petites dégradations et ponctuations non exhaustivement séparables sur cette vue."
+        },
+        {
+          "index": 2,
+          "reason": "Même plafond que val_103/train_199 ; petites dégradations et ponctuations non exhaustivement séparables sur cette vue."
+        }
+      ]
+    },
+    {
+      "id": "phele_val_128",
+      "decision": "excluded",
+      "note": "Encadrement rugueux possiblement inachevé ; même groupe que train_187, hors lot pilote.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Encadrement rugueux possiblement inachevé ; même groupe que train_187, hors lot pilote."
+        }
+      ]
+    },
+    {
+      "id": "phele_val_131",
+      "decision": "candidate",
+      "note": "Grande plage de revêtement manquant sur mur extérieur ; cadre source conservé.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.09126950000000003,
+            0.228836,
+            0.5696925,
+            0.6875
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_val_134",
+      "decision": "candidate",
+      "note": "Autre vue du pied de porte train_189/202 ; cadre source conservé.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.7586805,
+            0.23412750000000002,
+            0.9999995,
+            0.5241405
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_val_45",
+      "decision": "candidate",
+      "note": "Revêtement décollé dans l’angle ; foyer de petits points sombres situé surtout sous l’ancien cadre Mold. Cadres resserrés sur les signes visibles.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.18,
+            0.26,
+            0.73,
+            0.63
+          ],
+          "source_indices": [
+            0
+          ]
+        },
+        {
+          "class": "mold_suspected",
+          "xyxy_normalized": [
+            0.41,
+            0.61,
+            0.61,
+            0.75
+          ],
+          "source_indices": [
+            1
+          ]
+        },
+        {
+          "class": "mold_suspected",
+          "xyxy_normalized": [
+            0.67,
+            0.51,
+            0.73,
+            0.56
+          ],
+          "source_indices": []
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_val_67",
+      "decision": "candidate",
+      "note": "Même plage de support exposé que train_167. Retirer Mold faute de foyer distinct établi ; conserver le décollement du revêtement.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.10383599999999998,
+            0.1106145,
+            0.9778439999999999,
+            0.8407735000000001
+          ],
+          "source_indices": [
+            1
+          ]
+        }
+      ],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Même plage de support exposé que train_167. Retirer Mold faute de foyer distinct établi ; conserver le décollement du revêtement."
+        }
+      ]
+    },
+    {
+      "id": "commons_158222207",
+      "decision": "candidate",
+      "note": "Deux groupes d’auréoles brunâtres au plafond. Traces compatibles avec l’humidité ; pas de mesure ni de cause déduite.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "moisture_trace",
+          "xyxy_normalized": [
+            0.44,
+            0.19,
+            0.71,
+            0.56
+          ],
+          "source_indices": []
+        },
+        {
+          "class": "moisture_trace",
+          "xyxy_normalized": [
+            0.22,
+            0.6,
+            0.47,
+            0.91
+          ],
+          "source_indices": []
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "commons_22227712",
+      "decision": "excluded",
+      "note": "Grande plage de peinture décollée au plafond. Marques brunes imbriquées trop peu distinctes pour une seconde catégorie ; conservée hors lot pilote afin de ne pas les apprendre comme fond.",
+      "reviewed_scope": false,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0,
+            0.1,
+            1,
+            0.89
+          ],
+          "source_indices": []
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "commons_67025365",
+      "decision": "candidate",
+      "note": "Auréole brunâtre sur une dalle de plafond ; les petits points réguliers du plafond sont sa texture, pas des moisissures annotées.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "moisture_trace",
+          "xyxy_normalized": [
+            0.3,
+            0.1,
+            0.68,
+            0.55
+          ],
+          "source_indices": []
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "commons_61970335",
+      "decision": "candidate",
+      "note": "Revêtement de plafond détaché et pendant. Une grande zone est annotée pour la localisation ; pas de faux masque pixel par pixel.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0,
+            0,
+            1,
+            0.7
+          ],
+          "source_indices": []
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "commons_395051",
+      "decision": "candidate",
+      "note": "Plages de ponctuations compatibles avec des moisissures sur plafond et hauts de murs. Trois zones par surface ; auréoles imbriquées non doublées en humidité selon la convention du lot. Le ventilateur masque une partie du plafond.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "mold_suspected",
+          "xyxy_normalized": [
+            0,
+            0,
+            1,
+            0.53
+          ],
+          "source_indices": []
+        },
+        {
+          "class": "mold_suspected",
+          "xyxy_normalized": [
+            0,
+            0.34,
+            0.51,
+            0.6
+          ],
+          "source_indices": []
+        },
+        {
+          "class": "mold_suspected",
+          "xyxy_normalized": [
+            0.52,
+            0.42,
+            1,
+            0.65
+          ],
+          "source_indices": []
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "commons_137521145",
+      "decision": "excluded",
+      "note": "Pièce très dégradée : propositions localisées sur les plages les plus lisibles ; des zones restent masquées/sombres. Hors lot pilote, pas de fond sain implicite.",
+      "reviewed_scope": false,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0,
+            0.41,
+            0.4,
+            0.78
+          ],
+          "source_indices": []
+        },
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.27,
+            0,
+            0.68,
+            0.2
+          ],
+          "source_indices": []
+        },
+        {
+          "class": "mold_suspected",
+          "xyxy_normalized": [
+            0.9,
+            0,
+            1,
+            0.79
+          ],
+          "source_indices": []
+        },
+        {
+          "class": "mold_suspected",
+          "xyxy_normalized": [
+            0.0,
+            0.17,
+            0.38,
+            0.43
+          ],
+          "source_indices": []
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "commons_137521159",
+      "decision": "candidate",
+      "note": "Revêtement de plafond manquant et bandes pendantes : deux zones distinctes. Cadres sur les parties visibles.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.1,
+            0,
+            0.45,
+            0.45
+          ],
+          "source_indices": []
+        },
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.5,
+            0,
+            0.7,
+            0.33
+          ],
+          "source_indices": []
+        }
+      ],
+      "removed_source_boxes": []
+    }
+  ],
+  "negative_crops": [
+    {
+      "id": "negative_floor_202",
+      "parent_id": "phele_train_202",
+      "crop_xyxy_normalized": [
+        0.12,
+        0.68,
+        0.64,
+        0.96
+      ],
+      "note": "Motif du sol et joints ; aucune des trois cibles visible dans ce recadrage.",
+      "reviewed_scope": true
+    },
+    {
+      "id": "negative_texture_670",
+      "parent_id": "commons_67025365",
+      "crop_xyxy_normalized": [
+        0.02,
+        0.02,
+        0.28,
+        0.15
+      ],
+      "note": "Petits points réguliers du plafond et joint de dalle ; texture confondante, sans auréole visible dans le recadrage.",
+      "reviewed_scope": true
+    }
+  ]
+}

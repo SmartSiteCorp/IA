@@ -1,0 +1,4458 @@
+{
+  "schema_version": 1,
+  "selection_sha256": "c071b78b874af4948b1bd10718569bbedb4f1926df7506f40e3a67f0e3eea5f9",
+  "reviewer": "assistant_visual_review",
+  "human_validation": "pending",
+  "scope": [
+    "mold_suspected",
+    "moisture_trace",
+    "peeling_paint"
+  ],
+  "coordinate_frame": "display_oriented",
+  "protocol": {
+    "purpose": "pilot_training_only",
+    "annotation_unit": "Zone visible continue ; séparer les plages clairement disjointes. Rectangles approximatifs, pas des masques. Une cause physique n’est jamais déduite. Quand une auréole se confond avec une plage mouchetée, retenir seulement moisissures suspectées ; ajouter une trace d’eau uniquement si elle constitue une zone distincte lisible. Une plage passant du plafond au mur ou à un retour peut être scindée par surface pour réduire le fond englobé.",
+    "coverage": "53 décisions utiles de v2 conservées exactement. Revue des 130 photos MBDD sur 22 planches, puis agrandissement des candidates ; 7 positives retenues et 123 exclues. Neuf Commons vues sur planches, six agrandies ; trois positives retenues et six exclues. Chaque boîte source des classes cibles possède une décision explicite. Deux recadrages négatifs supplémentaires retenus ; le candidat sous la fenêtre est retiré après agrandissement, trop ambigu. Groupes de scène fixés avant tout entraînement ou prédiction v3. Seconde revue ciblée demandée par l’utilisateur : les dix nouvelles photos positives et les deux nouveaux recadrages négatifs sont relus individuellement ; quatre détails agrandis. Trois photos ont des rectangles corrigés ou ajoutés. Les autres annotations, exclusions et partitions restent identiques. Cette seconde lecture n’est pas une revue humaine ni indépendante.",
+    "limits": "Petit lot de convenance, scènes en grande partie dégradées ; groupes prudents et bâtiments souvent inconnus. Pas de test final. Les crops négatifs ne sont pas de nouvelles photos indépendantes. Les fissures seules sont hors périmètre de ce nouveau détecteur. Les exclusions ne sont jamais du fond négatif. Version 2 : humidité inchangée (deux boîtes train), seulement trois groupes supplémentaires de moisissures. Les négatifs sont définis pour ces trois classes, pas pour tous les risques. Pas de photo chantier utilisateur. Aucun critère de fiabilité opérationnelle atteint par construction. V3 : aucune validation humaine, aucun entraînement effectué à la préparation. Les 24 anciennes images MBDD servent au rapprochement des scènes et restent hors export. Les exclusions ne sont pas des négatifs. Le mur industriel et le mur du parc sont deux groupes distincts ; l’hypothèse préliminaire qui les mélangeait est corrigée. Bâtiments non certifiés, indépendance des scènes seulement proposée. Tous les anciens exemples utiles gardent leur partition v2. V3.1 : une seconde lecture visuelle de l’assistant améliore les propositions, sans certifier leur exhaustivité. Les petites marques de façade, les contours diffus et les occlusions restent incertains ; aucun diagnostic de cause ni précision modèle ne peut en être déduit.",
+    "class_rules": {
+      "mold_suspected": "Plage de petites ponctuations irrégulières compatibles avec des moisissures ; ne pas confondre support sombre, trous, texture ou salissure incertaine. Suspicion visuelle uniquement.",
+      "moisture_trace": "Auréole ou coulure visible compatible avec l’eau ; pas de diagnostic d’humidité actuelle. Une différence de peinture seule ne suffit pas.",
+      "peeling_paint": "Revêtement visible écaillé, décollé ou manquant, y compris enduit de surface ; matériau précis inconnu si non documenté. Fissure seule exclue."
+    }
+  },
+  "group_partitions": {
+    "phele_train_101": "validation",
+    "phele_train_108": "train",
+    "phele_train_109": "train",
+    "phele_train_114": "train",
+    "phele_train_124": "validation",
+    "phele_train_145": "train",
+    "phele_train_167": "train",
+    "phele_train_189": "train",
+    "phele_train_199": "train",
+    "phele_train_208": "train",
+    "phele_train_212": "train",
+    "phele_train_22": "train",
+    "phele_train_225": "train",
+    "phele_train_290": "validation",
+    "phele_train_301": "train",
+    "phele_train_306": "train",
+    "phele_train_309": "train",
+    "phele_train_344": "train",
+    "phele_train_364": "validation",
+    "phele_val_123": "train",
+    "phele_val_45": "train",
+    "commons_158222207": "validation",
+    "commons_67025365": "train",
+    "commons_61970335": "train",
+    "commons_395051": "train",
+    "commons_137521159": "train",
+    "phele_train_74": "train",
+    "phele_train_181": "validation",
+    "phele_train_487": "train",
+    "phele_train_464": "train",
+    "phele_train_267": "train",
+    "phele_train_294": "validation",
+    "phele_train_434": "validation",
+    "phele_train_139": "train",
+    "phele_train_465": "validation",
+    "commons_56570306": "train",
+    "commons_69965989": "train",
+    "commons_37820167": "train",
+    "mbdd_hefei677": "train",
+    "mbdd_hefei1006": "train",
+    "mbdd_hefei2564": "train",
+    "mbdd_hefei4593": "validation",
+    "mbdd_hefei6907": "train",
+    "mbdd_hefei8166": "train",
+    "mbdd_hefei8364": "train",
+    "mbdd_hefei8592": "train",
+    "mbdd_hefei9745": "train",
+    "mbdd_hefei10758": "train",
+    "mbdd_hefei10889": "train",
+    "commons_69374382": "train",
+    "commons_82342600": "train",
+    "commons_54699036": "train",
+    "commons_23035294": "train",
+    "commons_743629": "train",
+    "commons_11264509": "validation",
+    "commons_12465024": "train"
+  },
+  "records": [
+    {
+      "id": "phele_train_101",
+      "decision": "candidate",
+      "note": "Plaque de revêtement manquante au pied du mur ; cadre source conservé.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.448077,
+            0.36051,
+            0.662019,
+            0.470804
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_108",
+      "decision": "candidate",
+      "note": "Revêtement décollé autour du bas de la fenêtre et au pied du mur ; cadre étendu aux parties visibles.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.04,
+            0.48,
+            1,
+            1
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_109",
+      "decision": "candidate",
+      "note": "Plaques aux bords soulevés au centre du mur ; traces grises non assimilées à des moisissures.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.389881,
+            0.20783700000000002,
+            0.816799,
+            0.586309
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_114",
+      "decision": "candidate",
+      "note": "Écaillage près de la porte ; ajout de la bande décollée au pied du mur. Débris au sol hors cible.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.5710985,
+            0.3834325,
+            0.7910055,
+            0.5798615
+          ],
+          "source_indices": [
+            0
+          ]
+        },
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.05,
+            0.66,
+            0.68,
+            0.86
+          ],
+          "source_indices": []
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_124",
+      "decision": "candidate",
+      "note": "Deux plaques de revêtement manquantes au plafond ; cadres source conservés.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.11078100000000002,
+            0.1463295,
+            0.677249,
+            0.6626985
+          ],
+          "source_indices": [
+            0
+          ]
+        },
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.6398805,
+            0.7490079999999999,
+            0.9546955,
+            1.0
+          ],
+          "source_indices": [
+            1
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_135",
+      "decision": "candidate",
+      "note": "Même pied de mur que train_101, autre cadrage ; garder le même groupe.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.5947914999999999,
+            0.24609399999999998,
+            0.8656245,
+            0.55
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_136",
+      "decision": "candidate",
+      "note": "Plusieurs petites plaques décollées au plafond. Ajout de la zone basse oubliée ; fissures seules hors des trois cibles.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.5178565,
+            0.4794145,
+            0.6613755,
+            0.6520335
+          ],
+          "source_indices": [
+            0
+          ]
+        },
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.13,
+            0.71,
+            0.32,
+            0.89
+          ],
+          "source_indices": []
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_142",
+      "decision": "candidate",
+      "note": "Les deux rectangles source ne couvrent pas le décollement central ; regroupement de la zone continue.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.3,
+            0.12,
+            1,
+            0.73
+          ],
+          "source_indices": [
+            0,
+            1
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_145",
+      "decision": "candidate",
+      "note": "Coulures verticales visibles sous la fenêtre : trace compatible avec de l’humidité, sans cause ni moisissure confirmée. Cadre recentré sur le mur.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "moisture_trace",
+          "xyxy_normalized": [
+            0.36,
+            0.24,
+            0.76,
+            0.78
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_158",
+      "decision": "candidate",
+      "note": "Trois zones franches de décollement ; ajout de la petite plaque au fond du plafond.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.7562825,
+            0.05778799999999999,
+            0.9460975,
+            0.21527799999999997
+          ],
+          "source_indices": [
+            0
+          ]
+        },
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.284722,
+            0.25744049999999996,
+            0.664352,
+            0.6153275
+          ],
+          "source_indices": [
+            1
+          ]
+        },
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.8224205,
+            0.441716,
+            0.9692455,
+            0.5625
+          ],
+          "source_indices": [
+            2
+          ]
+        },
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.13,
+            0.71,
+            0.36,
+            0.79
+          ],
+          "source_indices": []
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_160",
+      "decision": "candidate",
+      "note": "Deux zones de revêtement décollé autour de la fenêtre ; cadres source conservés.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.1798945,
+            0.3273815,
+            0.3409395,
+            0.5354665
+          ],
+          "source_indices": [
+            0
+          ]
+        },
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.33664,
+            0.5238094999999999,
+            0.5694440000000001,
+            0.7522325
+          ],
+          "source_indices": [
+            1
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_161",
+      "decision": "candidate",
+      "note": "Deux pertes du revêtement au plafond, même scène que train_124 ; cadres conservés.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.06911399999999998,
+            0.09127050000000003,
+            0.513558,
+            0.4578375
+          ],
+          "source_indices": [
+            0
+          ]
+        },
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.45866450000000003,
+            0.519345,
+            0.6832015,
+            0.709077
+          ],
+          "source_indices": [
+            1
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_167",
+      "decision": "candidate",
+      "note": "La zone grise suit le support mis à nu. Garder la dégradation du revêtement ; retirer Mold qui ne montre pas de foyer distinct convaincant.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.1064815,
+            0.021081000000000016,
+            1.0,
+            0.955109
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": [
+        {
+          "index": 1,
+          "reason": "La zone grise suit le support mis à nu. Garder la dégradation du revêtement ; retirer Mold qui ne montre pas de foyer distinct convaincant."
+        }
+      ]
+    },
+    {
+      "id": "phele_train_189",
+      "decision": "candidate",
+      "note": "Plaque de revêtement décollée au pied de la porte ; cadre source conservé.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.7248675,
+            0.2864585,
+            0.9203045000000001,
+            0.4935515
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_199",
+      "decision": "candidate",
+      "note": "Deux zones de revêtement manquant ; le grand cadre source englobait la petite. Séparation sans double comptage.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.13,
+            0.19,
+            1,
+            0.8
+          ],
+          "source_indices": [
+            0
+          ]
+        },
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.244709,
+            0.7619045,
+            0.447421,
+            0.8752475
+          ],
+          "source_indices": [
+            1
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_202",
+      "decision": "candidate",
+      "note": "Dégradation au pied de porte, autre vue du groupe train_189 ; cadre conservé.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.717014,
+            0.27777799999999997,
+            0.929068,
+            0.493386
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_208",
+      "decision": "candidate",
+      "note": "Bords soulevés du revêtement sur le mur ; cadre étendu à la partie basse visible.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.04,
+            0.26,
+            0.9,
+            1
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_212",
+      "decision": "candidate",
+      "note": "Revêtement extérieur décollé ; ombres des arbres conservées dans le contexte, sans label humidité.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.00024799999999997047,
+            0.1775795,
+            0.937004,
+            0.7215605
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_22",
+      "decision": "candidate",
+      "note": "Petite plaque décollée au plafond ; source conservée. Les traits fins seuls restent hors cible.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.27612400000000004,
+            0.3576395,
+            0.493386,
+            0.5667165
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_225",
+      "decision": "candidate",
+      "note": "Revêtement abîmé au pied de l’angle ; cadre source conservé, sans diagnostic d’humidité.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.41005349999999996,
+            0.4761905,
+            0.9636245,
+            0.8427575
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_290",
+      "decision": "candidate",
+      "note": "Deux plages de ponctuations sombres sur les carreaux, compatibles avec des moisissures ; suspicion visuelle seulement.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "mold_suspected",
+          "xyxy_normalized": [
+            0.3762405,
+            0.17857099999999998,
+            0.9290674999999999,
+            0.6822090000000001
+          ],
+          "source_indices": [
+            0
+          ]
+        },
+        {
+          "class": "mold_suspected",
+          "xyxy_normalized": [
+            0.0002479999999999982,
+            0.21924599999999994,
+            0.39930600000000005,
+            0.900794
+          ],
+          "source_indices": [
+            1
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_301",
+      "decision": "candidate",
+      "note": "Décollement du revêtement autour de la fenêtre, pas de foyer de moisissure distinct établi. Remplacement de Mold et ajout de la zone basse.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.02,
+            0,
+            0.61,
+            0.62
+          ],
+          "source_indices": [
+            0
+          ]
+        },
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.02,
+            0.56,
+            0.62,
+            0.89
+          ],
+          "source_indices": []
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_306",
+      "decision": "candidate",
+      "note": "Plage de ponctuations sombres près de la fenêtre et plaque de revêtement manquante en dessous ; deux catégories conservées.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "mold_suspected",
+          "xyxy_normalized": [
+            0.4775135,
+            0.043898999999999994,
+            1.0,
+            0.383433
+          ],
+          "source_indices": [
+            0
+          ]
+        },
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.36375650000000004,
+            0.431051,
+            0.5998675,
+            0.642361
+          ],
+          "source_indices": [
+            1
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_309",
+      "decision": "candidate",
+      "note": "Le cadre Mold entoure une plaque dont les bords se décollent. Reclassement en revêtement écaillé ; ajout du petit éclat au plafond.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.47,
+            0.59,
+            0.93,
+            0.98
+          ],
+          "source_indices": [
+            0
+          ]
+        },
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.19,
+            0.55,
+            0.31,
+            0.6
+          ],
+          "source_indices": []
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_344",
+      "decision": "candidate",
+      "note": "Plage de ponctuations sombres sur le bas du mur ; cadre source conservé comme moisissures suspectées. Fissure latérale hors cible.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "mold_suspected",
+          "xyxy_normalized": [
+            0.41005250000000004,
+            0.383433,
+            0.9999995,
+            0.951885
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_352",
+      "decision": "candidate",
+      "note": "Deux plages de ponctuations sombres sur carreaux conservées. Le petit cadre autour du raccord/robinet est retiré : rouille, joint et ombre non distinguables.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "mold_suspected",
+          "xyxy_normalized": [
+            0.06101200000000001,
+            0.42592599999999997,
+            0.5610120000000001,
+            0.8740079999999999
+          ],
+          "source_indices": [
+            1
+          ]
+        },
+        {
+          "class": "mold_suspected",
+          "xyxy_normalized": [
+            0.613839,
+            0.4880955,
+            0.919395,
+            1.0
+          ],
+          "source_indices": [
+            2
+          ]
+        }
+      ],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Deux plages de ponctuations sombres sur carreaux conservées. Le petit cadre autour du raccord/robinet est retiré : rouille, joint et ombre non distinguables."
+        }
+      ]
+    },
+    {
+      "id": "phele_train_362",
+      "decision": "candidate",
+      "note": "Plage mouchetée du bas du mur plus large que la boîte source ; extension à la surface visible, sans qualifier les zones lisses de moisissures.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "mold_suspected",
+          "xyxy_normalized": [
+            0,
+            0.32,
+            0.79,
+            1
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_364",
+      "decision": "candidate",
+      "note": "Auréoles et front de coloration en pied de mur ; reclassés en trace compatible avec l’humidité. Pas de diagnostic de matériau humide.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "moisture_trace",
+          "xyxy_normalized": [
+            0.19,
+            0.02,
+            0.8,
+            0.56
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_val_123",
+      "decision": "candidate",
+      "note": "Zone de revêtement manquante derrière les chaussures ; cadre étendu jusqu’au bord visible à droite.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.29,
+            0.38,
+            0.89,
+            0.63
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_val_131",
+      "decision": "candidate",
+      "note": "Grande plage de revêtement manquant sur mur extérieur ; cadre source conservé.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.09126950000000003,
+            0.228836,
+            0.5696925,
+            0.6875
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_val_134",
+      "decision": "candidate",
+      "note": "Autre vue du pied de porte train_189/202 ; cadre source conservé.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.7586805,
+            0.23412750000000002,
+            0.9999995,
+            0.5241405
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_val_45",
+      "decision": "candidate",
+      "note": "Revêtement décollé dans l’angle ; foyer de petits points sombres situé surtout sous l’ancien cadre Mold. Cadres resserrés sur les signes visibles.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.18,
+            0.26,
+            0.73,
+            0.63
+          ],
+          "source_indices": [
+            0
+          ]
+        },
+        {
+          "class": "mold_suspected",
+          "xyxy_normalized": [
+            0.41,
+            0.61,
+            0.61,
+            0.75
+          ],
+          "source_indices": [
+            1
+          ]
+        },
+        {
+          "class": "mold_suspected",
+          "xyxy_normalized": [
+            0.67,
+            0.51,
+            0.73,
+            0.56
+          ],
+          "source_indices": []
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_val_67",
+      "decision": "candidate",
+      "note": "Même plage de support exposé que train_167. Retirer Mold faute de foyer distinct établi ; conserver le décollement du revêtement.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.10383599999999998,
+            0.1106145,
+            0.9778439999999999,
+            0.8407735000000001
+          ],
+          "source_indices": [
+            1
+          ]
+        }
+      ],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Même plage de support exposé que train_167. Retirer Mold faute de foyer distinct établi ; conserver le décollement du revêtement."
+        }
+      ]
+    },
+    {
+      "id": "commons_158222207",
+      "decision": "candidate",
+      "note": "Deux groupes d’auréoles brunâtres au plafond. Traces compatibles avec l’humidité ; pas de mesure ni de cause déduite.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "moisture_trace",
+          "xyxy_normalized": [
+            0.44,
+            0.19,
+            0.71,
+            0.56
+          ],
+          "source_indices": []
+        },
+        {
+          "class": "moisture_trace",
+          "xyxy_normalized": [
+            0.22,
+            0.6,
+            0.47,
+            0.91
+          ],
+          "source_indices": []
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "commons_67025365",
+      "decision": "candidate",
+      "note": "Auréole brunâtre sur une dalle de plafond ; les petits points réguliers du plafond sont sa texture, pas des moisissures annotées.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "moisture_trace",
+          "xyxy_normalized": [
+            0.3,
+            0.1,
+            0.68,
+            0.55
+          ],
+          "source_indices": []
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "commons_61970335",
+      "decision": "candidate",
+      "note": "Revêtement de plafond détaché et pendant. Une grande zone est annotée pour la localisation ; pas de faux masque pixel par pixel.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0,
+            0,
+            1,
+            0.7
+          ],
+          "source_indices": []
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "commons_395051",
+      "decision": "candidate",
+      "note": "Plages de ponctuations compatibles avec des moisissures sur plafond et hauts de murs. Trois zones par surface ; auréoles imbriquées non doublées en humidité selon la convention du lot. Le ventilateur masque une partie du plafond.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "mold_suspected",
+          "xyxy_normalized": [
+            0,
+            0,
+            1,
+            0.53
+          ],
+          "source_indices": []
+        },
+        {
+          "class": "mold_suspected",
+          "xyxy_normalized": [
+            0,
+            0.34,
+            0.51,
+            0.6
+          ],
+          "source_indices": []
+        },
+        {
+          "class": "mold_suspected",
+          "xyxy_normalized": [
+            0.52,
+            0.42,
+            1,
+            0.65
+          ],
+          "source_indices": []
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "commons_137521159",
+      "decision": "candidate",
+      "note": "Revêtement de plafond manquant et bandes pendantes : deux zones distinctes. Cadres sur les parties visibles.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.1,
+            0,
+            0.45,
+            0.45
+          ],
+          "source_indices": []
+        },
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.5,
+            0,
+            0.7,
+            0.33
+          ],
+          "source_indices": []
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_74",
+      "decision": "negative",
+      "note": "Photo entière examinée : aucune des trois cibles visuelle retenue. Mobilier, joints, motifs, reflets et équipements restent du fond pour ce détecteur. Cela ne signifie ni absence de tout défaut ni conformité. Revue humaine en attente.",
+      "reviewed_scope": true,
+      "boxes": [],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_181",
+      "decision": "negative",
+      "note": "Photo entière examinée : aucune des trois cibles visuelle retenue. Mobilier, joints, motifs, reflets et équipements restent du fond pour ce détecteur. Cela ne signifie ni absence de tout défaut ni conformité. Revue humaine en attente.",
+      "reviewed_scope": true,
+      "boxes": [],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_487",
+      "decision": "negative",
+      "note": "Photo entière examinée : aucune des trois cibles visuelle retenue. Mobilier, joints, motifs, reflets et équipements restent du fond pour ce détecteur. Cela ne signifie ni absence de tout défaut ni conformité. Revue humaine en attente.",
+      "reviewed_scope": true,
+      "boxes": [],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_464",
+      "decision": "negative",
+      "note": "Photo entière examinée : aucune des trois cibles visuelle retenue. Mobilier, joints, motifs, reflets et équipements restent du fond pour ce détecteur. Cela ne signifie ni absence de tout défaut ni conformité. Revue humaine en attente.",
+      "reviewed_scope": true,
+      "boxes": [],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_267",
+      "decision": "negative",
+      "note": "Photo entière examinée : aucune des trois cibles visuelle retenue. Mobilier, joints, motifs, reflets et équipements restent du fond pour ce détecteur. Cela ne signifie ni absence de tout défaut ni conformité. Revue humaine en attente.",
+      "reviewed_scope": true,
+      "boxes": [],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_294",
+      "decision": "negative",
+      "note": "Photo entière examinée : aucune des trois cibles visuelle retenue. Mobilier, joints, motifs, reflets et équipements restent du fond pour ce détecteur. Cela ne signifie ni absence de tout défaut ni conformité. Revue humaine en attente.",
+      "reviewed_scope": true,
+      "boxes": [],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_434",
+      "decision": "negative",
+      "note": "Photo entière examinée : aucune des trois cibles visuelle retenue. Mobilier, joints, motifs, reflets et équipements restent du fond pour ce détecteur. Cela ne signifie ni absence de tout défaut ni conformité. Revue humaine en attente.",
+      "reviewed_scope": true,
+      "boxes": [],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_139",
+      "decision": "negative",
+      "note": "Photo entière examinée : aucune des trois cibles visuelle retenue. Mobilier, joints, motifs, reflets et équipements restent du fond pour ce détecteur. Cela ne signifie ni absence de tout défaut ni conformité. Revue humaine en attente.",
+      "reviewed_scope": true,
+      "boxes": [],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_331",
+      "decision": "negative",
+      "note": "Photo entière examinée : aucune des trois cibles visuelle retenue. Mobilier, joints, motifs, reflets et équipements restent du fond pour ce détecteur. Cela ne signifie ni absence de tout défaut ni conformité. Revue humaine en attente.",
+      "reviewed_scope": true,
+      "boxes": [],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_63",
+      "decision": "negative",
+      "note": "Photo entière examinée : aucune des trois cibles visuelle retenue. Mobilier, joints, motifs, reflets et équipements restent du fond pour ce détecteur. Cela ne signifie ni absence de tout défaut ni conformité. Revue humaine en attente.",
+      "reviewed_scope": true,
+      "boxes": [],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "phele_train_465",
+      "decision": "negative",
+      "note": "Photo entière examinée : aucune des trois cibles visuelle retenue. Mobilier, joints, motifs, reflets et équipements restent du fond pour ce détecteur. Cela ne signifie ni absence de tout défaut ni conformité. Revue humaine en attente.",
+      "reviewed_scope": true,
+      "boxes": [],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "commons_56570306",
+      "decision": "candidate",
+      "note": "Plages de ponctuations sombres compatibles avec des moisissures, revues sur photo agrandie. Rectangles approximatifs ; ni cause ni humidité actuelle confirmée. Revue humaine en attente.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "mold_suspected",
+          "xyxy_normalized": [
+            0,
+            0,
+            0.665,
+            1
+          ],
+          "source_indices": []
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "commons_56570307",
+      "decision": "candidate",
+      "note": "Plages de ponctuations sombres compatibles avec des moisissures, revues sur photo agrandie. Rectangles approximatifs ; ni cause ni humidité actuelle confirmée. Revue humaine en attente.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "mold_suspected",
+          "xyxy_normalized": [
+            0,
+            0,
+            0.77,
+            1
+          ],
+          "source_indices": []
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "commons_69965989",
+      "decision": "candidate",
+      "note": "Plages de ponctuations sombres compatibles avec des moisissures, revues sur photo agrandie. Rectangles approximatifs ; ni cause ni humidité actuelle confirmée. Revue humaine en attente.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "mold_suspected",
+          "xyxy_normalized": [
+            0,
+            0.28,
+            0.855,
+            0.7
+          ],
+          "source_indices": []
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "commons_37820167",
+      "decision": "candidate",
+      "note": "Plages de ponctuations sombres compatibles avec des moisissures, revues sur photo agrandie. Rectangles approximatifs ; ni cause ni humidité actuelle confirmée. Revue humaine en attente.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "mold_suspected",
+          "xyxy_normalized": [
+            0.02,
+            0.38,
+            0.84,
+            0.87
+          ],
+          "source_indices": []
+        },
+        {
+          "class": "mold_suspected",
+          "xyxy_normalized": [
+            0.63,
+            0,
+            0.84,
+            0.38
+          ],
+          "source_indices": []
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "mbdd_hefei677",
+      "decision": "candidate",
+      "note": "Bande de coulures sombres sous le haut du mur rouge ; retrait du ciel et de la végétation inclus dans le cadre source.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "moisture_trace",
+          "xyxy_normalized": [
+            0.0,
+            0.375,
+            0.95546875,
+            0.5402777777777777
+          ],
+          "source_indices": [
+            0
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "mbdd_hefei693",
+      "decision": "excluded",
+      "note": "Vue répétée du parapet ; représentant Hefei677 conservé.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vue répétée du parapet ; représentant Hefei677 conservé."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei709",
+      "decision": "excluded",
+      "note": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei726",
+      "decision": "excluded",
+      "note": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei743",
+      "decision": "excluded",
+      "note": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei759",
+      "decision": "excluded",
+      "note": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei775",
+      "decision": "excluded",
+      "note": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei792",
+      "decision": "excluded",
+      "note": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei808",
+      "decision": "excluded",
+      "note": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei824",
+      "decision": "excluded",
+      "note": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        },
+        {
+          "index": 1,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei841",
+      "decision": "excluded",
+      "note": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        },
+        {
+          "index": 1,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei857",
+      "decision": "excluded",
+      "note": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        },
+        {
+          "index": 1,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei874",
+      "decision": "excluded",
+      "note": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        },
+        {
+          "index": 1,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei891",
+      "decision": "excluded",
+      "note": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        },
+        {
+          "index": 1,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei908",
+      "decision": "excluded",
+      "note": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        },
+        {
+          "index": 1,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei924",
+      "decision": "excluded",
+      "note": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        },
+        {
+          "index": 1,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        },
+        {
+          "index": 2,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei940",
+      "decision": "excluded",
+      "note": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        },
+        {
+          "index": 1,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        },
+        {
+          "index": 2,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei957",
+      "decision": "excluded",
+      "note": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        },
+        {
+          "index": 1,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        },
+        {
+          "index": 2,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        },
+        {
+          "index": 3,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        },
+        {
+          "index": 4,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        },
+        {
+          "index": 5,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        },
+        {
+          "index": 6,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei973",
+      "decision": "excluded",
+      "note": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        },
+        {
+          "index": 1,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        },
+        {
+          "index": 2,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        },
+        {
+          "index": 3,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei989",
+      "decision": "excluded",
+      "note": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        },
+        {
+          "index": 1,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        },
+        {
+          "index": 2,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        },
+        {
+          "index": 3,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        },
+        {
+          "index": 4,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei1006",
+      "decision": "candidate",
+      "note": "Coulure scindée aux parties visibles au-dessus et au-dessous de la fenêtre. Trois zones distinctes de revêtement manquant ; ombres des climatiseurs non annotées comme humidité.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "moisture_trace",
+          "xyxy_normalized": [
+            0.6765625,
+            0.1486111111111111,
+            0.7421875,
+            0.38055555555555554
+          ],
+          "source_indices": [
+            0
+          ]
+        },
+        {
+          "class": "moisture_trace",
+          "xyxy_normalized": [
+            0.68671875,
+            0.7222222222222222,
+            0.73828125,
+            0.9569444444444445
+          ],
+          "source_indices": [
+            0
+          ]
+        },
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.30859375,
+            0.25,
+            0.3609375,
+            0.36527777777777776
+          ],
+          "source_indices": [
+            1
+          ]
+        },
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.82890625,
+            0.24722222222222223,
+            0.87578125,
+            0.33055555555555555
+          ],
+          "source_indices": []
+        },
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.9640625,
+            0.25555555555555554,
+            1.0,
+            0.3388888888888889
+          ],
+          "source_indices": []
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "mbdd_hefei1022",
+      "decision": "excluded",
+      "note": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        },
+        {
+          "index": 1,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        },
+        {
+          "index": 2,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei1038",
+      "decision": "excluded",
+      "note": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        },
+        {
+          "index": 1,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        },
+        {
+          "index": 2,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        },
+        {
+          "index": 3,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei1055",
+      "decision": "excluded",
+      "note": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        },
+        {
+          "index": 1,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        },
+        {
+          "index": 2,
+          "reason": "Vues répétées ou zones mouchetées difficiles à séparer du revêtement vieilli. Hefei1006 retenu avec pertes de revêtement et coulures redessinées."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei2564",
+      "decision": "excluded",
+      "note": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 1,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 2,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 3,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei2580",
+      "decision": "excluded",
+      "note": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei2596",
+      "decision": "excluded",
+      "note": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 1,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 2,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei2613",
+      "decision": "excluded",
+      "note": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 1,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei2629",
+      "decision": "excluded",
+      "note": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 1,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei2645",
+      "decision": "excluded",
+      "note": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 1,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei2666",
+      "decision": "excluded",
+      "note": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 1,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei2682",
+      "decision": "excluded",
+      "note": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 1,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei2699",
+      "decision": "excluded",
+      "note": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 1,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 2,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 3,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 4,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 5,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei2716",
+      "decision": "excluded",
+      "note": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 1,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 2,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 3,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 4,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei2732",
+      "decision": "excluded",
+      "note": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 1,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 2,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 3,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 4,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei2748",
+      "decision": "excluded",
+      "note": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 1,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 2,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 3,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 4,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 5,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei2764",
+      "decision": "excluded",
+      "note": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 1,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 2,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 3,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei2782",
+      "decision": "excluded",
+      "note": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 1,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei2798",
+      "decision": "excluded",
+      "note": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 1,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 2,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 3,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 4,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei2814",
+      "decision": "excluded",
+      "note": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 1,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 2,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 3,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei2831",
+      "decision": "excluded",
+      "note": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 1,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 2,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 3,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei2847",
+      "decision": "excluded",
+      "note": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 1,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 2,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei2863",
+      "decision": "excluded",
+      "note": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 1,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 2,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 3,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei2881",
+      "decision": "excluded",
+      "note": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 1,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 2,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 3,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei2897",
+      "decision": "excluded",
+      "note": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 1,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 2,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 3,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei2914",
+      "decision": "excluded",
+      "note": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 1,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 2,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei2930",
+      "decision": "excluded",
+      "note": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 1,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 2,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei2947",
+      "decision": "excluded",
+      "note": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 1,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 2,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei3167",
+      "decision": "excluded",
+      "note": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 1,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 2,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 3,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 4,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei3183",
+      "decision": "excluded",
+      "note": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 1,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 2,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 3,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 4,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei3200",
+      "decision": "excluded",
+      "note": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 1,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 2,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 3,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 4,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        },
+        {
+          "index": 5,
+          "reason": "Bois verdi, mousse, vieillissement ou vernis usé ; annotation leakage trop ambiguë pour les trois cibles. Ce n’est pas un négatif."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei4593",
+      "decision": "candidate",
+      "note": "Trois ensembles de coulures : sous les deux fenêtres et entre elles. La source omettait la zone de droite. Cadres de fenêtre usés trop petits pour établir un décollement distinct.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "moisture_trace",
+          "xyxy_normalized": [
+            0.07109375,
+            0.6680555555555555,
+            0.253125,
+            1.0
+          ],
+          "source_indices": [
+            0
+          ]
+        },
+        {
+          "class": "moisture_trace",
+          "xyxy_normalized": [
+            0.39609375,
+            0.0,
+            0.46953125,
+            1.0
+          ],
+          "source_indices": [
+            1
+          ]
+        },
+        {
+          "class": "moisture_trace",
+          "xyxy_normalized": [
+            0.75234375,
+            0.6680555555555555,
+            0.93671875,
+            1.0
+          ],
+          "source_indices": []
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "mbdd_hefei4609",
+      "decision": "excluded",
+      "note": "Vue répétée ou zone trop diffuse. Trois représentants de cette façade sont réservés ensemble à la validation.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vue répétée ou zone trop diffuse. Trois représentants de cette façade sont réservés ensemble à la validation."
+        },
+        {
+          "index": 1,
+          "reason": "Vue répétée ou zone trop diffuse. Trois représentants de cette façade sont réservés ensemble à la validation."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei4626",
+      "decision": "excluded",
+      "note": "Vue répétée ou zone trop diffuse. Trois représentants de cette façade sont réservés ensemble à la validation.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vue répétée ou zone trop diffuse. Trois représentants de cette façade sont réservés ensemble à la validation."
+        },
+        {
+          "index": 1,
+          "reason": "Vue répétée ou zone trop diffuse. Trois représentants de cette façade sont réservés ensemble à la validation."
+        },
+        {
+          "index": 2,
+          "reason": "Vue répétée ou zone trop diffuse. Trois représentants de cette façade sont réservés ensemble à la validation."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei4642",
+      "decision": "candidate",
+      "note": "Quatre ensembles de coulures séparés ; resserrage autour de la trace sous une fixation. Fenêtres et conduites conservées comme contexte. Seconde revue : cadre sous la fixation élargi au halo et à la traînée basse visibles en agrandissement ; la limite reste approximative.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "moisture_trace",
+          "xyxy_normalized": [
+            0.0,
+            0.0,
+            0.046875,
+            1.0
+          ],
+          "source_indices": [
+            0
+          ]
+        },
+        {
+          "class": "moisture_trace",
+          "xyxy_normalized": [
+            0.26796875,
+            0.7680555555555556,
+            0.50703125,
+            1.0
+          ],
+          "source_indices": [
+            1
+          ]
+        },
+        {
+          "class": "moisture_trace",
+          "xyxy_normalized": [
+            0.60859375,
+            0.1736111111111111,
+            0.678125,
+            0.6277777777777778
+          ],
+          "source_indices": [
+            2
+          ]
+        },
+        {
+          "class": "moisture_trace",
+          "xyxy_normalized": [
+            0.7640625,
+            0.7680555555555556,
+            0.96953125,
+            1.0
+          ],
+          "source_indices": [
+            3
+          ]
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "mbdd_hefei4658",
+      "decision": "excluded",
+      "note": "Vue répétée ou zone trop diffuse. Trois représentants de cette façade sont réservés ensemble à la validation.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vue répétée ou zone trop diffuse. Trois représentants de cette façade sont réservés ensemble à la validation."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei4674",
+      "decision": "excluded",
+      "note": "Vue répétée ou zone trop diffuse. Trois représentants de cette façade sont réservés ensemble à la validation.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vue répétée ou zone trop diffuse. Trois représentants de cette façade sont réservés ensemble à la validation."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei4691",
+      "decision": "excluded",
+      "note": "Vue répétée ou zone trop diffuse. Trois représentants de cette façade sont réservés ensemble à la validation.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vue répétée ou zone trop diffuse. Trois représentants de cette façade sont réservés ensemble à la validation."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei4707",
+      "decision": "excluded",
+      "note": "Vue répétée ou zone trop diffuse. Trois représentants de cette façade sont réservés ensemble à la validation.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vue répétée ou zone trop diffuse. Trois représentants de cette façade sont réservés ensemble à la validation."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei4723",
+      "decision": "excluded",
+      "note": "Vue répétée ou zone trop diffuse. Trois représentants de cette façade sont réservés ensemble à la validation.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vue répétée ou zone trop diffuse. Trois représentants de cette façade sont réservés ensemble à la validation."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei4740",
+      "decision": "candidate",
+      "note": "Ajout des coulures sous la fenêtre de gauche et de la perte de revêtement au pied de la fissure à droite. La fissure fine seule reste hors périmètre.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "moisture_trace",
+          "xyxy_normalized": [
+            0.4140625,
+            0.5277777777777778,
+            0.60546875,
+            0.8361111111111111
+          ],
+          "source_indices": [
+            0
+          ]
+        },
+        {
+          "class": "moisture_trace",
+          "xyxy_normalized": [
+            0.0,
+            0.575,
+            0.15234375,
+            0.8680555555555556
+          ],
+          "source_indices": []
+        },
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.80390625,
+            0.7583333333333333,
+            0.8375,
+            0.9319444444444445
+          ],
+          "source_indices": []
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "mbdd_hefei4756",
+      "decision": "excluded",
+      "note": "Vue répétée ou zone trop diffuse. Trois représentants de cette façade sont réservés ensemble à la validation.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vue répétée ou zone trop diffuse. Trois représentants de cette façade sont réservés ensemble à la validation."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei4772",
+      "decision": "excluded",
+      "note": "Vue répétée ou zone trop diffuse. Trois représentants de cette façade sont réservés ensemble à la validation.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vue répétée ou zone trop diffuse. Trois représentants de cette façade sont réservés ensemble à la validation."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei4789",
+      "decision": "excluded",
+      "note": "Vue répétée ou zone trop diffuse. Trois représentants de cette façade sont réservés ensemble à la validation.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vue répétée ou zone trop diffuse. Trois représentants de cette façade sont réservés ensemble à la validation."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei4805",
+      "decision": "excluded",
+      "note": "Vue répétée ou zone trop diffuse. Trois représentants de cette façade sont réservés ensemble à la validation.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vue répétée ou zone trop diffuse. Trois représentants de cette façade sont réservés ensemble à la validation."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei6907",
+      "decision": "excluded",
+      "note": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei6923",
+      "decision": "excluded",
+      "note": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei6940",
+      "decision": "excluded",
+      "note": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures."
+        },
+        {
+          "index": 1,
+          "reason": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures."
+        },
+        {
+          "index": 2,
+          "reason": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei6956",
+      "decision": "excluded",
+      "note": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures."
+        },
+        {
+          "index": 1,
+          "reason": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures."
+        },
+        {
+          "index": 2,
+          "reason": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei6972",
+      "decision": "excluded",
+      "note": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures."
+        },
+        {
+          "index": 1,
+          "reason": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures."
+        },
+        {
+          "index": 2,
+          "reason": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei6989",
+      "decision": "excluded",
+      "note": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei7005",
+      "decision": "excluded",
+      "note": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei7021",
+      "decision": "excluded",
+      "note": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei7038",
+      "decision": "excluded",
+      "note": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei7054",
+      "decision": "excluded",
+      "note": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei7070",
+      "decision": "excluded",
+      "note": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei7086",
+      "decision": "excluded",
+      "note": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei7103",
+      "decision": "excluded",
+      "note": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei7119",
+      "decision": "excluded",
+      "note": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei7135",
+      "decision": "excluded",
+      "note": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei7152",
+      "decision": "excluded",
+      "note": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Bois verdi, mousses et vieillissement ; la classe source leakage ne suffit pas à établir une coulure ou des moisissures."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei8166",
+      "decision": "excluded",
+      "note": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        },
+        {
+          "index": 1,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei8182",
+      "decision": "excluded",
+      "note": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        },
+        {
+          "index": 1,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        },
+        {
+          "index": 2,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei8199",
+      "decision": "excluded",
+      "note": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        },
+        {
+          "index": 1,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        },
+        {
+          "index": 2,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        },
+        {
+          "index": 3,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei8215",
+      "decision": "excluded",
+      "note": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        },
+        {
+          "index": 1,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        },
+        {
+          "index": 2,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        },
+        {
+          "index": 3,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei8231",
+      "decision": "excluded",
+      "note": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        },
+        {
+          "index": 1,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        },
+        {
+          "index": 2,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        },
+        {
+          "index": 3,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei8247",
+      "decision": "excluded",
+      "note": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        },
+        {
+          "index": 1,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        },
+        {
+          "index": 2,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        },
+        {
+          "index": 3,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        },
+        {
+          "index": 4,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        },
+        {
+          "index": 5,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei8264",
+      "decision": "excluded",
+      "note": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        },
+        {
+          "index": 1,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        },
+        {
+          "index": 2,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        },
+        {
+          "index": 3,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        },
+        {
+          "index": 4,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei8280",
+      "decision": "excluded",
+      "note": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        },
+        {
+          "index": 1,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        },
+        {
+          "index": 2,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        },
+        {
+          "index": 3,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei8297",
+      "decision": "excluded",
+      "note": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        },
+        {
+          "index": 1,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        },
+        {
+          "index": 2,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei8315",
+      "decision": "excluded",
+      "note": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        },
+        {
+          "index": 1,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        },
+        {
+          "index": 2,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei8331",
+      "decision": "excluded",
+      "note": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        },
+        {
+          "index": 1,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        },
+        {
+          "index": 2,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei8347",
+      "decision": "excluded",
+      "note": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        },
+        {
+          "index": 1,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        },
+        {
+          "index": 2,
+          "reason": "Mousse ou végétation visible : exclusion de la correspondance automatique avec humidité ou moisissures d’intérieur."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei8364",
+      "decision": "excluded",
+      "note": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles."
+        },
+        {
+          "index": 1,
+          "reason": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei8380",
+      "decision": "excluded",
+      "note": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles."
+        },
+        {
+          "index": 1,
+          "reason": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei8396",
+      "decision": "excluded",
+      "note": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles."
+        },
+        {
+          "index": 1,
+          "reason": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei8412",
+      "decision": "excluded",
+      "note": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles."
+        },
+        {
+          "index": 1,
+          "reason": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei8429",
+      "decision": "excluded",
+      "note": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles."
+        },
+        {
+          "index": 1,
+          "reason": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei8445",
+      "decision": "excluded",
+      "note": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles."
+        },
+        {
+          "index": 1,
+          "reason": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei8461",
+      "decision": "excluded",
+      "note": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles."
+        },
+        {
+          "index": 1,
+          "reason": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei8478",
+      "decision": "excluded",
+      "note": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles."
+        },
+        {
+          "index": 1,
+          "reason": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei8494",
+      "decision": "excluded",
+      "note": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles."
+        },
+        {
+          "index": 1,
+          "reason": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei8510",
+      "decision": "excluded",
+      "note": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles."
+        },
+        {
+          "index": 1,
+          "reason": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei8527",
+      "decision": "excluded",
+      "note": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles."
+        },
+        {
+          "index": 1,
+          "reason": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei8543",
+      "decision": "excluded",
+      "note": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles."
+        },
+        {
+          "index": 1,
+          "reason": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles."
+        },
+        {
+          "index": 2,
+          "reason": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei8559",
+      "decision": "excluded",
+      "note": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles."
+        },
+        {
+          "index": 1,
+          "reason": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles."
+        },
+        {
+          "index": 2,
+          "reason": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei8575",
+      "decision": "excluded",
+      "note": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles."
+        },
+        {
+          "index": 1,
+          "reason": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles."
+        },
+        {
+          "index": 2,
+          "reason": "Mur diffusément moucheté ; salissure, colonisation et ruissellement non séparables avec confiance. Boîtes source partielles."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei8592",
+      "decision": "excluded",
+      "note": "Vue répétée du mur ; Hefei8608 retenu. Les autres vues ne servent pas de négatifs.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vue répétée du mur ; Hefei8608 retenu. Les autres vues ne servent pas de négatifs."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei8608",
+      "decision": "candidate",
+      "note": "Coulures hautes réparties sur le mur : le cadre source central était incomplet. Ajout de la bande de revêtement manquant en pied. Ombres des arbres et graffiti non classés comme défauts.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "moisture_trace",
+          "xyxy_normalized": [
+            0.01953125,
+            0.2875,
+            0.2734375,
+            0.5708333333333333
+          ],
+          "source_indices": []
+        },
+        {
+          "class": "moisture_trace",
+          "xyxy_normalized": [
+            0.36015625,
+            0.28194444444444444,
+            0.55234375,
+            0.7083333333333334
+          ],
+          "source_indices": []
+        },
+        {
+          "class": "moisture_trace",
+          "xyxy_normalized": [
+            0.60703125,
+            0.2791666666666667,
+            0.7796875,
+            0.8597222222222223
+          ],
+          "source_indices": [
+            0
+          ]
+        },
+        {
+          "class": "moisture_trace",
+          "xyxy_normalized": [
+            0.85703125,
+            0.2986111111111111,
+            0.99609375,
+            0.7638888888888888
+          ],
+          "source_indices": []
+        },
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.1859375,
+            0.8180555555555555,
+            1.0,
+            0.9333333333333333
+          ],
+          "source_indices": []
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "mbdd_hefei8624",
+      "decision": "excluded",
+      "note": "Vue répétée du mur ; Hefei8608 retenu. Les autres vues ne servent pas de négatifs.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vue répétée du mur ; Hefei8608 retenu. Les autres vues ne servent pas de négatifs."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei8641",
+      "decision": "excluded",
+      "note": "Vue répétée du mur ; Hefei8608 retenu. Les autres vues ne servent pas de négatifs.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vue répétée du mur ; Hefei8608 retenu. Les autres vues ne servent pas de négatifs."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei8657",
+      "decision": "excluded",
+      "note": "Vue répétée du mur ; Hefei8608 retenu. Les autres vues ne servent pas de négatifs.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vue répétée du mur ; Hefei8608 retenu. Les autres vues ne servent pas de négatifs."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei8673",
+      "decision": "excluded",
+      "note": "Vue répétée du mur ; Hefei8608 retenu. Les autres vues ne servent pas de négatifs.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vue répétée du mur ; Hefei8608 retenu. Les autres vues ne servent pas de négatifs."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei8690",
+      "decision": "excluded",
+      "note": "Vue répétée du mur ; Hefei8608 retenu. Les autres vues ne servent pas de négatifs.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vue répétée du mur ; Hefei8608 retenu. Les autres vues ne servent pas de négatifs."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei8706",
+      "decision": "excluded",
+      "note": "Vue répétée du mur ; Hefei8608 retenu. Les autres vues ne servent pas de négatifs.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vue répétée du mur ; Hefei8608 retenu. Les autres vues ne servent pas de négatifs."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei8722",
+      "decision": "excluded",
+      "note": "Vue répétée du mur ; Hefei8608 retenu. Les autres vues ne servent pas de négatifs.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vue répétée du mur ; Hefei8608 retenu. Les autres vues ne servent pas de négatifs."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei9745",
+      "decision": "excluded",
+      "note": "Rouille ou trace d’eau difficile à distinguer ; catégorie incertaine, exclusion.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Rouille ou trace d’eau difficile à distinguer ; catégorie incertaine, exclusion."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei10758",
+      "decision": "candidate",
+      "note": "Les plages de coulures du limon sont séparées par marche. Une zone de revêtement soulevé est ajoutée ; marches, garde-corps et ombres restent du contexte. Seconde revue : trois cadres de coulure étendus aux bords visibles ; les deux petites pertes hautes sont séparées et la perte triangulaire au milieu du limon est ajoutée. Les micro-marques non résolues restent une limite de cette photo.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "moisture_trace",
+          "xyxy_normalized": [
+            0.0,
+            0.6055555555555555,
+            0.05,
+            0.8916666666666667
+          ],
+          "source_indices": [
+            4
+          ]
+        },
+        {
+          "class": "moisture_trace",
+          "xyxy_normalized": [
+            0.05234375,
+            0.5638888888888889,
+            0.1140625,
+            0.8319444444444445
+          ],
+          "source_indices": [
+            3
+          ]
+        },
+        {
+          "class": "moisture_trace",
+          "xyxy_normalized": [
+            0.10703125,
+            0.5013888888888889,
+            0.18046875,
+            0.7819444444444444
+          ],
+          "source_indices": [
+            2
+          ]
+        },
+        {
+          "class": "moisture_trace",
+          "xyxy_normalized": [
+            0.18125,
+            0.4513888888888889,
+            0.240625,
+            0.7319444444444444
+          ],
+          "source_indices": [
+            1
+          ]
+        },
+        {
+          "class": "moisture_trace",
+          "xyxy_normalized": [
+            0.26875,
+            0.4027777777777778,
+            0.303125,
+            0.6736111111111112
+          ],
+          "source_indices": [
+            1
+          ]
+        },
+        {
+          "class": "moisture_trace",
+          "xyxy_normalized": [
+            0.40625,
+            0.2875,
+            0.43046875,
+            0.5805555555555556
+          ],
+          "source_indices": [
+            0
+          ]
+        },
+        {
+          "class": "moisture_trace",
+          "xyxy_normalized": [
+            0.44609375,
+            0.32083333333333336,
+            0.47734375,
+            0.5555555555555556
+          ],
+          "source_indices": [
+            0
+          ]
+        },
+        {
+          "class": "moisture_trace",
+          "xyxy_normalized": [
+            0.478125,
+            0.24166666666666667,
+            0.49921875,
+            0.5277777777777778
+          ],
+          "source_indices": [
+            0
+          ]
+        },
+        {
+          "class": "moisture_trace",
+          "xyxy_normalized": [
+            0.5265625,
+            0.13472222222222222,
+            0.6234375,
+            0.48333333333333334
+          ],
+          "source_indices": [
+            0
+          ]
+        },
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.43359375,
+            0.23472222222222222,
+            0.4546875,
+            0.26805555555555555
+          ],
+          "source_indices": []
+        },
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.459375,
+            0.2513888888888889,
+            0.48203125,
+            0.28888888888888886
+          ],
+          "source_indices": []
+        },
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.37265625,
+            0.3958333333333333,
+            0.39453125,
+            0.4388888888888889
+          ],
+          "source_indices": []
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "mbdd_hefei10774",
+      "decision": "excluded",
+      "note": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 1,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 2,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 3,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 4,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 5,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 6,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 7,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 8,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 9,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei10791",
+      "decision": "excluded",
+      "note": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 1,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 2,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 3,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 4,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 5,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 6,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 7,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 8,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 9,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 10,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 11,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei10808",
+      "decision": "excluded",
+      "note": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 1,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 2,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 3,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 4,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 5,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei10824",
+      "decision": "excluded",
+      "note": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 1,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 2,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 3,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 4,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei10840",
+      "decision": "excluded",
+      "note": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 1,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 2,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 3,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 4,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 5,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 6,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei10857",
+      "decision": "excluded",
+      "note": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 1,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 2,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 3,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 4,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 5,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 6,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 7,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 8,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 9,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 10,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei10873",
+      "decision": "excluded",
+      "note": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 1,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 2,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 3,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 4,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 5,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 6,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 7,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 8,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei10889",
+      "decision": "excluded",
+      "note": "Plages diffuses : réparation, peinture et salissure non séparables. Exclusion, pas de négatif.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Plages diffuses : réparation, peinture et salissure non séparables. Exclusion, pas de négatif."
+        },
+        {
+          "index": 1,
+          "reason": "Plages diffuses : réparation, peinture et salissure non séparables. Exclusion, pas de négatif."
+        },
+        {
+          "index": 2,
+          "reason": "Plages diffuses : réparation, peinture et salissure non séparables. Exclusion, pas de négatif."
+        },
+        {
+          "index": 3,
+          "reason": "Plages diffuses : réparation, peinture et salissure non séparables. Exclusion, pas de négatif."
+        },
+        {
+          "index": 4,
+          "reason": "Plages diffuses : réparation, peinture et salissure non séparables. Exclusion, pas de négatif."
+        },
+        {
+          "index": 5,
+          "reason": "Plages diffuses : réparation, peinture et salissure non séparables. Exclusion, pas de négatif."
+        },
+        {
+          "index": 6,
+          "reason": "Plages diffuses : réparation, peinture et salissure non séparables. Exclusion, pas de négatif."
+        },
+        {
+          "index": 7,
+          "reason": "Plages diffuses : réparation, peinture et salissure non séparables. Exclusion, pas de négatif."
+        },
+        {
+          "index": 8,
+          "reason": "Plages diffuses : réparation, peinture et salissure non séparables. Exclusion, pas de négatif."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei10905",
+      "decision": "excluded",
+      "note": "Plages diffuses : réparation, peinture et salissure non séparables. Exclusion, pas de négatif.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Plages diffuses : réparation, peinture et salissure non séparables. Exclusion, pas de négatif."
+        },
+        {
+          "index": 1,
+          "reason": "Plages diffuses : réparation, peinture et salissure non séparables. Exclusion, pas de négatif."
+        },
+        {
+          "index": 2,
+          "reason": "Plages diffuses : réparation, peinture et salissure non séparables. Exclusion, pas de négatif."
+        },
+        {
+          "index": 3,
+          "reason": "Plages diffuses : réparation, peinture et salissure non séparables. Exclusion, pas de négatif."
+        },
+        {
+          "index": 4,
+          "reason": "Plages diffuses : réparation, peinture et salissure non séparables. Exclusion, pas de négatif."
+        },
+        {
+          "index": 5,
+          "reason": "Plages diffuses : réparation, peinture et salissure non séparables. Exclusion, pas de négatif."
+        },
+        {
+          "index": 6,
+          "reason": "Plages diffuses : réparation, peinture et salissure non séparables. Exclusion, pas de négatif."
+        },
+        {
+          "index": 7,
+          "reason": "Plages diffuses : réparation, peinture et salissure non séparables. Exclusion, pas de négatif."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei10922",
+      "decision": "excluded",
+      "note": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 1,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 2,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei10939",
+      "decision": "excluded",
+      "note": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 1,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 2,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        }
+      ]
+    },
+    {
+      "id": "mbdd_hefei10955",
+      "decision": "excluded",
+      "note": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": [
+        {
+          "index": 0,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 1,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        },
+        {
+          "index": 2,
+          "reason": "Vues répétées, flou ou mélange de revêtement usé et de traces. Hefei10758 retenu ; Hefei10922 n’est pas accepté automatiquement comme leakage."
+        }
+      ]
+    },
+    {
+      "id": "commons_69374521",
+      "decision": "excluded",
+      "note": "Mur très dégradé et filigrané ; revêtement, taches et coloration ne se séparent pas assez bien pour une annotation exhaustive fiable.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "commons_69374382",
+      "decision": "candidate",
+      "note": "Trois surfaces distinguées pour limiter le fond dans les rectangles : plafond, mur du fond et retour gauche. Plages mouchetées compatibles avec des moisissures, sans confirmer leur cause. Filigrane présent hors des zones visées autant que possible.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "mold_suspected",
+          "xyxy_normalized": [
+            0.033,
+            0,
+            1,
+            0.52
+          ],
+          "source_indices": []
+        },
+        {
+          "class": "mold_suspected",
+          "xyxy_normalized": [
+            0.19,
+            0.5,
+            1,
+            0.74
+          ],
+          "source_indices": []
+        },
+        {
+          "class": "mold_suspected",
+          "xyxy_normalized": [
+            0.093,
+            0.33,
+            0.233,
+            1
+          ],
+          "source_indices": []
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "commons_82342600",
+      "decision": "excluded",
+      "note": "Joints noircis : moisissures, ancien mastic et salissure difficiles à séparer. Conservée comme confusion à faire arbitrer, pas comme négatif.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "commons_54699036",
+      "decision": "candidate",
+      "note": "Plage mouchetée localisée sur le mur derrière les livres ; le motif et les ombres des livres ne sont pas des cibles.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "mold_suspected",
+          "xyxy_normalized": [
+            0.598,
+            0.328,
+            0.889,
+            0.619
+          ],
+          "source_indices": []
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "commons_23035294",
+      "decision": "excluded",
+      "note": "Fenêtre métallique corrodée ou empoussiérée ; le titre seul ne suffit pas à annoter des moisissures.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "commons_743629",
+      "decision": "excluded",
+      "note": "Intérieur inondé encombré : mobilier, débris et murs atteints se recouvrent. Annotation exhaustive trop incertaine pour ce lot.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "commons_11264509",
+      "decision": "excluded",
+      "note": "Moisissures surtout sur le canapé et dans des reflets ; surfaces du bâtiment difficiles à isoler. Exclusion, pas de photo saine.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "commons_11264527",
+      "decision": "candidate",
+      "note": "Moisissures suspectées sur le mur et limite de submersion distincte en partie basse. Rectangle englobant malgré le tableau et le mobilier qui masquent une partie du mur. Scène après inondation, peu représentative d’un chantier courant. Seconde revue : le cadre de moisissures inclut les points bas oubliés ; ajout du revêtement qui se soulève en bandes dans l’angle inférieur du mur. Matériau exact non confirmé.",
+      "reviewed_scope": true,
+      "boxes": [
+        {
+          "class": "mold_suspected",
+          "xyxy_normalized": [
+            0.28,
+            0.066,
+            0.576,
+            0.68
+          ],
+          "source_indices": []
+        },
+        {
+          "class": "moisture_trace",
+          "xyxy_normalized": [
+            0.282,
+            0.59,
+            0.573,
+            0.866
+          ],
+          "source_indices": []
+        },
+        {
+          "class": "peeling_paint",
+          "xyxy_normalized": [
+            0.41,
+            0.64,
+            0.485,
+            0.803
+          ],
+          "source_indices": []
+        }
+      ],
+      "removed_source_boxes": []
+    },
+    {
+      "id": "commons_12465024",
+      "decision": "excluded",
+      "note": "Pièce encombrée après inondation ; murs, meubles et panneaux détachés atteints. Réservée à une annotation humaine plus précise.",
+      "reviewed_scope": false,
+      "boxes": [],
+      "removed_source_boxes": []
+    }
+  ],
+  "negative_crops": [
+    {
+      "id": "negative_floor_202",
+      "parent_id": "phele_train_202",
+      "crop_xyxy_normalized": [
+        0.12,
+        0.68,
+        0.64,
+        0.96
+      ],
+      "note": "Motif du sol et joints ; aucune des trois cibles visible dans ce recadrage.",
+      "reviewed_scope": true
+    },
+    {
+      "id": "negative_texture_670",
+      "parent_id": "commons_67025365",
+      "crop_xyxy_normalized": [
+        0.02,
+        0.02,
+        0.28,
+        0.15
+      ],
+      "note": "Petits points réguliers du plafond et joint de dalle ; texture confondante, sans auréole visible dans le recadrage.",
+      "reviewed_scope": true
+    },
+    {
+      "id": "commons_69965989_negative",
+      "parent_id": "commons_69965989",
+      "crop_xyxy_normalized": [
+        0.05,
+        0.73,
+        0.65,
+        0.89
+      ],
+      "reviewed_scope": true,
+      "note": "Bande claire sous la plage mouchetée, revue sans cible visible. Même groupe que la photo ; pas une scène indépendante."
+    },
+    {
+      "id": "negative_mbdd_parapet_v3",
+      "parent_id": "mbdd_hefei677",
+      "crop_xyxy_normalized": [
+        0.05,
+        0.65,
+        0.45,
+        0.95
+      ],
+      "note": "Surface rouge uniforme revue, sans les coulures du haut ni les ouvertures. Même scène, pas une nouvelle photo indépendante.",
+      "reviewed_scope": true
+    },
+    {
+      "id": "negative_commons_books_v3",
+      "parent_id": "commons_54699036",
+      "crop_xyxy_normalized": [
+        0.05,
+        0.03,
+        0.85,
+        0.25
+      ],
+      "note": "Mur clair avec ombre d’angle, au-dessus des livres ; aucune des trois cibles visible. Même pièce que la photo positive.",
+      "reviewed_scope": true
+    }
+  ]
+}

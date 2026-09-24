@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "reviewed_at": "2026-09-22",
+  "reviewed_at": "2026-09-23",
   "description": "Registre de sources candidates. Aucun téléchargement, contrôle d'archive ou entraînement n'est attesté par la consultation de leur page.",
   "datasets": [
     {
@@ -98,13 +98,14 @@
       "pair_review_status": "199 pairs compared at native resolution; 195 groups quarantined with conservative mask/image thresholds; 12 pairs inspected visually",
       "prepared_candidate_references": 64,
       "prepared_similar_variants": 4,
-      "prepared_quarantined_images": 390
+      "prepared_quarantined_images": 390,
+      "exploratory_generalization_use_2026-09-23": "external_candidate split measured with smartsite-model external; coverage only, no instance matching, no threshold chosen on this corpus; approved_for_evaluation stays false until the alignment review is complete"
     },
     {
       "id": "sdnet2018",
       "url": "https://digitalcommons.usu.edu/all_datasets/48/",
       "declared_license": "CC-BY-4.0",
-      "role": "auxiliary_candidate_requires_localization_annotations",
+      "role": "reserved_negative_and_alert_measurement_source",
       "declared_annotation_types": [
         "image_labels"
       ],
@@ -112,18 +113,28 @@
         "crack"
       ],
       "source_page_reviewed": true,
-      "archive_inspected": false,
+      "archive_inspected": true,
       "approved_for_training": false,
       "required_checks": [
-        "archive_access",
-        "original_image_grouping",
+        "labels_for_other_target_classes",
         "localization_annotations",
-        "labels_for_other_target_classes"
+        "original_image_grouping",
+        "other_defect_labels_for_clear_patches",
+        "whole_photo_confirmation"
       ],
       "domain_limits": [
         "concrete_patches",
         "binary_noncrack_label_is_not_all_classes_negative"
-      ]
+      ],
+      "access_status": "automated_download_refused_2026-09-23: the publisher's viewcontent link answers HTTP 403 for a tool user agent; no workaround attempted",
+      "access_checked_at": "2026-09-23",
+      "license_evidence": "Publication page links creativecommons.org/licenses/by/4.0; DOI 10.15142/T3TD19; authors Maguire Marc, Dorafshan Sattar, Thomas Robert J.",
+      "declared_content": "Over 56,000 crack and non-crack concrete images with shadows, roughness, scaling, edges, holes and debris; useful as difficult negatives once accessible",
+      "inspection_scope": "Manually downloaded outer ZIP verified; inner SDNET2018.zip pinned by SHA-256 617afc074b53bfb11121b9bbd10512784e1b0b21529f542c61f2c422ebf77331; all 56 092 JPEG entries validated, 230 origin photos confirmed (54 decks, 72 walls, 104 pavements)",
+      "observed_images": 56092,
+      "observed_structure": "D/P/W surfaces, C (cracked) and U (uncracked) author labels; file names carry the origin photo, so scene groups are known; 11 patches published twice under two names",
+      "approved_for_evaluation": false,
+      "exploratory_alert_use_2026-09-23": "720 clear and 720 cracked wall patches sampled with smartsite-data prepare-patches; alert rates measured, no threshold chosen on this corpus"
     },
     {
       "id": "kasbah_v2",
@@ -324,7 +335,7 @@
         "Wanqi Ma",
         "Wenkang Zhang"
       ],
-      "role": "exploratory_moisture_probe_not_training_or_final_test",
+      "role": "assistant_reviewed_pilot_candidates_pending_human_validation",
       "declared_annotation_types": [
         "VOC_XML_boxes",
         "YOLO_boxes"
@@ -337,12 +348,13 @@
         "bulge"
       ],
       "target_classes": [
-        "moisture_trace"
+        "moisture_trace",
+        "peeling_paint"
       ],
       "source_page_reviewed": true,
-      "source_page_reviewed_at": "2026-09-22",
+      "source_page_reviewed_at": "2026-09-23",
       "archive_inspected": true,
-      "inspection_scope": "HTTP range inspection of ZIP directory, README, all VOC annotations and 24 selected JPEGs; not a complete image import",
+      "inspection_scope": "ZIP directory, README, all VOC annotations and 154 unique selected JPEGs: 24 historical probe photos plus 130 additional unassigned candidates; not a complete image import",
       "declared_images": 14471,
       "observed_annotation_files": 14471,
       "invalid_annotation_files_excluded_from_probe_selection": 105,
@@ -375,7 +387,45 @@
         "multiple_near_views_not_independent_scenes",
         "no_known_pretraining_overlap_audit"
       ],
-      "review_notes_fr": "API Zenodo et README interne concordent sur CC BY 4.0. Lot figé de 12 photos portant leakage et 12 sans cette annotation, sélectionné avant inférence. Classe leakage utilisée comme référence visuelle exploratoire seulement. Les 105 fichiers aux boîtes invalides sont exclus de la sélection ; aucune correction silencieuse. Les prédictions ne qualifient pas un détecteur chantier."
+      "review_notes_fr": "API Zenodo et README interne concordent sur CC BY 4.0. Lot figé de 12 photos portant leakage et 12 sans cette annotation, sélectionné avant inférence. Classe leakage utilisée comme référence visuelle exploratoire seulement. Les 105 fichiers aux boîtes invalides sont exclus de la sélection ; aucune correction silencieuse. Les prédictions ne qualifient pas un détecteur chantier. Complément du 23 septembre : 130 nouvelles photos portant la classe source leakage récupérées sur 200 prévues. Limitation HTTP 429 à la 131e photo ; aucun nouvel accès après le refus, cache vérifié et finalisé hors réseau. Les 20 traces restantes et 50 autres défauts ne sont pas reçus. Annotations, scènes et diversité encore à qualifier ; aucune entrée dans un apprentissage ni affectation à un test. Revue complète suivante : 130/130 nouvelles vues et 24/24 anciennes vues examinées. Onze groupes visuels de précaution pour les nouvelles vues ; sept positives proposées, 123 exclues. Les 405 objets VOC ont une issue tracée (32 fissures hors périmètre). Export pilote préparé sans entraîner ; validation humaine toujours en attente.",
+      "additional_candidate_collection": {
+        "manifest": "data/experiments/moisture_candidates_v3/manifest.json",
+        "gallery": "artifacts/predictions/moisture_candidates_v3/index.html",
+        "selection": "artifacts/inspection/moisture_sources_v3/selection_before_download.json",
+        "planned_images": 200,
+        "received_images": 130,
+        "source_leakage_images": 130,
+        "other_defect_images_received": 0,
+        "other_defect_images_planned": 50,
+        "image_bytes": 23610017,
+        "approval": "pending_visual_and_human_annotation_review",
+        "split": "unassigned",
+        "acquisition_status": "HTTP_429_stopped_no_retry_offline_cache_recovery",
+        "final_test": false
+      },
+      "annotation_review_v3": {
+        "preparation_manifest": "config/moisture_collection_v3.json",
+        "review_manifest": "config/moisture_review_v3.json",
+        "reviewed_images": 130,
+        "positive_candidates": 7,
+        "excluded_images": 123,
+        "full_negative_photos_added": 0,
+        "visual_scene_groups": 11,
+        "groups_certified": false,
+        "gallery": "artifacts/predictions/moisture_annotations_v3/index.html",
+        "human_validation": "pending",
+        "training_started": false,
+        "final_test": false
+      },
+      "second_visual_review": {
+        "review_manifest": "config/moisture_review_v3_1.json",
+        "training_config": "config/moisture_boxes_v3_1.json",
+        "gallery": "artifacts/predictions/moisture_review_v3_1/index.html",
+        "reviewer": "assistant_visual_review",
+        "human_validation": "pending",
+        "training_started": false,
+        "notes_fr": "Seconde lecture ciblée des dix ajouts et deux recadrages négatifs. Trois photos corrigées ; mêmes photos, décisions, groupes et partitions. Les sources complètes ne sont pas approuvées pour autant."
+      }
     },
     {
       "id": "phele_v3",
@@ -389,11 +439,14 @@
       "source_page_reviewed": true,
       "source_page_reviewed_at": "2026-09-22",
       "archive_inspected": true,
-      "inspection_scope": "Central directory, class file, 720 train/val label files; 64 selected images retrieved by exact byte ranges and CRC checked. Full archive SHA-256 not verified. Reserved test images and labels not opened.",
+      "inspection_scope": "Central directory, class file, 720 train/val label files; 89 selected images retrieved by exact byte ranges, CRC checked, decoded and SHA-256 pinned. Full archive SHA-256 not verified. Reserved test images and labels not opened.",
       "role": "interior_source_boxes_to_review",
-      "observed_selected_images": 64,
+      "observed_selected_images": 89,
       "observed_source_boxes": 91,
-      "observed_format": "56 two-frame MPO disguised as .jpg; 8 single JPEG; YOLO boxes in display-oriented coordinates according to visual review",
+      "observed_format": {
+        "single_frame": 24,
+        "mpo_primary_of_two": 65
+      },
       "source_mapping": {
         "5": "Peeling paint -> peeling_paint",
         "9": "Mold -> mold_suspected"
@@ -417,7 +470,20 @@
         "unknown_original_building_ids",
         "box_annotations_may_be_wrong_or_incomplete"
       ],
-      "review_notes_fr": "64 photos réellement préparées avec originaux ; 7 groupes visuels de précaution croisent les lots train/val auteur. Une bâche annotée peinture écaillée est mise de côté. Pas de nouvel entraînement."
+      "review_notes_fr": "64 photos réellement préparées avec originaux ; 7 groupes visuels de précaution croisent les lots train/val auteur. Une bâche annotée peinture écaillée est mise de côté. Pas de nouvel entraînement. Revue suivante : propositions et exclusions motivées dans config/moisture_review_v1.json ; conventions visuelles distinctes de la description auteur. Usage limité à un futur essai, source complète non approuvée.",
+      "annotation_review_manifest": "config/moisture_review_v1.json",
+      "review_provenance": "assistant_visual_review; human validation pending",
+      "pilot_export_usage": "Selected reviewed candidates only; COCO boxes train/validation, no final test; see review manifest for per-image decisions.",
+      "supplement_2026_09_23": {
+        "downloaded_images": 25,
+        "excluded_before_download_over_8MiB": 3,
+        "reviewed_full_negatives": 11,
+        "new_images_excluded_after_review": 14,
+        "target_boxes_added": 0,
+        "preparation_manifest": "config/moisture_collection_v2.json",
+        "review_manifest": "config/moisture_review_v2.json",
+        "notes_fr": "Sélection sans Mold/Peeling paint complétée par Wet floor ; seules les photos explicitement revues deviennent des négatifs. Les liquides renversés ne sont pas assimilés aux traces durables d’humidité. Sept nouvelles photos négatives train et quatre validation, sans déplacer les références v1."
+      }
     },
     {
       "id": "commons_moisture_selection_v1",
@@ -450,14 +516,17 @@
         "no_boxes_or_masks_provided",
         "existing_and_abandoned_buildings_not_qualified_construction_captures"
       ],
-      "review_notes_fr": "Auteur, licence et page source conservés par photo ; SHA-1 Commons vérifié puis SHA-256 épinglé. 3 EXIF orientation=0 exclus du lot préparé, originaux conservés. HTTP 429 pour des téléchargements suivants : collecte arrêtée, aucun contournement. Les variantes déjà vues ne constitueront pas un test aveugle."
+      "review_notes_fr": "Auteur, licence et page source conservés par photo ; SHA-1 Commons vérifié puis SHA-256 épinglé. 3 EXIF orientation=0 exclus du lot préparé, originaux conservés. HTTP 429 pour des téléchargements suivants : collecte arrêtée, aucun contournement. Les variantes déjà vues ne constitueront pas un test aveugle. Revue suivante : propositions et exclusions motivées dans config/moisture_review_v1.json ; conventions visuelles distinctes de la description auteur. Usage limité à un futur essai, source complète non approuvée.",
+      "annotation_review_manifest": "config/moisture_review_v1.json",
+      "review_provenance": "assistant_visual_review; human validation pending",
+      "pilot_export_usage": "Selected reviewed candidates only; COCO boxes train/validation, no final test; see review manifest for per-image decisions."
     },
     {
       "id": "cubit_det_author_release",
       "url": "https://github.com/BenyunZhao/CUBIT",
       "declared_license": "CC-BY-4.0",
       "source_page_reviewed": true,
-      "source_page_reviewed_at": "2026-09-22",
+      "source_page_reviewed_at": "2026-09-23",
       "archive_inspected": false,
       "role": "exterior_boxes_candidate",
       "declared_annotation_types": [
@@ -475,14 +544,15 @@
         "scene_grouping",
         "domain_review"
       ],
-      "review_notes_fr": "Le README auteur et le fichier LICENSE affichent CC BY 4.0 pour CUBIT-Det. Les 5527 photos annoncées ne sont pas téléchargées dans cette tranche ; lien Drive consulté sans inventaire exploitable. Cette vérification ne qualifie pas automatiquement les autres sous-ensembles CUBIT."
+      "review_notes_fr": "Le README auteur et le fichier LICENSE affichent CC BY 4.0 pour CUBIT-Det. Les 5527 photos annoncées ne sont pas téléchargées dans cette tranche ; lien Drive consulté sans inventaire exploitable. Cette vérification ne qualifie pas automatiquement les autres sous-ensembles CUBIT. Vérification du 23 septembre : dossier Google Drive auteur consultable sans connexion ; dossiers images/labels et listes train, val, trainval, test visibles. Aucun contenu d’image, label ou test téléchargé dans cette vérification.",
+      "access_status": "public_author_google_drive_folder_browsable_without_login"
     },
     {
       "id": "leakagewaterstain_roboflow_candidate",
       "url": "https://universe.roboflow.com/project-xjzzj/leakagewaterstain-r4rg9",
       "declared_license": "CC-BY-4.0",
       "source_page_reviewed": true,
-      "source_page_reviewed_at": "2026-09-22",
+      "source_page_reviewed_at": "2026-09-23",
       "archive_inspected": false,
       "role": "candidate_not_downloaded",
       "declared_annotation_types": [
@@ -498,7 +568,122 @@
         "original_image_provenance",
         "actual_annotations_and_grouping"
       ],
-      "review_notes_fr": "Page publique annonce 500 images et une classe LeakageWaterStain ; accès direct 403, aucune image ni poids récupéré, aucune demande de compte ou contournement."
+      "review_notes_fr": "Page publique annonce 500 images et une classe LeakageWaterStain ; accès direct 403, aucune image ni poids récupéré, aucune demande de compte ou contournement. Vérification du 23 septembre : v4 affiche 500 images sans augmentation ; ouverture normale du téléchargement dans le navigateur affiche une demande de connexion/création de compte. Aucun compte créé, connexion effectuée ou fichier reçu. Domaine visuel effectif, provenance et groupes non vérifiés. L’utilisateur confirme ne pas avoir de compte et demande de poursuivre uniquement avec les sources publiques ; aucun compte créé ni connexion tentée.",
+      "version_reviewed": {
+        "version": 4,
+        "url": "https://universe.roboflow.com/project-xjzzj/leakagewaterstain-r4rg9/dataset/4",
+        "declared_splits": {
+          "train": 350,
+          "valid": 100,
+          "test": 50
+        },
+        "declared_augmentation": "none",
+        "declared_preprocessing": "auto-orient; stretch 640x640"
+      },
+      "access_status": "login_required_user_has_no_account_continue_public_sources"
+    },
+    {
+      "id": "commons_mold_selection_v2",
+      "url": "https://commons.wikimedia.org/wiki/Category:Mold_on_buildings",
+      "source_page_reviewed": true,
+      "source_page_reviewed_at": "2026-09-23",
+      "declared_license": "Per-image: CC0, CC-BY-3.0, CC-BY-SA-4.0",
+      "individual_files_downloaded": 10,
+      "prepared_images": 10,
+      "reviewed_positive_candidates": 4,
+      "reviewed_excluded_images": 6,
+      "role": "supplementary_mold_candidates_and_visual_confusions",
+      "approved_for_training": false,
+      "preparation_manifest": "config/moisture_collection_v2.json",
+      "annotation_review_manifest": "config/moisture_review_v2.json",
+      "review_provenance": "assistant_visual_review; human validation pending",
+      "review_notes_fr": "Originaux contrôlés contre taille/SHA-1 Commons, SHA-256 épinglés ; licences/auteurs par photo. Cinq nouvelles boîtes de moisissures suspectées sur quatre photos, trois groupes de précaution train. Algues, pierres sombres et image peu lisible écartées. Un original dépasse 16 mégapixels ; arrêt au premier HTTP 429, pas de contournement. Aucun diagnostic biologique ou preuve chantier."
+    },
+    {
+      "id": "roboflow_mould_research_placement_candidate",
+      "url": "https://universe.roboflow.com/research-placement/mould-detection-single-label",
+      "source_page_reviewed": true,
+      "source_page_reviewed_at": "2026-09-23",
+      "declared_license": null,
+      "observed_project_images": 265,
+      "archive_inspected": false,
+      "approved_for_training": false,
+      "role": "candidate_access_and_rights_unresolved",
+      "review_notes_fr": "Référence trouvée dans le dépôt auteur dtian09/Mould_Classification_Segmentation. Version 12 affiche 819 images après augmentation, pas 819 photos indépendantes. Export non récupéré ; droits des données non vérifiés. GPL du code ne vaut pas licence des images. Aucun poids, image ou script de cette source utilisé."
+    },
+    {
+      "id": "bfdd_v1",
+      "url": "https://data.mendeley.com/datasets/9ych7czvyg/1",
+      "doi": "10.17632/9ych7czvyg.1",
+      "declared_license": "CC-BY-4.0",
+      "authors": [
+        "lai wei",
+        "Hong Huang",
+        "Xiang Nie",
+        "Qian Wang"
+      ],
+      "source_page_reviewed": true,
+      "source_page_reviewed_at": "2026-09-23",
+      "archive_inspected": false,
+      "role": "candidate_not_downloaded",
+      "declared_image_pairs": 788,
+      "declared_modalities": [
+        "RGB",
+        "IR"
+      ],
+      "declared_annotation_types": [
+        "pixel_masks"
+      ],
+      "source_classes": [
+        "Cracks",
+        "Peeling",
+        "Hollow Areas",
+        "Stains",
+        "Erosion"
+      ],
+      "target_classes": [],
+      "approved_for_training": false,
+      "access_status": "public_file_listing_API_HTTP_403_no_retry",
+      "required_checks": [
+        "archive_access",
+        "RGB_visibility_and_semantic_mapping",
+        "annotation_schema",
+        "SfM_group_ids_and_split_isolation"
+      ],
+      "domain_limits": [
+        "facades_not_interior_mould",
+        "stains_not_automatically_moisture",
+        "some_defects_visible_only_in_infrared"
+      ],
+      "review_notes_fr": "Page auteur v1 publiée le 10 avril 2026 : 788 paires 640x512 et groupes SfM annoncés. Licence CC BY 4.0 sur la page. Réponse 403 à la demande de liste publique des fichiers ; aucun contenu acquis. Ne pas transformer Stains en humidité ni utiliser une anomalie invisible en RGB comme référence détectable sur photo couleur."
+    },
+    {
+      "id": "commons_mold_selection_v3",
+      "url": "https://commons.wikimedia.org/wiki/Category:Mold_on_buildings",
+      "declared_license": "Per-image: CC-BY-2.0, CC-BY-2.5, CC-BY-SA-2.0, CC-BY-SA-3.0, CC-BY-SA-4.0",
+      "source_page_reviewed": true,
+      "source_page_reviewed_at": "2026-09-23",
+      "individual_files_downloaded": 10,
+      "prepared_images": 9,
+      "excluded_invalid_orientation": 1,
+      "reviewed_positive_candidates": 3,
+      "reviewed_excluded_images": 6,
+      "role": "supplementary_interior_candidates_pending_human_validation",
+      "approved_for_training": false,
+      "preparation_manifest": "config/moisture_collection_v3.json",
+      "annotation_review_manifest": "config/moisture_review_v3.json",
+      "review_provenance": "assistant_visual_review; human validation pending",
+      "acquisition_status": "HTTP_429_stopped_no_further_request",
+      "review_notes_fr": "Reprise normale après 172 minutes de pause ; 10 secondes entre requêtes, arrêt au premier HTTP 429. Taille et SHA-1 de la source puis SHA-256 local vérifiés ; une orientation EXIF invalide exclue. Neuf nouvelles photos visuellement revues : trois positives proposées, six confusions ou vues trop encombrées exclues. Original, auteur et licence propres à chaque photo conservés. Ni cause physique ni qualification chantier démontrée.",
+      "second_visual_review": {
+        "review_manifest": "config/moisture_review_v3_1.json",
+        "training_config": "config/moisture_boxes_v3_1.json",
+        "gallery": "artifacts/predictions/moisture_review_v3_1/index.html",
+        "reviewer": "assistant_visual_review",
+        "human_validation": "pending",
+        "training_started": false,
+        "notes_fr": "Seconde lecture ciblée des dix ajouts et deux recadrages négatifs. Trois photos corrigées ; mêmes photos, décisions, groupes et partitions. Les sources complètes ne sont pas approuvées pour autant."
+      }
     }
   ]
 }

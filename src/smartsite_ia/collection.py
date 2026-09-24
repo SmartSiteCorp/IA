@@ -16,6 +16,7 @@ from urllib.parse import urlsplit
 
 from PIL import Image, ImageDraw
 
+from smartsite_ia.categories import COLLECTION_COLORS, COLLECTION_LABELS
 from smartsite_ia.collection_assets import Asset, fetch_asset
 from smartsite_ia.collection_html import write_collection_html
 from smartsite_ia.curation import content_groups, digest, read_document, require_text, staged_output
@@ -24,7 +25,7 @@ from smartsite_ia.prediction import decode_photo
 from smartsite_ia.review import MAX_FILE_BYTES, read_local
 from smartsite_ia.similarity import candidate_groups, find_similar_pairs, fingerprint
 
-CLASSES = {"mold_suspected": "Moisissures suspectées", "peeling_paint": "Revêtement écaillé"}
+CLASSES = COLLECTION_LABELS
 
 
 def safe_link(value: object) -> str:
@@ -183,7 +184,7 @@ def prepare_collection(selection: Path, cache: Path, output: Path) -> dict[str, 
             draw = ImageDraw.Draw(preview)
             for box in boxes:
                 x1, y1, x2, y2 = box["xyxy_normalized"]
-                color = "#db3a55" if box["class"] == "mold_suspected" else "#236fc3"
+                color = COLLECTION_COLORS[box["class"]]
                 draw.rectangle(
                     (
                         x1 * preview.width,

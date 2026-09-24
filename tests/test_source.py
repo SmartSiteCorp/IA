@@ -31,6 +31,19 @@ def test_only_approved_https_sources(url):
         check_url(url)
 
 
+def test_zenodo_originals_use_only_the_exact_public_host():
+    check_url("https://zenodo.org/api/records/15622584/files/MBDD2025.zip/content")
+    for url in (
+        "http://zenodo.org/file",
+        "https://zenodo.org.evil.test/file",
+        "https://user@zenodo.org/file",
+        "https://zenodo.org:8443/file",
+        "https://localhost/file",
+    ):
+        with pytest.raises(ValueError, match="approved HTTPS"):
+            check_url(url)
+
+
 def test_redirect_cannot_leave_source_hosts():
     with pytest.raises(ValueError):
         SourceRedirects().redirect_request(None, None, 302, "", {}, "http://127.0.0.1/")

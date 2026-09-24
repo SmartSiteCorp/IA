@@ -10,6 +10,7 @@ from smartsite_ia.external import prepare_external
 from smartsite_ia.importer import import_archive
 from smartsite_ia.prepare import prepare_corpus
 from smartsite_ia.review import review_corpus
+from smartsite_ia.sdnet_sample import SURFACES, prepare_sample
 from smartsite_ia.source import SOURCES, download_archive
 
 
@@ -42,9 +43,32 @@ def main() -> int:
     )
     external.add_argument("--policy", type=Path, required=True)
     external.add_argument("--output", type=Path, required=True)
+    patches = commands.add_parser(
+        "prepare-patches", help="Sample labelled SDNET2018 patches, clear ones and cracked ones"
+    )
+    patches.add_argument("archive", type=Path, help="Manually downloaded SDNET2018.zip")
+    patches.add_argument("--output", type=Path, required=True)
+    patches.add_argument("--surface", default="W", choices=sorted(SURFACES))
+    patches.add_argument("--per-photo", type=int, default=10)
+    patches.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
     try:
-        if args.command == "download":
+        if args.command == "prepare-patches":
+            report = prepare_sample(
+                args.archive, args.output, args.surface, args.per_photo, args.seed
+            )
+            print(
+                json.dumps(
+                    {
+                        "counts": report["counts"],
+                        "scene_groups": report["scene_groups"],
+                        "selection": report["selection"],
+                        "approved_for_training": report["approved_for_training"],
+                    },
+                    indent=2,
+                )
+            )
+        elif args.command == "download":
             print(download_archive(args.output, SOURCES[args.dataset]))
         elif args.command in ("prepare", "prepare-external"):
             report = (

@@ -126,6 +126,30 @@ def test_preparation_replays_identically(collection):
             assert p.read_bytes() == (other / p.relative_to(output)).read_bytes()
 
 
+def test_moisture_source_is_a_review_candidate_with_its_own_legend(collection):
+    selection, cache, output, document = collection
+    document["sources"]["fixture"]["class_names"][0] = "leakage"
+    document["sources"]["fixture"]["class_map"]["0"] = "moisture_trace"
+    selection.write_text(json.dumps(document))
+    prepare_collection(selection, cache, output)
+    report = json.loads((output / "report.json").read_text())
+    box = report["records"][0]["boxes"][0]
+    assert box["class"] == "moisture_trace"
+    assert box["xyxy_normalized"] == [0.25, 0.25, 0.75, 0.75]
+    assert all(not row["approved_for_training"] for row in report["records"])
+    page = (output / "index.html").read_text()
+    assert "Orange" in page and "Traces compatibles avec l&#x27;humidité" in page
+    assert "Mold » et « Peeling paint" not in page
+
+
+def test_source_cannot_turn_moisture_into_a_confirmed_diagnosis(collection):
+    selection, _, _, document = collection
+    document["sources"]["fixture"]["class_map"]["0"] = "confirmed_leak"
+    selection.write_text(json.dumps(document))
+    with pytest.raises(ValueError, match="Unsupported semantic mapping"):
+        load_collection(selection)
+
+
 @pytest.mark.parametrize(
     "bad",
     [

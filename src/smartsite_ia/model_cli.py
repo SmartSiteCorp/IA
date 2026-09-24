@@ -8,6 +8,11 @@ from pathlib import Path
 from typing import Any
 
 from smartsite_ia.continuation import extend_training
+from smartsite_ia.external_evaluation import (
+    evaluate_external,
+    evaluate_patch_alerts,
+    evaluate_windowed,
+)
 from smartsite_ia.inference import DEFAULT_PROFILE, PROFILES
 from smartsite_ia.learning import runtime, train_model
 from smartsite_ia.model_assets import CLASS_NAMES, PRETRAINED
@@ -16,6 +21,7 @@ from smartsite_ia.source import download_archive
 from smartsite_ia.threshold_study import DEFAULT_THRESHOLDS, study_thresholds
 from smartsite_ia.training_data import load_training_config, prepare_training_inputs
 from smartsite_ia.validation import compare_validations, evaluate_validation
+from smartsite_ia.windowed_inference import DEFAULT_OVERLAP, DEFAULT_WINDOW
 
 
 def main() -> int:
@@ -63,7 +69,30 @@ def main() -> int:
     evaluate.add_argument(
         "--classes", nargs="+", choices=CLASS_NAMES, help="Compare a shared subset of model classes"
     )
-    for command in (predict, evaluate):
+    evaluate.add_argument(
+        "--open-reserved-test",
+        action="store_true",
+        help="Open the reserved test split once; it stops being a neutral judge afterwards",
+    )
+    external = commands.add_parser(
+        "external", help="Measure a model on an independent source, outside its training domain"
+    )
+    external.add_argument("corpus", type=Path)
+    external.add_argument("--run", type=Path, required=True)
+    external.add_argument("--output", type=Path, required=True)
+    external.add_argument("--split", default="external_candidate")
+    external.add_argument(
+        "--windowed", action="store_true", help="Cut each photo into windows and merge the results"
+    )
+    external.add_argument("--window", type=int, default=DEFAULT_WINDOW)
+    external.add_argument("--overlap", type=int, default=DEFAULT_OVERLAP)
+    patches = commands.add_parser(
+        "patch-alerts", help="Count crack alerts on labelled patches, clear ones and cracked ones"
+    )
+    patches.add_argument("sample", type=Path)
+    patches.add_argument("--run", type=Path, required=True)
+    patches.add_argument("--output", type=Path, required=True)
+    for command in (predict, evaluate, external, patches):
         command.add_argument("--preprocessing", choices=PROFILES, default=DEFAULT_PROFILE)
         command.add_argument("--mask-threshold", type=float, default=0.5)
     compare = commands.add_parser("compare", help="Compare two identical validation protocols")
@@ -79,7 +108,7 @@ def main() -> int:
     study.add_argument("--output", type=Path, required=True)
     study.add_argument("--class", dest="target_class", choices=CLASS_NAMES, default="surface_loss")
     study.add_argument("--thresholds", nargs="+", type=float, default=DEFAULT_THRESHOLDS)
-    for command in (doctor, train, extend, predict, evaluate):
+    for command in (doctor, train, extend, predict, evaluate, external, patches):
         command.add_argument("--device", choices=("cpu", "mps", "cuda"), required=True)
     args = parser.parse_args()
     result: dict[str, Any]
@@ -135,8 +164,54 @@ def main() -> int:
                 args.preprocessing,
                 args.mask_threshold,
                 tuple(args.classes) if args.classes is not None else None,
+                split="test" if args.open_reserved_test else "valid",
+                open_reserved_test=args.open_reserved_test,
             )
-            result = {"images": report["images"], "report": str(args.output / "index.html")}
+            result = {
+                "images": report["images"],
+                # Une ouverture de la réserve doit rester visible dans la sortie.
+                "test_used": report.get("test_used", False),
+                "report": str(args.output / "index.html"),
+            }
+        elif args.command == "external":
+            report = (
+                evaluate_windowed(
+                    args.run,
+                    args.corpus,
+                    args.output,
+                    args.device,
+                    args.split,
+                    args.window,
+                    args.overlap,
+                    args.preprocessing,
+                    args.mask_threshold,
+                )
+                if args.windowed
+                else evaluate_external(
+                    args.run,
+                    args.corpus,
+                    args.output,
+                    args.device,
+                    args.split,
+                    args.preprocessing,
+                    args.mask_threshold,
+                )
+            )
+            result = {
+                "images": report["images"],
+                "coverage": report["coverage"],
+                "report": str(args.output / "report.json"),
+            }
+        elif args.command == "patch-alerts":
+            report = evaluate_patch_alerts(
+                args.run,
+                args.sample,
+                args.output,
+                args.device,
+                args.preprocessing,
+                args.mask_threshold,
+            )
+            result = {"patches": report["patches"], "alerts": report["alerts"]}
         elif args.command == "compare":
             compare_validations(args.before, args.after, args.output)
             result = {"report": str(args.output / "index.html")}
