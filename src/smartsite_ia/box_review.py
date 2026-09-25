@@ -64,16 +64,22 @@ def review_inputs(
     return report, selection, checkpoint, run_sha
 
 
-def load_box_engine(checkpoint: Path, device: str) -> AlignedPredictor:
-    """Le chargement sûr reprend les paramètres des poids, sans entraînement."""
+def load_box_engine(
+    checkpoint: Path, device: str, box_classes: tuple[str, ...] = BOX_CLASSES
+) -> AlignedPredictor:
+    """Le chargement sûr reprend les paramètres des poids, sans entraînement.
+
+    Les classes sont un paramètre : elles doivent correspondre à celles inscrites
+    dans le checkpoint, et un pilote entraîné sur un autre corpus en porte d'autres.
+    """
     engine = importlib.import_module("rfdetr").RFDETR.from_checkpoint(
         str(checkpoint.resolve()), device=device, trust_checkpoint=False
     )
     if type(engine).__name__ != BOX_MODEL_NAME:
         raise ValueError("Expected the RF-DETR Nano box model")
-    # Réutiliser exactement le redimensionnement de validation évite d'introduire
-    # un changement de pixels entre le journal d'entraînement et cette inspection.
-    return AlignedPredictor(engine, box_classes=BOX_CLASSES)
+    # Réutiliser le redimensionnement de validation évite d'introduire
+    # un changement de pixels
+    return AlignedPredictor(engine, box_classes=box_classes)
 
 
 def encode_boxes(detections: Any, photo: Image.Image) -> dict[str, Any]:
@@ -101,8 +107,8 @@ def encode_boxes(detections: Any, photo: Image.Image) -> dict[str, Any]:
         if not 0 <= score <= 1 or int(label) != label or raw[0] > raw[2] or raw[1] > raw[3]:
             raise ValueError("Invalid prediction class, score or box")
         record: dict[str, Any] = {"id": index + 1, "score": score, "raw_bbox_xyxy": raw}
-        # Le moteur peut exposer la classe sans objet. Elle reste comptée dans
-        # les sorties écartées, et ne devient jamais une quatrième anomalie.
+        # Le model peut exposer la classe sans objet.. Elle reste compté dans
+        # les sorties écartées, et ne devient jamais une anomalie
         if label == len(BOX_CLASSES) and names is not None and names[index] == "__background__":
             discarded.append({**record, "reason": "background"})
             continue

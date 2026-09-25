@@ -526,8 +526,8 @@
       "url": "https://github.com/BenyunZhao/CUBIT",
       "declared_license": "CC-BY-4.0",
       "source_page_reviewed": true,
-      "source_page_reviewed_at": "2026-09-23",
-      "archive_inspected": false,
+      "source_page_reviewed_at": "2026-09-24",
+      "archive_inspected": true,
       "role": "exterior_boxes_candidate",
       "declared_annotation_types": [
         "bounding_boxes"
@@ -539,13 +539,40 @@
       ],
       "approved_for_training": false,
       "required_checks": [
-        "archive_access",
-        "published_annotation_mapping",
-        "scene_grouping",
-        "domain_review"
+        "human_review_of_a_sample",
+        "moisture_label_scope_review",
+        "same_facade_other_angle_not_detected",
+        "scene_grouping"
       ],
       "review_notes_fr": "Le README auteur et le fichier LICENSE affichent CC BY 4.0 pour CUBIT-Det. Les 5527 photos annoncées ne sont pas téléchargées dans cette tranche ; lien Drive consulté sans inventaire exploitable. Cette vérification ne qualifie pas automatiquement les autres sous-ensembles CUBIT. Vérification du 23 septembre : dossier Google Drive auteur consultable sans connexion ; dossiers images/labels et listes train, val, trainval, test visibles. Aucun contenu d’image, label ou test téléchargé dans cette vérification.",
-      "access_status": "public_author_google_drive_folder_browsable_without_login"
+      "access_status": "public_author_google_drive_folder_browsable_without_login",
+      "license_evidence": "GitHub licence API on BenyunZhao/CUBIT returns spdx_id CC-BY-4.0 with a LICENSE file; the master README states that images, annotations and metadata distributed through the download links are CC BY 4.0",
+      "paper": "Automation in Construction 163 (2024) 105405, doi 10.1016/j.autcon.2024.105405",
+      "declared_content": "5527 UAV photos at 4624x3472 and 8000x6000, captured 2023 on buildings, pavements and bridges; classes crack, spalling, moisture; bounding boxes; author train, val, trainval and test lists published beside images and labels",
+      "benchmark_page": "https://benyunzhao.github.io/CUBIT-Dataset",
+      "benchmark_claims_not_verified": "The benchmark page announces an extension to 12 500+ images and a leaderboard where YOLOv6-l reaches 85.7 % crack AP and 91.7 % spalling AP on boxes. Neither the extension nor these figures were reproduced here, and box AP is not comparable to our mask measurements",
+      "download": "Google Drive folder or BaiduNet; folder listing shows a CUBIT-Det directory with train/val/trainval/test lists; no automated whole-folder download attempted",
+      "archives_sha256": {
+        "CUBIT-Det-20260924T095111Z-1-003.zip": "660a1f03b66b4ccde7318c692ca5a0354f036bce11b30e6d1a79c4a529eada8c",
+        "test2017-002.zip": "f3bf1c16633b401c9b05447271555537b72aac9a6d8e6efb5572953eb216a121",
+        "train2017-001.zip": "9137aa779bfb6b05814698f9d8febeafabb4b68e706adebff88abbbcdc074804"
+      },
+      "inspection_scope": "Three manually downloaded ZIP files, 17.7 GB total, listed without extraction. Splits match the author lists exactly: 3980 train, 442 val, 1105 test, 5527 total. Labels are YOLO text files, one per image, normalised centre and size.",
+      "observed_images": 5527,
+      "observed_instances": {
+        "crack": 13703,
+        "spalling": 2079,
+        "moisture": 1010
+      },
+      "class_mapping_verified": "Class ids checked visually on single-class images at full resolution: 0 is a crack in concrete, 1 is spalling with the render detached from its support, 2 is a dark water run-off streak on a facade. This matches the README order Crack, Spalling, Moisture; it is an inspection result, not an author confirmation.",
+      "observed_format": "JPEG at 4624x3472 and 8000x6000; sampled 25 training photos gave 20 usable and 5 partial with the project photo check",
+      "open_risk": "Author train/val/test splits share scenes, so they cannot serve as a final evaluation. The 1.7 % figure is a lower bound: the fingerprint only catches very close shots, not the same facade from another angle. Project scene groups and splits must be built before any training or measurement.",
+      "near_duplicate_search_2026-09-24": "Difference hash on all 5527 photos, vectorised comparison: no exact pixel duplicate; at distance 8, 46 groups cover 132 photos and 29 of them straddle the author splits, 93 photos or 1.7 %. Two groups were checked visually and confirmed as one scene, including six near-identical photos of one slab spread over train, val and test. 18 of 20 pairs inside those groups carry consecutive file numbers.",
+      "author_splits_usable": false,
+      "project_scene_groups_2026-09-24": "5441 scene groups built from the perceptual fingerprint alone, 46 of them holding more than one photo and the largest holding 11. Project splits assigned with smartsite_ia.partition.assign_splits, seed 20260924, strata resolution plus classes present: 4429 train, 547 valid, 551 test, no group cut across partitions and the three classes present in each. Three boxes of zero width were set aside and listed.",
+      "file_number_rule_rejected": "Grouping by consecutive file numbers was measured and rejected: 73 % of very similar pairs carry consecutive numbers, but only 1.5 % of consecutive pairs are similar, and their median hash distance of 56 is close to the 63 of random pairs.",
+      "prepared_corpus_2026-09-24": "data/prepared/cubit_det_v1, 17 GB: 5527 photos copied byte for byte from the archives with their fingerprints checked, boxes converted from YOLO to COCO, project splits 4429/547/551 and 16 789 boxes kept. ATTRIBUTION.json carries the CC BY 4.0 credit required by the licence.",
+      "known_annotation_notes": "Two boxes exceed their image by 0.003 pixel on 8000 px sides, an artefact of the rounding in the published YOLO files. Left unchanged rather than silently clamped."
     },
     {
       "id": "leakagewaterstain_roboflow_candidate",

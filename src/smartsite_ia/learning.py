@@ -377,8 +377,15 @@ def check_resume(
     return report
 
 
-def verify_training_data(output: Path, report: dict[str, Any]) -> None:
-    """Les mêmes contrôles protègent une reprise et une continuation du parent."""
+def verify_training_data(
+    output: Path, report: dict[str, Any], max_photo_bytes: int = MAX_FILE_BYTES
+) -> None:
+    """Les mêmes contrôles protègent une reprise et une continuation du parent.
+
+    La limite de taille des photos est un paramètre : les corpus de revue tiennent
+    largement sous la limite commune, alors qu'une photo de façade prise au drone
+    atteint une douzaine de mégaoctets.
+    """
     data = output / "data"
     if data.is_symlink() or not data.resolve().is_relative_to(output.resolve()):
         raise ValueError("Resume data path escapes its run")
@@ -392,7 +399,7 @@ def verify_training_data(output: Path, report: dict[str, Any]) -> None:
         if file_hash(data / annotation) != report.get("input_annotations_sha256", {}).get(split):
             raise ValueError("Resume annotations changed")
         for record in selection["splits"][split]["records"]:
-            raw = read_local(data, f"{split}/{record['id']}.jpg", MAX_FILE_BYTES)
+            raw = read_local(data, f"{split}/{record['id']}.jpg", max_photo_bytes)
             if digest(raw) != record["image_sha256"]:
                 raise ValueError("Resume photo changed")
 

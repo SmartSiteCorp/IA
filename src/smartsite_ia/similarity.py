@@ -114,3 +114,64 @@ def candidate_groups(pairs: list[SimilarPair]) -> list[list[str]]:
         remaining -= group
         groups.append(sorted(group))
     return groups
+
+
+# Comparer chaque paire en Python coûte trop cher sur plusieurs milliers de photos.
+# Cette limite borne la mémoire du calcul groupé ci-dessous, pas la qualité du tri.
+MAX_BULK_IMAGES = 50000
+BULK_BLOCK = 512
+
+
+def close_pairs(hashes: dict[str, int], max_distance: int = 8) -> list[tuple[str, str, int]]:
+    """Trouver les photos proches dans un grand lot, par comparaison vectorisée.
+
+    Même empreinte et même distance que la recherche détaillée, mais le calcul se
+    fait par blocs avec numpy. Le résultat sert à proposer des groupes de scène à
+    revoir ; deux photos proches ne sont pas forcément la même scène, et deux photos
+    éloignées peuvent montrer la même façade sous un autre angle.
+    """
+    if type(max_distance) is not int or not 0 <= max_distance <= 128:
+        raise ValueError("Hash distance must be an integer between 0 and 128")
+    if len(hashes) > MAX_BULK_IMAGES:
+        raise ValueError("Too many images for the bulk similarity search")
+    ids = sorted(hashes)
+    if not ids:
+        return []
+    raw = np.array([list(hashes[name].to_bytes(16, "big")) for name in ids], dtype=np.uint8)
+    bits = np.unpackbits(raw, axis=1).astype(np.float32)
+    inverse = 1.0 - bits
+    result: list[tuple[str, str, int]] = []
+    for start in range(0, len(ids), BULK_BLOCK):
+        block = slice(start, start + BULK_BLOCK)
+        # Nombre de bits qui diffèrent : produit matriciel plutôt que boucle.
+        distances = bits[block] @ inverse.T + inverse[block] @ bits.T
+        rounded = np.rint(distances).astype(np.int16)
+        for row, left in enumerate(range(start, min(start + BULK_BLOCK, len(ids)))):
+            # Chaque paire n'est gardée qu'une fois, dans l'ordre des identifiants.
+            close = np.nonzero(rounded[row, left + 1 :] <= max_distance)[0]
+            result.extend(
+                (ids[left], ids[left + 1 + int(offset)], int(rounded[row, left + 1 + offset]))
+                for offset in close
+            )
+    return sorted(result)
+
+
+def groups_from_pairs(pairs: list[tuple[str, str, int]]) -> list[list[str]]:
+    """Relier les paires proches en groupes, sans affirmer une origine commune."""
+    neighbors: dict[str, set[str]] = {}
+    for left, right, _ in pairs:
+        neighbors.setdefault(left, set()).add(right)
+        neighbors.setdefault(right, set()).add(left)
+    remaining = set(neighbors)
+    groups = []
+    while remaining:
+        pending = [min(remaining)]
+        group: set[str] = set()
+        while pending:
+            current = pending.pop()
+            if current not in group:
+                group.add(current)
+                pending.extend(neighbors[current] - group)
+        remaining -= group
+        groups.append(sorted(group))
+    return sorted(groups)

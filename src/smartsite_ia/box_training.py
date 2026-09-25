@@ -7,10 +7,11 @@ from pathlib import Path
 from typing import Any
 
 from smartsite_ia.box_data import (
-    BOX_CLASSES,
-    inspect_box_corpus,
+    config_classes,
+    corpus_photo_limit,
+    inspect_corpus,
     load_box_config,
-    prepare_box_inputs,
+    prepare_inputs,
 )
 from smartsite_ia.curation import read_document
 from smartsite_ia.learning import (
@@ -29,7 +30,7 @@ from smartsite_ia.source import verify_archive
 def check_box_training(root: Path, config_path: Path, weights: Path, device: str) -> dict[str, Any]:
     """Contrôler toutes les entrées et le matériel, sans commencer à apprendre."""
     config, sha = load_box_config(config_path)
-    selection = inspect_box_corpus(root, config)
+    selection = inspect_corpus(root, config)
     verify_archive(weights, BOX_PRETRAINED)
     environment = runtime(device)
     return {
@@ -41,7 +42,8 @@ def check_box_training(root: Path, config_path: Path, weights: Path, device: str
         "config_sha256": sha,
         "pretrained_sha256": BOX_PRETRAINED.sha256,
         "runtime": environment,
-        "class_names": list(BOX_CLASSES),
+        # Les classes viennent de la configuration : une reprise les compare telles quelles.
+        "class_names": list(config_classes(config)),
         "test_used": False,
         "qualified_for_smartsite": False,
         "selected": {
@@ -62,7 +64,7 @@ def resume_box_run(output: Path, checked: dict[str, Any]) -> dict[str, Any]:
     for key in ("device", "versions"):
         if previous.get("runtime", {}).get(key) != checked["runtime"][key]:
             raise ValueError("Resume runtime differs from the interrupted run")
-    verify_training_data(output, previous)
+    verify_training_data(output, previous, corpus_photo_limit(checked["config"]))
     last = output / "checkpoints/last.ckpt"
     if last.parent.is_symlink() or file_hash(last) != previous.get("resume_checkpoint_sha256"):
         raise ValueError("No verified checkpoint to resume; keep this run and use a new output")
@@ -127,7 +129,7 @@ def run_box_attempt(
     save_state(output, report)
     try:
         if previous is None:
-            prepare_box_inputs(root, output / "data", config)
+            prepare_inputs(root, output / "data", config)
             report.update(
                 selection_sha256=file_hash(output / "data/selection.json"),
                 input_annotations_sha256={
@@ -150,7 +152,7 @@ def run_box_attempt(
                 fit_config,
                 checked["runtime"]["device"],
                 model_name=BOX_MODEL_NAME,
-                class_names=BOX_CLASSES,
+                class_names=tuple(checked["class_names"]),
             )
         finally:
             if old_safe is None:
@@ -166,7 +168,7 @@ def run_box_attempt(
         if sha == BOX_PRETRAINED.sha256:
             raise ValueError("Box checkpoint is unchanged from initial weights")
         verify_archive(weights, BOX_PRETRAINED)
-        verify_training_data(output, report)
+        verify_training_data(output, report, corpus_photo_limit(config))
         report.update(
             status="completed",
             checkpoint="checkpoints/checkpoint_best_total.pth",

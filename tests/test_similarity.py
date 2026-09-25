@@ -87,3 +87,80 @@ def test_candidate_groups_are_transitive_and_do_not_include_singletons():
     ]
     assert candidate_groups(pairs) == [["a", "b", "c"], ["x", "y"]]
     assert candidate_groups([]) == []
+
+
+def bulk_hash(bits):
+    """Construire une empreinte de 128 bits à partir d'une liste de positions à un."""
+    value = 0
+    for position in bits:
+        value |= 1 << position
+    return value
+
+
+def test_bulk_search_finds_the_same_close_pairs_as_the_detailed_one():
+    hashes = {"a": bulk_hash([0, 5]), "b": bulk_hash([0, 5, 9]), "c": bulk_hash(range(64))}
+    pairs = similarity.close_pairs(hashes, max_distance=2)
+    assert pairs == [("a", "b", 1)]
+
+
+def test_bulk_search_counts_the_exact_bit_distance():
+    hashes = {"a": 0, "b": bulk_hash([1, 2, 3])}
+    assert similarity.close_pairs(hashes, max_distance=8) == [("a", "b", 3)]
+    assert similarity.close_pairs(hashes, max_distance=2) == []
+
+
+def test_identical_images_have_no_distance():
+    value = bulk_hash([3, 40, 127])
+    assert similarity.close_pairs({"a": value, "b": value}, max_distance=0) == [("a", "b", 0)]
+
+
+def test_each_pair_is_reported_once_and_ordered():
+    value = bulk_hash([7])
+    pairs = similarity.close_pairs({"c": value, "a": value, "b": value}, max_distance=0)
+    assert pairs == [("a", "b", 0), ("a", "c", 0), ("b", "c", 0)]
+
+
+def test_bulk_search_crosses_its_internal_blocks(monkeypatch):
+    """Les blocs sont un détail de calcul : ils ne doivent pas couper une paire."""
+    monkeypatch.setattr(similarity, "BULK_BLOCK", 2)
+    value = bulk_hash([11])
+    hashes = {name: value for name in ("a", "b", "c", "d", "e")}
+    assert len(similarity.close_pairs(hashes, max_distance=0)) == 10
+
+
+def test_empty_bulk_search_returns_nothing():
+    assert similarity.close_pairs({}, max_distance=4) == []
+
+
+@pytest.mark.parametrize("distance", [-1, 129, 1.5, "4", None])
+def test_invalid_bulk_distance_is_refused(distance):
+    with pytest.raises(ValueError, match="Hash distance"):
+        similarity.close_pairs({"a": 1}, distance)
+
+
+def test_oversized_bulk_search_is_refused(monkeypatch):
+    monkeypatch.setattr(similarity, "MAX_BULK_IMAGES", 2)
+    with pytest.raises(ValueError, match="Too many images"):
+        similarity.close_pairs({"a": 1, "b": 2, "c": 3})
+
+
+def test_groups_link_photos_through_a_common_neighbour():
+    pairs = [("a", "b", 1), ("b", "c", 2), ("x", "y", 0)]
+    assert similarity.groups_from_pairs(pairs) == [["a", "b", "c"], ["x", "y"]]
+
+
+def test_groups_without_pairs_are_empty():
+    assert similarity.groups_from_pairs([]) == []
+
+
+def test_bulk_hashes_match_the_real_image_hash():
+    """L'empreinte groupée doit être celle du module, pas une variante."""
+    first = Image.new("RGB", (64, 64), "black")
+    second = first.copy()
+    second.paste((255, 255, 255), (0, 0, 32, 64))
+    hashes = {
+        "uniform": similarity.difference_hash(first),
+        "split": similarity.difference_hash(second),
+    }
+    assert similarity.close_pairs(hashes, max_distance=0) == []
+    assert similarity.close_pairs(hashes, max_distance=128)[0][2] > 0

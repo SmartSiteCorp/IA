@@ -226,3 +226,23 @@ def summarize_coverage(
             ),
         }
     return result
+
+
+def box_mask(bbox_xywh: list[float], width: int, height: int) -> dict[str, Any]:
+    """Faire du rectangle une zone, pour mesurer des corpus annotés sans contour.
+
+    Certains corpus, dont CUBIT, ne publient que des rectangles. On mesure alors la
+    surface du rectangle lui-même. Ce n'est pas le contour du défaut : un rectangle
+    contient du fond autour de lui, et les chiffres obtenus ne se comparent pas à
+    ceux d'un corpus annoté au contour.
+    """
+    left, top, box_width, box_height = bbox_xywh
+    if box_width <= 0 or box_height <= 0:
+        raise ValueError("Box mask needs a positive width and height")
+    right, bottom = min(left + box_width, width), min(top + box_height, height)
+    left, top = max(left, 0.0), max(top, 0.0)
+    if right <= left or bottom <= top:
+        raise ValueError("Box mask falls outside its image")
+    polygon = [[left, top, right, top, right, bottom, left, bottom]]
+    merged: dict[str, Any] = coco_mask.merge(coco_mask.frPyObjects(polygon, height, width))
+    return merged

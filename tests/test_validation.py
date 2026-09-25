@@ -524,3 +524,41 @@ def test_evaluation_cli_opens_the_reserved_test_only_when_asked(monkeypatch, cap
     )
     assert model_cli.main() == 0
     assert json.loads(capsys.readouterr().out)["test_used"] is True
+
+
+def test_box_becomes_a_rectangular_zone():
+    mask = validation_metrics.box_mask([10.0, 20.0, 30.0, 40.0], 100, 100)
+    assert int(coco_mask.area(mask)) == 1200
+
+
+def test_box_is_clipped_to_its_image():
+    """Deux boites CUBIT depassent leur image de trois millièmes de pixel."""
+    mask = validation_metrics.box_mask([90.0, 90.0, 30.0, 30.0], 100, 100)
+    assert int(coco_mask.area(mask)) == 100
+
+
+@pytest.mark.parametrize("bbox", [[0.0, 0.0, 0.0, 10.0], [0.0, 0.0, 10.0, 0.0]])
+def test_flat_box_is_refused(bbox):
+    with pytest.raises(ValueError, match="positive width and height"):
+        validation_metrics.box_mask(bbox, 100, 100)
+
+
+def test_box_entirely_outside_its_image_is_refused():
+    with pytest.raises(ValueError, match="falls outside"):
+        validation_metrics.box_mask([200.0, 200.0, 10.0, 10.0], 100, 100)
+
+
+def test_box_zones_feed_the_coverage_measure():
+    reference = {
+        "category_id": 1,
+        "segmentation": validation_metrics.box_mask([0.0, 0.0, 20.0, 20.0], 100, 100),
+    }
+    proposal = {
+        "category_id": 1,
+        "score": 0.9,
+        "segmentation": validation_metrics.box_mask([0.0, 0.0, 10.0, 20.0], 100, 100),
+    }
+    row = validation_metrics.coverage_for_image([reference], [proposal], 0.3)
+    summary = validation_metrics.summarize_coverage([row])["crack"]
+    assert summary["zone_recall"] == pytest.approx(0.5)
+    assert summary["zone_precision"] == pytest.approx(1.0)

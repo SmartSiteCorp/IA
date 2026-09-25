@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "purpose": "pilot_box_training",
+  "corpus_kind": "prepared_coco",
+  "class_names": [
+    "crack",
+    "surface_loss",
+    "moisture_trace"
+  ],
+  "seed": 20260924,
+  "epochs": 5,
+  "batch_size": 2,
+  "grad_accum_steps": 2,
+  "lr": 0.0001,
+  "checkpoint_selection": "last_epoch",
+  "corpus_sha256": {
+    "report.json": "87b36ad10231d48e2a42f0c7766f462cb15b81686f1e7c1d1704be13569a7dce",
+    "train/_annotations.coco.json": "2c185222ca9c18217e2f92b0358c4da60a8e71f95d3cf8f4cdbe61744d7df270",
+    "valid/_annotations.coco.json": "e2b66e15c07ba9eba8aa19c3c5ae18f2ffaaa54195dd983f391b5be412e06a02"
+  }
+}
