@@ -9,6 +9,7 @@ Le numéro de fichier n'est pas utilisé comme indice de scène : la mesure mont
 deux photos qui se suivent ne se ressemblent presque jamais.
 """
 
+import random
 from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
@@ -16,7 +17,6 @@ from typing import Any
 from smartsite_ia.curation import digest, staged_output
 from smartsite_ia.importer import write_json
 from smartsite_ia.similarity import close_pairs, groups_from_pairs
-
 
 CUBIT_CLASSES = ("crack", "surface_loss", "moisture_trace")
 AUTHOR_CLASS_NAMES = ("Crack", "Spalling", "Moisture")
@@ -330,3 +330,51 @@ def prepare_cubit_corpus(
         write_json(stage / "manifest.json", {"schema_version": 1, "records": manifest})
         write_json(stage / "ATTRIBUTION.json", attribution())
     return report
+
+
+# Les extraits de murs sains servent à apprendre au modèle à ne rien signaler.
+# Leurs photos d'origine sont partagées entre apprentissage et mesure, jamais les deux.
+NEGATIVE_PREFIX = "sdnet_"
+
+
+def split_origin_photos(
+    photos: Mapping[str, str], training_share: float, seed: int
+) -> dict[str, str]:
+    """Répartir les photos d'origine entre apprentissage et mesure, de façon stable.
+
+    Un extrait ne dit rien de plus que sa photo d'origine : deux extraits du même mur
+    montrent la même scène. On sépare donc au niveau de la photo, jamais de l'extrait,
+    sinon la mesure des fausses alertes porterait sur un mur déjà appris.
+    """
+    if not 0 < training_share < 1:
+        raise ValueError("Training share must sit strictly between 0 and 1")
+    ordered = sorted(set(photos.values()))
+    if len(ordered) < 2:
+        raise ValueError("At least two origin photos are needed to separate the two uses")
+    generator = random.Random(seed)
+    shuffled = list(ordered)
+    generator.shuffle(shuffled)
+    cut = max(1, min(len(shuffled) - 1, round(len(shuffled) * training_share)))
+    training = set(shuffled[:cut])
+    return {photo: ("train" if photo in training else "reserved") for photo in ordered}
+
+
+def choose_negatives(
+    patches: Mapping[str, str], assignment: Mapping[str, str], wanted: int, seed: int
+) -> list[str]:
+    """Tirer les extraits d'apprentissage en équilibrant les photos d'origine."""
+    if wanted < 1:
+        raise ValueError("At least one negative patch is required")
+    by_photo: dict[str, list[str]] = {}
+    for patch, photo in sorted(patches.items()):
+        if assignment.get(photo) == "train":
+            by_photo.setdefault(photo, []).append(patch)
+    if not by_photo:
+        raise ValueError("No origin photo assigned to training")
+    chosen: list[str] = []
+    per_photo = max(1, wanted // len(by_photo))
+    for photo in sorted(by_photo):
+        names = by_photo[photo]
+        generator = random.Random(f"{seed}:{photo}")
+        chosen.extend(sorted(generator.sample(names, min(per_photo, len(names)))))
+    return sorted(chosen)[:wanted]

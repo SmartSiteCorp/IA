@@ -330,3 +330,70 @@ def test_manifest_records_the_author_split_and_scene_group(tmp_path):
     assert row["author_split"] == "test" and row["split"] == "test"
     assert row["scene_group"] == "hk0003"
     assert report["rejected_boxes"] == {"hk0009": [{"line": 1}]}
+
+
+def test_origin_photos_are_split_between_the_two_uses():
+    patches = {f"p{i}": f"photo{i // 5}" for i in range(50)}
+    assignment = cubit_data.split_origin_photos(patches, 0.7, seed=1)
+    assert set(assignment.values()) == {"train", "reserved"}
+    assert sum(v == "train" for v in assignment.values()) == 7
+    assert len(assignment) == 10
+
+
+def test_split_is_stable_for_a_given_seed():
+    patches = {f"p{i}": f"photo{i}" for i in range(20)}
+    first = cubit_data.split_origin_photos(patches, 0.5, seed=7)
+    assert first == cubit_data.split_origin_photos(patches, 0.5, seed=7)
+    assert first != cubit_data.split_origin_photos(patches, 0.5, seed=8)
+
+
+def test_both_sides_always_keep_at_least_one_photo():
+    patches = {"a": "p1", "b": "p2"}
+    for share in (0.01, 0.99):
+        assignment = cubit_data.split_origin_photos(patches, share, seed=1)
+        assert sorted(assignment.values()) == ["reserved", "train"]
+
+
+@pytest.mark.parametrize("share", [0, 1, -0.5, 1.5])
+def test_impossible_share_is_refused(share):
+    with pytest.raises(ValueError, match="strictly between 0 and 1"):
+        cubit_data.split_origin_photos({"a": "p1", "b": "p2"}, share, 1)
+
+
+def test_a_single_origin_photo_cannot_be_separated():
+    """Sans deux photos distinctes, apprentissage et mesure porteraient sur la meme scene."""
+    with pytest.raises(ValueError, match="At least two origin photos"):
+        cubit_data.split_origin_photos({"a": "p1", "b": "p1"}, 0.5, 1)
+
+
+def test_negatives_come_only_from_training_photos():
+    patches = {f"p{i}": f"photo{i // 10}" for i in range(60)}
+    assignment = {f"photo{i}": ("train" if i < 3 else "reserved") for i in range(6)}
+    chosen = cubit_data.choose_negatives(patches, assignment, 12, seed=3)
+    assert len(chosen) == 12
+    assert all(assignment[patches[name]] == "train" for name in chosen)
+
+
+def test_negatives_are_spread_across_origin_photos():
+    patches = {f"p{i}": f"photo{i // 10}" for i in range(30)}
+    assignment = {f"photo{i}": "train" for i in range(3)}
+    chosen = cubit_data.choose_negatives(patches, assignment, 9, seed=3)
+    used = {patches[name] for name in chosen}
+    assert used == {"photo0", "photo1", "photo2"}
+
+
+def test_negative_selection_is_reproducible():
+    patches = {f"p{i}": f"photo{i // 10}" for i in range(30)}
+    assignment = {f"photo{i}": "train" for i in range(3)}
+    first = cubit_data.choose_negatives(patches, assignment, 9, seed=5)
+    assert first == cubit_data.choose_negatives(patches, assignment, 9, seed=5)
+
+
+def test_selection_without_any_training_photo_is_refused():
+    with pytest.raises(ValueError, match="No origin photo assigned"):
+        cubit_data.choose_negatives({"a": "p1"}, {"p1": "reserved"}, 1, 1)
+
+
+def test_zero_negatives_is_refused():
+    with pytest.raises(ValueError, match="At least one negative"):
+        cubit_data.choose_negatives({"a": "p1"}, {"p1": "train"}, 0, 1)
