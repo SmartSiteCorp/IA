@@ -164,3 +164,32 @@ def test_every_outcome_is_declared():
         for f in ([], [{"id": "x"}])
     }
     assert produced == set(finding.OUTCOMES)
+
+
+@pytest.mark.parametrize(
+    "box", [[10, 20, 10, 90], [10, 20, 60, 20], [float("nan"), 20, 60, 90], [True, 20, 60, 90]]
+)
+def test_invalid_coordinates_are_rejected_before_making_a_finding(box):
+    with pytest.raises(ValueError):
+        make(detection={"bbox_xyxy": box})
+
+
+@pytest.mark.parametrize("size", [(0, 100), (200, -1), (True, 100), (200.5, 100)])
+def test_invalid_photo_dimensions_are_rejected(size):
+    with pytest.raises(ValueError):
+        make(photo_size=size)
+
+
+def test_non_hex_fingerprint_is_not_a_model_identity():
+    with pytest.raises(ValueError):
+        make(model={**MODEL, "checkpoint_sha256": "z" * 64})
+
+
+def test_same_photo_at_another_site_or_from_another_model_is_not_the_same_finding():
+    assert make()["id"] != make(context={**CONTEXT, "site_id": "other"})["id"]
+    assert make()["id"] != make(model={**MODEL, "checkpoint_sha256": "c" * 64})["id"]
+
+
+def test_unknown_quality_must_not_be_read_as_a_clean_photo():
+    with pytest.raises(ValueError):
+        analyse_outcome({"verdict": "broken"}, [])

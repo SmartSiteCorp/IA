@@ -328,3 +328,22 @@ def test_changed_inputs_during_prediction_cancel_publication(
     with pytest.raises(ValueError):
         box_review.review_boxes(run, corpus, config, output, "cpu")
     assert not output.exists()
+
+
+def test_box_encoding_respects_explicit_cubit_class_order():
+    photo = Image.new("RGB", (100, 100))
+    result = box_review.encode_boxes(
+        detections([[1, 2, 50, 60]], [0.8], [0], ["crack"]),
+        photo,
+        class_names=("crack", "surface_loss", "moisture_trace"),
+    )
+    assert result["predictions"][0]["class_name"] == "crack"
+
+
+def test_box_background_uses_the_actual_number_of_model_classes():
+    result = box_review.encode_boxes(
+        detections([[1, 2, 50, 60]], [0.8], [2], ["__background__"]),
+        Image.new("RGB", (100, 100)),
+        class_names=("crack", "surface_loss"),
+    )
+    assert result["predictions"] == [] and result["discarded"][0]["reason"] == "background"

@@ -2,6 +2,10 @@
 
 Préparation contrôlée des données et premiers essais de détection des défauts du bâtiment. Le projet télécharge, importe, inspecte et prépare les corpus, puis entraîne RF-DETR et affiche ses prédictions. Le premier modèle est expérimental ; aucun service chantier ni détecteur qualifié n'est encore livré.
 
+Un [constat local autonome](#constats-locaux-sans-smartsite) est également disponible :
+photo, zones proposées, vérification humaine, suivi de reprise et export HTML/JSON.
+Il fonctionne sans backend SmartSite et n'envoie aucune notification.
+
 Deux parcours sont disponibles :
 
 - **DamSegment** : segmentation d'instances du béton, avec partitions COCO `train/valid/test` pour les premiers essais.
@@ -20,6 +24,147 @@ uv run --no-sync pytest --cov --cov-report=term-missing
 ```
 
 Dans un environnement déjà installé, `uv run --no-sync smartsite-data` peut être remplacé par `.venv/bin/smartsite-data`. Les tests courants utilisent des fixtures synthétiques sans téléchargement ni GPU ; ils ne mesurent pas la précision d'une IA. La CI exécute les mêmes vérifications.
+
+## Constats locaux sans SmartSite
+
+Le parcours `smartsite-findings` fonctionne sur macOS/Linux avec Python 3.11–3.12.
+Les commandes `show`, `record` et `export` utilisent seulement les dépendances de
+base ; `analyse` nécessite aussi l'environnement d'entraînement et des poids Nano
+déjà présents, accompagnés de leur `run.json` terminé. Aucun corpus d'apprentissage
+n'est nécessaire pour analyser une photo. Les poids et les données ne sont pas
+distribués dans le paquet. Les versions du moteur doivent correspondre au manifeste
+d'entraînement ; les empreintes du manifeste et du checkpoint sont contrôlées.
+
+### Analyser puis consulter
+
+Exemple à adapter à une photo locale et aux identifiants du chantier :
+
+```sh
+uv run --no-sync smartsite-findings analyse /chemin/photo.jpg \
+  --run artifacts/training/cubit_boxes_v3 \
+  --output artifacts/findings/chantier-01-photo-01 \
+  --device mps --site chantier-01 --zone piece-01 --capture capture-01
+
+uv run --no-sync smartsite-findings show artifacts/findings/chantier-01-photo-01 \
+  --site chantier-01
+
+uv run --no-sync smartsite-findings export artifacts/findings/chantier-01-photo-01 \
+  --site chantier-01 --output artifacts/predictions/constat-photo-01-r0
+```
+
+Ouvrir `index.html` dans l'export. C'est une consultation hors ligne, sans formulaire
+d'édition : les retours sont enregistrés avec `record`. Après un retour, exporter
+dans un **nouveau dossier** pour actualiser la page. Le dossier de travail reste la
+référence ; ne pas modifier en parallèle ses copies exportées.
+
+`--device cpu` et `--device cuda` sont aussi acceptés selon l'installation.
+`--task`, `--media`, `--capture`, `--zone` et `--captured-at` sont facultatifs.
+Une date fournie doit être ISO 8601 avec fuseau et ne pas être postérieure à
+l'analyse. Les valeurs absentes restent nulles : aucune date de prise de vue,
+position 3D, tâche ou gravité n'est inventée. Le seuil par défaut est un score
+**strictement supérieur à 0,30** ; il n'est pas une probabilité de défaut vérifiée.
+
+Le détecteur produit des propositions pour les fissures et pertes de matière.
+Les autres classes, les scores sous le seuil et les cadres entièrement dans une
+zone déclarée illisible restent écartés avec leur motif. Les doublons géométriques
+de même classe gardent la proposition la mieux notée. Une photo non évaluable
+ne charge pas le moteur ; une photo partielle conserve ses limites, même avec un
+constat. Les contrôles d'exposition et de détail ne reconnaissent pas toutes les
+occultations ou les zones hors champ.
+
+### Enregistrer une décision humaine
+
+Lire `revision` et `findings[].finding.id` dans la sortie de `show`. Créer un
+fichier `review.json` avec les valeurs réelles ; l'exemple suivant est fictif :
+
+```json
+{
+  "request_id": "revue-photo-01-001",
+  "kind": "review",
+  "finding_id": "REMPLACER_PAR_L_IDENTIFIANT_DU_CONSTAT",
+  "actor": "IDENTIFIANT_DE_LA_PERSONNE",
+  "payload": {"decision": "confirmed", "note": "Observation faite sur place."}
+}
+```
+
+```sh
+uv run --no-sync smartsite-findings record artifacts/findings/chantier-01-photo-01 \
+  --site chantier-01 --request review.json --revision 0
+```
+
+Les décisions sont `confirmed`, `rejected` ou `indeterminate`. Une confirmation
+peut ajouter `class_name`, `task_id` et `severity` dans `payload` ; cette gravité
+est un texte renseigné par la personne, jamais déduit du score. `occurred_at`,
+facultatif au même niveau que `actor`, indique la date réelle de l'observation ;
+`recorded_at` est ajouté par le stockage. Les auteurs sont déclarés localement,
+sans authentification. Chaque demande exige une note et un `request_id` distinct.
+
+Autres demandes possibles, avec la même enveloppe :
+
+| `kind` | Contenu de `payload` | Règle |
+|---|---|---|
+| `note` | `{"note": "Observation complémentaire"}` | Conserve le constat et ses états |
+| `manual` | `{"class_name": "surface_loss", "bbox_xyxy": [10,20,60,90], "note": "Zone omise"}` | `finding_id` vaut `null` ; nouveau constat à vérifier, sans score IA |
+| `correction` | `{"status": "planned", "note": "Reprise prévue", "evidence_sha256": []}` | Nécessite un constat confirmé |
+
+Les catégories humaines acceptées sont `crack`, `surface_loss`, `peeling_paint`,
+`moisture_trace` et `mold_suspected`. Les ajouts humains des classes non validées
+ne les activent pas dans le détecteur. Les cadres `[x1,y1,x2,y2]` sont en pixels
+de la photo remise à l'endroit par son orientation EXIF, visibles dans `photo.png`.
+Ils doivent rester entièrement dans cette photo et avoir une surface positive.
+
+Les états de reprise sont `planned`, `in_progress`, `resolved`, `not_required`.
+Pour `resolved`, joindre au moins une photo avec `--evidence /chemin/apres.jpg` ;
+laisser `evidence_sha256: []` dans la demande, la commande calcule les empreintes.
+On peut également référencer des preuves déjà enregistrées. Au plus quatre photos
+par événement sont acceptées. Une preuve jointe ne prouve pas automatiquement
+la réparation : l'état reste une déclaration humaine. Un changement de conclusion
+ou de catégorie remet la reprise courante à `not_assessed`, sans effacer l'historique.
+L'absence de détection sur une autre photo ne ferme jamais un constat.
+
+### Contrat, preuves et reprise après une erreur
+
+Le dossier versionné (`schema_version: 2`) contient `record.json`, l'original
+exact `source.bin` et les éventuelles photos de preuve dans `evidence/`. Son analyse
+initiale conserve photo/SHA-256, contexte, qualité, propositions, motifs d'exclusion,
+modèle, versions, seuil et rectangles ; `events` conserve les retours successifs.
+`current.json`, dans l'export, est une vue recalculée et non un second journal.
+Les photos PNG/JPEG affichées sont des dérivés orientés sans métadonnées EXIF ;
+les originaux peuvent conserver leurs métadonnées et restent dans le dossier local.
+
+Les identifiants distinguent photo, capture, chantier, modèle et réglages. Une
+relance d'analyse identique retrouve le dossier et ses retours sans refaire
+l'inférence. Un autre contenu ne peut pas remplacer ce dossier. Une relance du
+même retour avec le même `request_id` et contenu est sans effet, même si sa révision
+est ancienne. En revanche, une nouvelle modification exige la dernière révision ;
+une révision périmée ou un identifiant de demande réutilisé autrement est refusé.
+
+Le verrou local empêche deux écritures simultanées. Les fichiers sont remplacés
+atomiquement ; une interruption peut laisser une preuve complète non référencée,
+mais pas publier un journal qui dépend d'une écriture de preuve encore à terminer.
+Relire le dossier avec `show` puis relancer la **même** demande après une interruption.
+Les empreintes et la reconstruction de l'état détectent les incohérences ; ce ne
+sont ni une signature, ni une sauvegarde, ni une protection contre un auteur local
+capable de réécrire tout le dossier. Ne pas modifier manuellement son journal.
+
+Limites : JPEG/PNG RGB ou gris, 8 Mio et 16 millions de pixels par image, au moins
+32 pixels par dimension ; JSON du dossier 16 Mio, demande CLI 32 Kio, 500 propositions
+du modèle, 200 constats, 1 000 événements et 64 fichiers de preuve par dossier.
+Les liens symboliques, chemins détournés, données incohérentes et références absentes
+sont refusés. Aucun accès réseau ni téléchargement de médias n'est proposé.
+
+Les erreurs CLI sont des JSON sur la sortie d'erreur, avec `error.code` :
+`invalid_input`, `integrity_error`, `conflict`, `busy`, `io_error` ou `engine_error`.
+Elles rendent le code de sortie 1 ; une interruption rend 130 (`interrupted`).
+Le contrôle local du `site_id` évite une erreur de ciblage ; il ne remplace pas
+les droits par chantier du futur serveur.
+
+**Périmètre restant :** raccordement API/stockage SmartSite, authentification et
+droits sur les médias, file de traitements avec délais et annulation, notifications,
+localisation 3D et rapprochement entre captures. Le modèle reste non qualifié sur
+les chantiers du produit, notamment sur les joints de sol et l'humidité. Le dossier
+indique toujours `qualified_for_smartsite: false`, `conformity: not_assessed` et
+`notification.sent: false` ; une absence de détection n'est jamais une conformité.
 
 ## Télécharger et importer DamSegment
 

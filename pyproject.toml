@@ -20,6 +20,7 @@ smartsite-probe = "smartsite_ia.zero_shot:main"
 smartsite-collection = "smartsite_ia.collection:main"
 smartsite-review-collection = "smartsite_ia.collection_review:main"
 smartsite-boxes = "smartsite_ia.box_cli:main"
+smartsite-findings = "smartsite_ia.finding_cli:main"
 
 [project.optional-dependencies]
 training = [

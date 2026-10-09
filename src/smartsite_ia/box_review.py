@@ -82,7 +82,9 @@ def load_box_engine(
     return AlignedPredictor(engine, box_classes=box_classes)
 
 
-def encode_boxes(detections: Any, photo: Image.Image) -> dict[str, Any]:
+def encode_boxes(
+    detections: Any, photo: Image.Image, *, class_names: tuple[str, ...] = BOX_CLASSES
+) -> dict[str, Any]:
     """Borner les sorties et conserver les coordonnées brutes si elles débordent."""
     boxes, scores, labels = detections.xyxy, detections.confidence, detections.class_id
     count = len(boxes)
@@ -109,12 +111,12 @@ def encode_boxes(detections: Any, photo: Image.Image) -> dict[str, Any]:
         record: dict[str, Any] = {"id": index + 1, "score": score, "raw_bbox_xyxy": raw}
         # Le model peut exposer la classe sans objet.. Elle reste compté dans
         # les sorties écartées, et ne devient jamais une anomalie
-        if label == len(BOX_CLASSES) and names is not None and names[index] == "__background__":
+        if label == len(class_names) and names is not None and names[index] == "__background__":
             discarded.append({**record, "reason": "background"})
             continue
-        if not 0 <= label < len(BOX_CLASSES):
+        if not 0 <= label < len(class_names):
             raise ValueError("Unknown prediction class")
-        name = BOX_CLASSES[int(label)]
+        name = class_names[int(label)]
         if names is not None and names[index] != name:
             raise ValueError("Prediction class names differ from labels")
         record.update(class_id=int(label), class_name=name)
